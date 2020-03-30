@@ -1,0 +1,88 @@
+html {
+    font-size: 80%;
+}
+body {
+    padding-top: 5rem;
+}
+footer {
+    padding-top: 10rem;
+}
+
+.hide {
+	display: none;
+}
+
+.zdo_drawer_menu .zdo_drawer_button {
+    z-index: 1031;
+    color: #FFF;
+    top: 0.12rem;
+    width: 28px;
+}
+.zdo_drawer_menu .zdo_drawer_button .zdo_drawer_bar {
+    background-color: #FFF;
+}
+.zdo_drawer_menu .zdo_drawer_bar {
+    margin: 5px 0;
+}
+.zdo_drawer_menu .zdo_drawer_button.active .zdo_drawer_bar {
+    width: 29px;
+}
+.zdo_drawer_menu .zdo_drawer_nav {
+    padding-top: 5.5rem;
+}
+
+.nav-tabs-title {
+	margin-top: 2rem;
+	margin-bottom: 1.5rem;
+}
+
+.custom-switch,
+.custom-checkbox,
+.custom-radio {
+	padding-top: 0.6rem;
+}
+
+.form-group.row .col-form-label {
+	color: dimgray;
+}
+
+/*************************************
+	datepicker
+**************************************/
+.datepicker-days th.dow:nth-last-child(2),
+.datepicker-days td:nth-last-child(2) {
+    color: #00f;
+}
+.datepicker-days th.dow:last-child,
+.datepicker-days td:last-child {
+    color: #f00;
+}
+/*************************************
+	FontAwesome color
+**************************************/
+.color-green {color: green}
+.color-yellow {color: #ffa500}
+.color-red {color: red}
+
+
+/*************************************
+	search item label
+**************************************/
+.search_item_lbl_width_sm {
+	width:5rem;
+}
+.search_item_lbl_width {
+	width:10rem;
+}
+.search_item_lbl_width_lg {
+	width:15rem;
+}
+
+/*************************************
+	table color
+**************************************/
+.table-danger-c {
+	background-color:#FCEEEB;
+}
+
+
