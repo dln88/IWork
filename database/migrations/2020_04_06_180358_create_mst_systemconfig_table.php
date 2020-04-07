@@ -15,7 +15,7 @@ class CreateMstSystemconfigTable extends Migration
     {
         Schema::create('mst_systemconfig', function (Blueprint $table) {
             $table->integer('systemconf_cd')->primary();
-            $table->string('systemconf_name', 20);
+            $table->string('systemconf_name', 20)->unique();
             $table->string('systemconf_value', 100);
             $table->string('memo', 100)->nullable();
             $table->integer('delete_flg')->default(0);

@@ -21,8 +21,8 @@ class CreateTrnAttendanceTable extends Migration
             $table->string('target_ym', 6);
             $table->timestampTz('att_time', 0); // 実際の時間
             $table->timestampTz('leav_time', 0); // 実際の時間
-            $table->time('start_time'); // hh:mm
-            $table->time('end_time'); // hh:mm
+            $table->time('start_time')->nullable(); // hh:mm
+            $table->time('end_time')->nullable(); // hh:mm
             $table->decimal('break_time', 5, 2)->nullable()->default(0.00);
             $table->decimal('working_time', 5, 2)->nullable()->default(0.00);
             $table->decimal('over_time', 5, 2)->nullable()->default(0.00);

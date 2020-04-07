@@ -19,8 +19,8 @@ class CreateMstOperatorTable extends Migration
             $table->string('operator_last_name', 15);
             $table->string('operator_first_name', 15);
             $table->string('operator_name_kana', 30); // 並び替え用 (for sorting)
-            $table->string('user_id', 10)->nullable();
-            $table->string('password', 30)->nullable();
+            $table->string('user_id', 10)->unique()->nullable();
+            $table->string('password')->nullable();
             $table->date('join_day')->nullable();
             $table->date('resigned_day')->nullable();
             $table->integer('post_cd')->unsigned()->unique();
