@@ -21,11 +21,11 @@ class CreateMstCalendarTable extends Migration
             $table->integer('nationalholiday_flg')->default(0);
             $table->string('nationalholiday_name', 20);
             $table->integer('delete_flg')->default(0);
-            $table->timestampTz('delete_date')->nullable();
+            $table->string('delete_date')->nullable();
             $table->integer('creater_cd')->default(0);
-            $table->timestampTz('create_date');
+            $table->string('create_date');
             $table->integer('updater_cd')->default(0);
-            $table->timestampTz('update_date');
+            $table->string('update_date');
             $table->string('update_app', 10);
         });
     }

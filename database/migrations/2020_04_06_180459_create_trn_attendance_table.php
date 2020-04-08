@@ -19,8 +19,8 @@ class CreateTrnAttendanceTable extends Migration
             $table->integer('post_cd');
             $table->string('emp_no', 15);
             $table->string('target_ym', 6);
-            $table->timestampTz('att_time', 0); // 実際の時間
-            $table->timestampTz('leav_time', 0); // 実際の時間
+            $table->string('att_time', 0); // 実際の時間
+            $table->string('leav_time', 0); // 実際の時間
             $table->time('start_time')->nullable(); // hh:mm
             $table->time('end_time')->nullable(); // hh:mm
             $table->decimal('break_time', 5, 2)->nullable()->default(0.00);
@@ -31,11 +31,11 @@ class CreateTrnAttendanceTable extends Migration
             $table->decimal('interval_time', 5, 2)->nullable()->default(0.00);
             $table->string('memo')->nullable();
             $table->integer('delete_flg')->default(0);
-            $table->timestampTz('delete_date')->nullable();
+            $table->string('delete_date')->nullable();
             $table->integer('creater_cd')->default(0);
-            $table->timestampTz('create_date');
+            $table->string('create_date');
             $table->integer('updater_cd')->default(0);
-            $table->timestampTz('update_date');
+            $table->string('update_date');
             $table->string('update_app', 10);
 
             $table->primary(['operator_cd', 'regi_date']);

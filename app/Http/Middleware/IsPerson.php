@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 
-class IsStaff
+class IsPerson
 {
     /**
      * Handle an incoming request.
@@ -15,14 +15,10 @@ class IsStaff
      */
     public function handle($request, Closure $next)
     {
-
-        if(auth()->user() && auth()->user()->isStaff()) {
+        if(session('user')) {
             return $next($request);
         }
-        else {
-            redirect(route('login'));
-        }
-        //return $next($request);
+
         return redirect(route('login'));
     }
 }

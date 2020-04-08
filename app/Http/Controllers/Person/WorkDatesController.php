@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers\Person;
 
 use App\Http\Controllers\Controller;
 use App\Models\WorkDate;
@@ -15,12 +15,13 @@ class WorkDatesController extends Controller
     protected $repository;
     public function __construct(WorkDateRepository $repository)
     {
-        $this->middleware('staff');
+        $this->middleware('person');
 
         $this->repository = $repository;
     }
 
     public function index(Request $request){
+        dd('word_date');
         $date = $this->repository->findWhere(['work_date' => date('Y/m/d')])->first();
 
         $headers = ['日付', '曜日', '開始', '終了', '休憩時間', '実働時間　（00.00）', '残業時間　（00.00）', '深夜残業　（00.00）', 'インターバル', '有休', '振休', '特休'];
@@ -30,11 +31,11 @@ class WorkDatesController extends Controller
                 '2020/04/'. $i ,Common::getDateOfWeek('2020/04/'. $i), '9:00', '18:00', '1.00', '8.00', '0.00', '0.00', '15.00', '0.0', '0.0', '0.0'
             ];
         }
-        return view('staff.work', ['date' => $date, 'data' => $data, 'headers' => $headers]);
+        return view('person.work', ['date' => $date, 'data' => $data, 'headers' => $headers]);
     }
 
     public function holiday(Request $request){
-        return view('staff.holiday');
+        return view('person.holiday');
     }
 
     public function register(Request $request){
@@ -58,7 +59,7 @@ class WorkDatesController extends Controller
             }
 
             $this->repository->update($data, $date->id);
-            return redirect(route('staff.work.dates'))->with('message', 'Add Successful');
+            return redirect(route('person.work.dates'))->with('message', 'Add Successful');
         }
         else {
             if ( $request->get('start_time')) {
@@ -69,7 +70,7 @@ class WorkDatesController extends Controller
                     'start_time' => $request->get('start_time') ]);
             }
         }
-        return redirect(route('staff.work.dates'))->with('message', 'Add Successful');
+        return redirect(route('person.work.dates'))->with('message', 'Add Successful');
 
     }
     public function add_holiday(Request $request){

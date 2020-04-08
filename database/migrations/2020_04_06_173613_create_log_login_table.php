@@ -15,7 +15,7 @@ class CreateLogLoginTable extends Migration
     {
         Schema::create('log_login', function (Blueprint $table) {
             $table->bigIncrements('login_log_no');
-            $table->timestampTz('operation_timestamp', 0);
+            $table->string('operation_timestamp');
             $table->string('ip_address', 30)->nullable();
             $table->string('user_id', 10)->nullable();
             $table->integer('operator_cd')->nullable();

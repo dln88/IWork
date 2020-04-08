@@ -12,11 +12,14 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', function () {
+    return redirect(route('login'));
+});
 
-Route::get('/login', 'AuthController@showLogin')->name('login');
-Route::post('/doLoginAdmin', 'AuthController@doLoginAdmin')->name('admin.login.post');
-Route::post('/doLogin', 'AuthController@doLogin')->name('login.post');
-Route::get('/logout', 'AuthController@logout')->name('logout');
+Route::get('/login', 'Common\AuthController@showLogin')->name('login');
+Route::post('/doLogin', 'Common\AuthController@doLogin')->name('login.post');
+Route::post('/doLoginAdmin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');
+Route::get('/logout', 'Common\AuthController@logout')->name('logout');
 
 Route::group(['prefix' => 'admin',  'middleware' => 'admin', 'namespace' => 'Admin'], function()
 {
@@ -36,20 +39,20 @@ Route::group(['prefix' => 'admin',  'middleware' => 'admin', 'namespace' => 'Adm
     Route::post('/work/personal/update/{uid}', 'WorkDatesController@ajaxUpdatePersonalDate')->name('admin.ajax.update_personal_date');
 });
 
-Route::group([ 'middleware' => 'staff'], function()
+Route::group([ 'middleware' => 'person'], function()
 {
-    Route::get('/',  'Staff\HomeController@index')->name('staff.dashboard');
-    Route::get('work/dates', 'Staff\WorkDatesController@index')
-        ->name('staff.work.dates');
+    Route::get('/',  'person\HomeController@index')->name('person.dashboard');
+    Route::get('work/dates', 'person\WorkDatesController@index')
+        ->name('person.work.dates');
 
-    Route::post('work/register', 'Staff\WorkDatesController@register')
-        ->name('staff.work.register_date');
+    Route::post('work/register', 'person\WorkDatesController@register')
+        ->name('person.work.register_date');
 
-    Route::get('holiday', 'Staff\HolidayController@index')
-        ->name('staff.holiday');
+    Route::get('holiday', 'person\HolidayController@index')
+        ->name('person.holiday');
 
-    Route::post('add_holiday', 'Staff\HolidayController@store')
-        ->name('staff.add_holiday');
+    Route::post('add_holiday', 'person\HolidayController@store')
+        ->name('person.add_holiday');
 
 });
 

@@ -17,11 +17,11 @@ class CreateMstOperatorSpecialRoleTable extends Migration
             $table->integer('operator_cd')->unsigned()->unique();
             $table->string('special_role_key', 20);
             $table->integer('delete_flg')->default(0);
-            $table->timestampTz('delete_date')->nullable();
+            $table->string('delete_date')->nullable();
             $table->integer('creater_cd')->default(0);
-            $table->timestampTz('create_date');
+            $table->string('create_date');
             $table->integer('updater_cd')->default(0);
-            $table->timestampTz('update_date');
+            $table->string('update_date');
             $table->string('update_app', 10);
 
             $table->primary(['operator_cd', 'special_role_key']);

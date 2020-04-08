@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers\Person;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\VacationRepository;
@@ -12,7 +12,7 @@ class HolidayController extends Controller
     protected $repository;
     public function __construct(VacationRepository $repository)
     {
-        $this->middleware('staff');
+        $this->middleware('person');
 
         $this->repository = $repository;
     }
@@ -22,7 +22,7 @@ class HolidayController extends Controller
         $user = Auth::user();
         $uid = $user->id;
         $holidays = $this->repository->findWhere(['user_id' => $uid]);
-        return view('staff.holiday', ['holidays' => $holidays]);
+        return view('person.holiday', ['holidays' => $holidays]);
     }
 
     public function store(Request $request)

@@ -59,7 +59,16 @@
         @csrf
         <!-- エラーメッセージ -->
         <!-- 			<div class="alert alert-danger" role="alert" style="width: 30rem;"> -->
-        @if (Session::get('error'))
+        
+        @if (Session::has('permission_error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30rem;">
+        管理者権限がありません。
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        @elseif ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30rem;">
             ログインID、またはパスワードが正しくありません。
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -67,23 +76,12 @@
             </button>
         </div>
         @endif
-        @if (count($errors) > 0)
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30rem;">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+
         <div class="card input-panel" style="width: 30rem;">
             <div class="card-body">
                 <!-- ログインID -->
                 <div class="form-group">
-                    <input type="text" name="email"  value="{{old('email', Session::get('email')?Session::get('email') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
+                    <input type="text" name="user_id"  value="{{old('user_id', Session::get('user_id') ? Session::get('user_id') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
                 </div>
                 <!-- パスワード -->
                 <div class="form-group">

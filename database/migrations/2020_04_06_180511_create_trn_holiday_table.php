@@ -24,11 +24,11 @@ class CreateTrnHolidayTable extends Migration
             $table->string('target_ym', 6);
             $table->integer('withdrawal_kbn')->default(0);
             $table->integer('delete_flg')->default(0);
-            $table->timestampTz('delete_date')->nullable();
+            $table->string('delete_date')->nullable();
             $table->integer('creater_cd')->default(0);
-            $table->timestampTz('create_date');
+            $table->string('create_date');
             $table->integer('updater_cd')->default(0);
-            $table->timestampTz('update_date');
+            $table->string('update_date');
             $table->string('update_app', 10);
         });
     }
