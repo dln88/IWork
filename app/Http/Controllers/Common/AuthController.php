@@ -108,11 +108,14 @@ class AuthController extends Controller
      * Check exist role of user function
      *
      * @param int $operatorCD
-     * @return void
+     * @return boolean
      */
     public function isRole(int $operatorCD)
     {
-        if(!MstOperatorSpecialRole::where('operator_cd', $operatorCD)->exists()) {
+        $checkRole = DB::select('SELECT o_s_role.special_role_key
+            FROM mst_operator_special_role o_s_role
+            WHERE o_s_role.operator_cd = ?', [$operatorCD]);
+        if (empty($checkRole)) {
             return false;
         }
         return true;
