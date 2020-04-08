@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Common;
 
+use Carbon\Carbon;
 use App\Utils\LogLoginUtil;
-use App\Models\MstOperator;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Models\MstOperatorSpecialRole;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Auth Class : Login/Logout
@@ -66,46 +67,37 @@ class AuthController extends Controller
      * @return bool
      */
     private function login($userId, $password, $admin = 0) {
+        $currentDate = Carbon::now()->format('Ymd');
         // only check if whether user_id has exists. 
-        $user = MstOperator::join('mst_post', function ($join) {
-            $join->on('mst_post.post_cd', '=', 'mst_operator.post_cd');
-            $join->where('mst_post.delete_flg', 0);
-            })
-            ->where('mst_operator.user_id', $userId)
-            ->where('mst_operator.delete_flg', 0)
-            ->select([
-                'mst_operator.operator_cd',
-                'mst_operator.operator_last_name',
-                'mst_operator.operator_first_name',
-                'mst_operator.user_id',
-                'mst_operator.password',
-                'mst_operator.admin_div',
-                'mst_post.post_cd',
-                'mst_post.post_name',
-                'mst_operator.emp_no'
-            ])->first();
-        if (is_null($user)) {
+        $user = DB::select("SELECT op.operator_cd, op.operator_last_name, op.operator_first_name, 
+            op.user_id, op.password, op.admin_div, po.post_cd, po.post_name, op.emp_no
+            FROM mst_operator op
+            INNER JOIN mst_post po ON op.post_cd = po.post_cd and po.delete_flg = 0
+            WHERE op.user_id = ?
+            AND COALESCE(op.resigned_day, '20991231') >= ?
+            AND op.delete_flg = 0", [$userId, $currentDate]);
+        if (empty($user)) {
             // Log login fail when user does not exist.
             LogLoginUtil::logLoginFail(['user_id' => $userId]);
             return false;
         }
 
-        if ($password !== $user->password) {
+        if ($password !== $user[0]->password) {
             // Log login fail when user exists but password is not correct.
-            LogLoginUtil::logLoginFail($user->toArray());
+            LogLoginUtil::logLoginFail((array) $user[0]);
             return false;
         }
 
         // the user has admin role can access as normal user
-        if ($user->admin_div !== $admin) {
-            if($user->admin_div === config('define.admin_div.user')) {
+        if ($user[0]->admin_div !== $admin) {
+            if($user[0]->admin_div === config('define.admin_div.user')) {
                 session()->flash('permission_error', '管理者権限がありません。');
                 return false;
             }
         }
         
-        if($this->isRole($user['operator_cd'])) {
-            session(['user' => $user]);
+        if($this->isRole($user[0]->operator_cd)) {
+            session(['user' => $user[0]]);
             return true;
         }
 
