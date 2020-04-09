@@ -15,11 +15,10 @@ class IsAdmin
      */
     public function handle($request, Closure $next)
     {
-        if(!auth()->user()) {
-            return redirect(route('login'));
-        }
-        if(auth()->user()->isAdmin()) {
-            return $next($request);
+        if(session('user')->admin_div) {
+            if(session('user')->admin_div === config('define.admin_div.admin')) {
+                return $next($request);
+            }
         }
         return redirect(route('login'));
     }

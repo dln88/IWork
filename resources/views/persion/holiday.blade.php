@@ -39,7 +39,7 @@
 				</li>
 			</ul>
 			<ul class="navbar-nav navbar-light">
-				<div style="margin-right:1rem;"><a href="{{route('staff.work.dates')}}"><button type="button" class="btn btn-outline-secondary mb-2">CLOSE</button></a></div>
+				<div style="margin-right:1rem;"><a href="{{route('person.work.dates')}}"><button type="button" class="btn btn-outline-secondary mb-2">CLOSE</button></a></div>
 <!-- 				<h2> -->
 <!-- 				<li class="nav-item"><a class="nav-link" href="work.html" data-toggle="tooltip" data-placement="bottom" title="閉じる"><i class="fas fa-times"></i></a></li> -->
 <!-- 				</h2> -->
@@ -69,7 +69,7 @@
 			</div>
 		</div>
 		<!-- 休暇申請 -->
-		<form method="POST" action="{{route('staff.add_holiday')}}" class="form-inline" style="margin-top:2rem;margin-bottom:2rem;" id="form">
+		<form method="POST" action="{{route('person.add_holiday')}}" class="form-inline" style="margin-top:2rem;margin-bottom:2rem;" id="form">
 			@csrf
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="custom-control custom-radio custom-control-inline">

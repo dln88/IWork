@@ -20,11 +20,11 @@ class CreateMstItemnameTable extends Migration
             $table->decimal('item_num', 5, 2)->nullable()->default(0);
             $table->integer('output_type')->default(0);  // 帳票等へ出力するかどうか
             $table->integer('delete_flg')->default(0);
-            $table->timestampTz('delete_date')->nullable();
+            $table->string('delete_date')->nullable();
             $table->integer('creater_cd')->default(0);
-            $table->timestampTz('create_date');
+            $table->string('create_date');
             $table->integer('updater_cd')->default(0);
-            $table->timestampTz('update_date');
+            $table->string('update_date');
             $table->string('update_app', 10);
 
             $table->primary(['item_name_cd', 'item_name_value']);	

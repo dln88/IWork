@@ -42,7 +42,7 @@
 		</ul>
 		<ul class="navbar-nav navbar-light">
 			<div class="d-none d-md-block">
-				<div style="margin-right:1rem;"><a href="{{route('staff.holiday')}}"><button type="button" class="btn btn-outline-success mb-2">休暇登録</button></a></div>
+				<div style="margin-right:1rem;"><a href="{{route('person.holiday')}}"><button type="button" class="btn btn-outline-success mb-2">休暇登録</button></a></div>
 			</div>
 			<div style="margin-right:1rem;"><a href="{{route('logout')}}"><button type="button" class="btn btn-outline-secondary mb-2">ログアウト</button></a></div>
 <!-- 			<li class="nav-item"><a class="nav-link" href="login.html" data-toggle="tooltip" data-placement="bottom" title="ログアウト"><i class="fas fa-sign-out-alt"></i></a></li> -->
@@ -126,7 +126,7 @@
 		<div class="container-fluid" style="margin-bottom:1rem;">
 			<div class="row">
 				<div class="col-sm-3">
-					<form method="post" action="{{route('staff.work.register_date')}}">
+					<form method="post" action="{{route('person.work.register_date')}}">
 						@csrf
 						<div class="input-group" style="margin-bottom:1rem;">
 							<label for="inputStart" class="sr-only">出勤時間</label>
@@ -138,7 +138,7 @@
 					</form>
 				</div>
 				<div class="col-sm-3">
-					<form method="post" action="{{route('staff.work.register_date')}}">
+					<form method="post" action="{{route('person.work.register_date')}}">
 						@csrf
 						<div class="input-group" style="margin-bottom:1rem;">
 							<label for="inputEnd" class="sr-only">退勤時間</label>

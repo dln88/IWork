@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class MstOperator extends Authenticatable
 {
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'mst_operator';
+
     use Notifiable;
 
+    const ROLE_PERSON = 0;
     const ROLE_ADMIN = 1;
-    const ROLE_STAFF = 2;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +25,10 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'role_id'
+        'operator_cd',
+        'operator_last_name',
+        'operator_first_name',
+        'emp_no'
     ];
 
     /**
@@ -36,13 +45,6 @@ class User extends Authenticatable
      * @return bool
      */
     public function isAdmin()    {
-        return $this->role_id === self::ROLE_ADMIN;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isStaff()    {
-        return $this->role_id === self::ROLE_STAFF;
+        return $this->admin_div === self::ROLE_ADMIN;
     }
 }

@@ -15,7 +15,7 @@ class CreateLogActionTable extends Migration
     {
         Schema::create('log_action', function (Blueprint $table) {
             $table->bigIncrements('action_log_no');
-            $table->timestampTz('operation_timestamp', 0);
+            $table->string('operation_timestamp');
             $table->string('ip_address', 30)->nullable();
             $table->integer('operator_cd')->nullable();
             $table->string('operator_name', 50)->nullable();

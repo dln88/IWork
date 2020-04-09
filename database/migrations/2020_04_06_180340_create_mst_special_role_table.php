@@ -19,11 +19,11 @@ class CreateMstSpecialRoleTable extends Migration
             $table->string('explanation', 100)->nullable();
             $table->integer('not_display')->default(0); // 1: 非表示 (Hidden)
             $table->integer('delete_flg')->default(0);
-            $table->timestampTz('delete_date')->nullable();
+            $table->string('delete_date')->nullable();
             $table->integer('creater_cd')->default(0);
-            $table->timestampTz('create_date');
+            $table->string('create_date');
             $table->integer('updater_cd')->default(0);
-            $table->timestampTz('update_date');
+            $table->string('update_date');
             $table->string('update_app', 10);
         });
     }
