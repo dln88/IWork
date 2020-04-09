@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Common;
 
 use Carbon\Carbon;
 use App\Utils\LogLoginUtil;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
-use App\Models\MstOperatorSpecialRole;
-use Illuminate\Support\Facades\DB;
+use App\Repositories\Interfaces\AuthRepositoryInterface;
 
 /**
  * Auth Class : Login/Logout
@@ -16,6 +16,19 @@ use Illuminate\Support\Facades\DB;
  */
 class AuthController extends Controller
 {
+    protected $authRepository;
+
+    /**
+     * Create a new controller instance function.
+     *
+     * @param AuthRepositoryInterface $authRepository
+     * @return void
+     */
+    public function __construct(AuthRepositoryInterface $authRepository)
+    {
+        $this->authRepository = $authRepository;
+    }
+
     /**
      * Show the form to the user login.
      * 
@@ -67,15 +80,8 @@ class AuthController extends Controller
      * @return bool
      */
     private function login($userId, $password, $admin = 0) {
-        $currentDate = Carbon::now()->format('Ymd');
         // only check if whether user_id has exists. 
-        $user = DB::select("SELECT op.operator_cd, op.operator_last_name, op.operator_first_name, 
-            op.user_id, op.password, op.admin_div, po.post_cd, po.post_name, op.emp_no
-            FROM mst_operator op
-            INNER JOIN mst_post po ON op.post_cd = po.post_cd and po.delete_flg = 0
-            WHERE op.user_id = ?
-            AND COALESCE(op.resigned_day, '20991231') >= ?
-            AND op.delete_flg = 0", [$userId, $currentDate]);
+        $user = $this->authRepository->getUser($userId);
         if (empty($user)) {
             // Log login fail when user does not exist.
             LogLoginUtil::logLoginFail(['user_id' => $userId]);
@@ -112,10 +118,7 @@ class AuthController extends Controller
      */
     public function isRole(int $operatorCD)
     {
-        $checkRole = DB::select('SELECT o_s_role.special_role_key
-            FROM mst_operator_special_role o_s_role
-            WHERE o_s_role.operator_cd = ?', [$operatorCD]);
-        if (empty($checkRole)) {
+        if (empty($this->authRepository->checkRole($operatorCD))) {
             return false;
         }
         return true;
