@@ -70,13 +70,13 @@
 
         @elseif ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30rem;">
-            ログインID、またはパスワードが正しくありません。
+            {{ $errors->first() }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
         @endif
-
+        
         <div class="card input-panel" style="width: 30rem;">
             <div class="card-body">
                 <!-- ログインID -->
