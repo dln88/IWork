@@ -28,7 +28,7 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_id.required' => 'ユーザーIDが未入力です。',
+            'user_id.required' => 'ログインIDが未入力です。',
             'password.required'  => 'パスワードが未入力です。',
             'user_id.max'  => 'ユーザーIDの最大長は15文字です。',
             'password.max'  => 'パスワードの最大長は30文字です。',
