@@ -15,8 +15,25 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|string',
-            'password' => 'required|string|min:2|max:30'
+            'user_id' => 'required|string|max:15',
+            'password' => 'required|string|max:30'
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'user_id.required' => 'ユーザーIDが未入力です。',
+            'password.required'  => 'パスワードが未入力です。',
+            'user_id.max'  => 'ユーザーIDの最大長は15文字です。',
+            'password.max'  => 'パスワードの最大長は30文字です。',
+            'user_id.string'  => 'ユーザーIDは半角英数字でなければなりません。',
+            'password.string'  => 'パスワードは半角英数字でなければなりません。',
         ];
     }
 }
