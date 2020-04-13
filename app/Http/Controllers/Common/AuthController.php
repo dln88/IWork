@@ -51,7 +51,8 @@ class AuthController extends Controller
             LogLoginUtil::logLoginSuccess();
             return redirect(route('person.work.dates'));
         }
-        return back()->withErrors(['msg', 'ログインID、またはパスワードが正しくありません。']);
+        return back()->withErrors('ログインID、またはパスワードが正しくありません。')
+            ->withInput();
     }
 
     /**
@@ -68,7 +69,8 @@ class AuthController extends Controller
             return redirect(route('admin.work_dates'));
         }
 
-        return back()->withErrors(['msg', 'ログインID、またはパスワードが正しくありません。']);
+        return back()->withErrors('ログインID、またはパスワードが正しくありません。')
+            ->withInput();
     }
 
     /**
