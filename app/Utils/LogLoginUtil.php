@@ -2,8 +2,9 @@
 
 namespace App\Utils;
 
-use App\Models\LogLogin;
 use Carbon\Carbon;
+use App\Models\LogLogin;
+use App\Utils\OperatorName;
 
 /**
  * Class Common
@@ -23,7 +24,7 @@ class LogLoginUtil
             'ip_address' => \Request::ip(),
             'user_id' => $data['user_id'],
             'operator_cd' => $data['operator_cd'] ?? null,
-            'operator_name' => self::operatorName($data),
+            'operator_name' => OperatorName::operatorName((array) $data),
             'operation_type' => config('define.operation_type.login'),
             'contents' => 'ログイン失敗',
         ]);
@@ -43,17 +44,5 @@ class LogLoginUtil
             'operation_type' => config('define.operation_type.login'),
             'contents' => 'ログイン成功',
         ]);
-    }
- 
-    /**
-     * check name of operator.
-     * 
-     * @param array $data
-     */
-    private static function operatorName(array $data) {
-        if (isset($data['operator_last_name']) && isset($data['operator_first_name'])) {
-            return $data['operator_last_name']. " ". $data['operator_first_name'];
-        }
-        return null;
     }
 }

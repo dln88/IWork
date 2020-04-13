@@ -2,27 +2,31 @@
 
 namespace App\Http\Controllers\Person;
 
-use App\Http\Controllers\Controller;
-use App\Repositories\VacationRepository;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\Interfaces\HolidayRepositoryInterface;
 
 class HolidayController extends Controller
 {
-    protected $repository;
-    public function __construct(VacationRepository $repository)
+    protected $holidayRepository;
+
+    /**
+     * Create a new controller instance function.
+     *
+     * @param HolidayRepositoryInterface $holidayRepository
+     * @return void
+     */
+    public function __construct(HolidayRepositoryInterface $holidayRepository)
     {
         $this->middleware('person');
 
-        $this->repository = $repository;
+        $this->holidayRepository = $holidayRepository;
     }
 
     public function index()
     {
-        $user = Auth::user();
-        $uid = $user->id;
-        $holidays = $this->repository->findWhere(['user_id' => $uid]);
-        return view('person.holiday', ['holidays' => $holidays]);
+        return view('person.holiday');
     }
 
     public function store(Request $request)

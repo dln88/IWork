@@ -45,8 +45,11 @@ Route::group([ 'middleware' => 'person'], function()
     Route::get('work/dates', 'person\WorkDatesController@index')
         ->name('person.work.dates');
 
-    Route::post('work/register', 'person\WorkDatesController@register')
-        ->name('person.work.register_date');
+    Route::post('work/register-attendance-time', 'person\WorkDatesController@registerAttendanceTime')
+        ->name('person.work.register_attendance_time');
+
+    Route::post('work/register-leave-time', 'person\WorkDatesController@registerLeaveTime')
+        ->name('person.work.register_leave_time');
 
     Route::get('holiday', 'person\HolidayController@index')
         ->name('person.holiday');
