@@ -99,7 +99,7 @@
 								<div class="input-group-text"><i class="far fa-clock"></i></div>
 							</div>
 						</div>
-						<button class="btn btn-info btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location='{{ route('person.work.register_attendance_time') }}'">出勤</button>
+						<button class="btn btn-info btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location = '{{ route('person.work.register_attendance_time') }}'">出勤</button>
 					</div>
 				</div>
 			</div>
@@ -234,9 +234,9 @@
 						<div class="col-sm-8">
 							<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
 								<div class="btn-group mr-2" role="group" aria-label="First group">
-									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route("person.work.dates", ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->subMonth()->format('Ym')]) }}'"><</button>
-									<button type="button" class="btn btn-secondary active" onclick="window.location='{{ route("person.work.dates") }}'">当月</button>
-									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route("person.work.dates", ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->addMonth()->format('Ym')]) }}'">></button>
+									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route('person.work.dates', ['year' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->subMonth()->format('Ym')]) }}'"><</button>
+									<button type="button" class="btn btn-secondary active" onclick="window.location='{{ route('person.work.dates') }}'">当月</button>
+									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route('person.work.dates', ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->addMonth()->format('Ym')]) }}'">></button>
 								</div>
 							</div>
 						</div>
