@@ -16,6 +16,16 @@ use App\Models\MstOperator;
 class TestController extends Controller
 {
     function test(){
+        $dbconn=pg_connect( "dbname=" . env('DB_DATABASE')." host=" . env('DB_HOST'). " port=" . env('DB_PORT') . "  
+user=" . env('DB_USERNAME') . " password=" . env('DB_PASSWORD') );
+        if ( ! $dbconn ) {
+            echo "Error connecting to the database !<br> " ;
+            printf("%s", pg_errormessage( $dbconn ) );
+            exit(); 
+        }
+        else {
+            echo "Connect Successful"; die;
+        }
         dd(MstOperator::all());
     }
 }
