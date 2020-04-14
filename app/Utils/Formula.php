@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Utils;
+
+use Illuminate\Support\Str;
+
+class Formula
+{
+     /**
+     * Calculte total working time.
+     * 
+     * @param string $startTime
+     * @param string $endTime
+     * @return int
+     */
+   public static function calculateWorkingTime(string $startTime, string $endTime)
+   {
+      $startHour = Str::substr($startTime, 0, 2);
+      $endHour = Str::substr($endTime, 0, 2);
+      $startMinute = Str::substr($startTime, 3, 2);
+      $endMinute = Str::substr($endTime, 3, 2);
+      
+      $totalMinute = $endMinute - $startMinute;
+      if ($totalMinute < 0) {
+         $startHour += 1;
+         if ($totalMinute == -30) {
+            $minute = 0.5;
+         } else {
+            $minute = (60 + $totalMinute)/100; 
+         }
+      } elseif ($totalMinute > 0) {
+         if ($totalMinute == 30) {
+            $minute = 0.5;
+         } else {
+            $minute = $totalMinute/100; 
+         }
+      } else {
+         return $endHour - $startHour;
+      }
+      
+      return ($endHour - $startHour) + $minute;
+   }
+
+   /**
+    * Calculte break time.
+    * 
+    * @param int $workingTime
+    */
+   public static function calculateBreakTime(int $workingTime)
+   {
+      if ($workingTime >= 6) {
+         return 1;
+      }
+      return 0;
+   }
+
+   /**
+    * Calculte overtime.
+    * 
+    * @param number $workingTime
+    */
+   public static function calculateOverTime($workingTime)
+   {
+      if ($workingTime > 8) {
+         return $workingTime - 8;
+      }
+      return 0;
+   }
+
+   /**
+    * Calculte Midnight overtime.
+    * 
+    * @param int $workingTime
+    * @param string $leavTime
+    */
+   public static function calculateLateNightOverTime($workingTime, $leavTime)
+   {
+      if ($workingTime > 8) {
+         if ($leavTime > '22:00') {
+            $latenightOvertimeHour = Str::substr($leavTime, 0, 2) - 22;
+            $latenightOvertimeMinute = Str::substr($leavTime, 3, 2);
+            if ($latenightOvertimeMinute == 30) {
+               return $latenightOvertimeHour + 0.5;
+            }
+            return $latenightOvertimeHour + $latenightOvertimeMinute/100;
+         }
+      }
+      return 0;
+   }
+}

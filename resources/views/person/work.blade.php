@@ -54,14 +54,17 @@
 <!-- <main role="main" class="container"> -->
 
 	<!-- alert start -->
+	@if (isset($overTime) && $overTime === true)
 	<div class="container-fluid mb-3">
 		<div class="alert alert-danger alert-dismissible fade show" role="alert">
 			<strong><i class="fas fa-exclamation-triangle"></i></strong>　残業時間に注意してください。
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
+			
 		</div>
 	</div>
+	@endif
 	<!-- alert end -->
 	<div class="container-fluid mb-3">
 		@if (Session::get('message'))
@@ -74,31 +77,29 @@
 		@endif
 		@if (count($errors) > 0)
 			<div class="alert alert-danger alert-dismissible fade show" role="alert" >
-				<ul>
-					@foreach($errors->all() as $error)
-						<li>{{ $error }}</li>
-					@endforeach
-				</ul>
+				@foreach($errors->all() as $error)
+					{{ $error }}
+				@endforeach
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
 		@endif
 	</div>
+
 <!-- for smart phone -->
 	<div class="container-fluid mb-3">
 		<div class="mx-auto">
 			<div class="col-12 d-md-none">
 				<div class="card text-center">
 					<div class="card-body">
-
 						<div class="input-group date datepicker_time" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-							<input type="text" class="form-control datetimepicker-input text-center" value="9:00" data-target="#datetimepicker"/>
+							<input name="att_time" novalidate type="text" class="form-control datetimepicker-input text-center" value="{{ $intialTime['att_time'] }}" data-target="#datetimepicker"/>
 							<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 								<div class="input-group-text"><i class="far fa-clock"></i></div>
 							</div>
 						</div>
-						<button class="btn btn-info btn-block btn-lg" type="button" style="margin-top:1rem;">出勤</button>
+						<button class="btn btn-info btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location='{{ route('person.work.register_attendance_time') }}'">出勤</button>
 					</div>
 				</div>
 			</div>
@@ -108,12 +109,12 @@
 				<div class="card text-center">
 					<div class="card-body">
 						<div class="input-group date datepicker_time" id="datepicker_2" data-target-input="nearest" style="margin-right:10px;">
-							<input name="end_time" type="text" class="form-control datetimepicker-input text-center" value="18:00" data-target="#datetimepicker"/>
+							<input name="leav_time" novalidate type="text" class="form-control datetimepicker-input text-center" value="{{ $intialTime['leav_time'] }}" data-target="#datetimepicker"/>
 							<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 								<div class="input-group-text"><i class="far fa-clock"></i></div>
 							</div>
 						</div>
-						<button class="btn btn-warning btn-block btn-lg" type="button" style="margin-top:1rem;">退勤</button>
+						<button class="btn btn-warning btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location='{{ route('person.work.register_leave_time') }}'">退勤</button>
 					</div>
 				</div>
 			</div>
@@ -126,11 +127,11 @@
 		<div class="container-fluid" style="margin-bottom:1rem;">
 			<div class="row">
 				<div class="col-sm-3">
-					<form method="post" action="{{route('person.work.register_date')}}">
+					<form method="post" novalidate action="{{route('person.work.register_attendance_time')}}">
 						@csrf
 						<div class="input-group" style="margin-bottom:1rem;">
 							<label for="inputStart" class="sr-only">出勤時間</label>
-							<input type="text" class="form-control text-center" value="{{request('start_time', isset($date->start_time)?substr($date->start_time, 0, 5):'')}}" id="inputStart" name="start_time" placeholder="09:00" required>
+							<input type="text" class="form-control text-center" value="{{ $intialTime['att_time'] }}" id="inputStart" name="att_time" placeholder="{{ $intialTime['att_time'] }}" required>
 							<div class="input-group-append" id="button-addon4">
 								<button class="btn btn-info" type="submit">出勤</button>
 							</div>
@@ -138,13 +139,13 @@
 					</form>
 				</div>
 				<div class="col-sm-3">
-					<form method="post" action="{{route('person.work.register_date')}}">
+					<form method="post" novalidate action="{{route('person.work.register_leave_time')}}">
 						@csrf
 						<div class="input-group" style="margin-bottom:1rem;">
 							<label for="inputEnd" class="sr-only">退勤時間</label>
-							<input type="text" class="form-control text-center" value="{{request('end_time', isset($date->end_time)?substr($date->end_time, 0, 5):'')}}" id="inputEnd"  name="end_time" placeholder="18:00" required>
+							<input type="text" class="form-control text-center" value="{{ $intialTime['leav_time'] }}" id="inputEnd"  name="leav_time" placeholder="{{ $intialTime['leav_time'] }}" required>
 							<div class="input-group-append" id="button-addon4">
-								<button class="btn btn-warning" type="submit">退勤</button>
+								<button class="btn btn-warning" type="submit"}}>退勤</button>
 							</div>
 						</div>
 					</form>
@@ -153,6 +154,7 @@
 		</div>
 	</div>
 
+	
 	<!-- search result -->
 	<div class="d-none d-md-block">
 		<div class="container-fluid">
@@ -162,462 +164,79 @@
 				</div>
 				<div class="card-body">
 					<div class="table-responsive mb-3">
-						<table class="table table-hover table-bordered mb-0">
+					<table class="table table-hover table-bordered mb-0">
+						@if (count($workDates) > 0)
 							<thead class="thead-dark">
 								<tr>
-{{--									<th class="text-center" scope="col" nowrap>日付</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>曜日</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>開始</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>終了</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>休憩時間</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>実働時間　（00.00）</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>残業時間　（00.00）</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>深夜残業　（00.00）</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>インターバル</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>有休</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>振休</th>--}}
-{{--									<th class="text-center" scope="col" nowrap>特休</th>--}}
-										@foreach( $headers as $header)
-										<th class="text-center" scope="col" nowrap>{{$header}}</th>
-										@endforeach
+									<th class="text-center" scope="col" nowrap>日付</th>
+									<th class="text-center" scope="col" nowrap>曜日</th>
+									<th class="text-center" scope="col" nowrap>開始</th>
+									<th class="text-center" scope="col" nowrap>終了</th>
+									<th class="text-center" scope="col" nowrap>休憩時間</th>
+									<th class="text-center" scope="col" nowrap>実働時間　（00.00）</th>
+									<th class="text-center" scope="col" nowrap>残業時間　（00.00）</th>
+									<th class="text-center" scope="col" nowrap>深夜残業　（00.00）</th>
+									<th class="text-center" scope="col" nowrap>インターバル</th>
+									<th class="text-center" scope="col" nowrap>有休</th>
+									<th class="text-center" scope="col" nowrap>振休</th>
+									<th class="text-center" scope="col" nowrap>特休</th>
 								</tr>
 							</thead>
 							<tbody>
-								@foreach($data as $item)
-								<tr class="table-danger-c">
-									<td class="text-center" nowrap>{{$item[0]}}</td>
-									<td class="text-center" nowrap>{{$item[1]}}</td>
-									<td class="text-center" nowrap>{{$item[2]}}</td>
-									<td class="text-center" nowrap>{{$item[3]}}</td>
-									<td class="text-center" nowrap>{{$item[4]}}</td>
-									<td class="text-center" nowrap>{{$item[5]}}</td>
-									<td class="text-center" nowrap>{{$item[6]}}</td>
-									<td class="text-center" nowrap>{{$item[7]}}</td>
-									<td class="text-center" nowrap>{{$item[8]}}</td>
-									<td class="text-center" nowrap>{{$item[9]}}</td>
-									<td class="text-center" nowrap>{{$item[10]}}</td>
-									<td class="text-center" nowrap>{{$item[11]}}</td>
-								</tr>
+								@foreach ($workDates as $workDate)
+									<tr>
+										<td class="text-center" nowrap>{{ $workDate->calendar_ymd }}</td>
+										<td class="text-center" nowrap>
+										@switch(\Carbon\Carbon::parse($workDate->calendar_ymd)->dayOfWeek)
+											@case(1)
+												月
+												@break
+											@case(2)
+												火
+												@break
+											@case(3)
+												水
+												@break
+											@case(4)
+												木
+												@break
+											@case(5)
+												金
+												@break
+											@case(6)
+												土
+												@break
+											@default
+												日
+										@endswitch
+										</td>
+										<td class="text-center" nowrap>{{ isset($workDate->start_time) ? \Carbon\Carbon::parse($workDate->start_time)->format('H:i') : number_format(0, 2) }}</td>
+										<td class="text-center" nowrap>{{ isset($workDate->end_time) ? \Carbon\Carbon::parse($workDate->end_time)->format('H:i') : number_format(0, 2) }}</td>
+										<td class="text-center" nowrap>{{ $workDate->break_time ?? number_format(00, 2) }}</td>
+										<td class="text-center" nowrap>{{ $workDate->working_time ?? number_format(00, 2) }}</td>
+										<td class="text-center" nowrap>{{ $workDate->over_time ?? number_format(00, 2) }}</td>
+										<td class="text-center" nowrap>{{ $workDate->late_over_time ?? number_format(00, 2) }}</td>
+										<td class="text-center" nowrap>{{ $workDate->interval_time ?? number_format(00, 2) }}</td>
+										<td class="text-center" nowrap>{{ $workDate->paid_vacation_cnt }}</td>
+										<td class="text-center" nowrap>{{ $workDate->exchange_day_cnt }}</td>
+										<td class="text-center" nowrap>{{ $workDate->special_leave_cnt }}</td>
+									</tr>
 								@endforeach
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/2</td>--}}
-{{--									<td class="text-center" nowrap>木</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/3</td>--}}
-{{--									<td class="text-center" nowrap>金</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/4</td>--}}
-{{--									<td class="text-center" nowrap>土</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/5</td>--}}
-{{--									<td class="text-center" nowrap>日</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/6</td>--}}
-{{--									<td class="text-center" nowrap>月</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/7</td>--}}
-{{--									<td class="text-center" nowrap>火</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/8</td>--}}
-{{--									<td class="text-center" nowrap>水</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/9</td>--}}
-{{--									<td class="text-center" nowrap>木</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-info">--}}
-{{--									<td class="text-center" nowrap>2020/4/10</td>--}}
-{{--									<td class="text-center" nowrap>金</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/11</td>--}}
-{{--									<td class="text-center" nowrap>土</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/12</td>--}}
-{{--									<td class="text-center" nowrap>日</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/13</td>--}}
-{{--									<td class="text-center" nowrap>月</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/14</td>--}}
-{{--									<td class="text-center" nowrap>火</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/15</td>--}}
-{{--									<td class="text-center" nowrap>水</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/16</td>--}}
-{{--									<td class="text-center" nowrap>木</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/17</td>--}}
-{{--									<td class="text-center" nowrap>金</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/18</td>--}}
-{{--									<td class="text-center" nowrap>土</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/19</td>--}}
-{{--									<td class="text-center" nowrap>日</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/20</td>--}}
-{{--									<td class="text-center" nowrap>月</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/21</td>--}}
-{{--									<td class="text-center" nowrap>火</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/22</td>--}}
-{{--									<td class="text-center" nowrap>水</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/23</td>--}}
-{{--									<td class="text-center" nowrap>木</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/24</td>--}}
-{{--									<td class="text-center" nowrap>金</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/25</td>--}}
-{{--									<td class="text-center" nowrap>土</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/26</td>--}}
-{{--									<td class="text-center" nowrap>日</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/27</td>--}}
-{{--									<td class="text-center" nowrap>月</td>--}}
-{{--									<td class="text-center" nowrap>0:00</td>--}}
-{{--									<td class="text-center" nowrap>0:00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>1.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/28</td>--}}
-{{--									<td class="text-center" nowrap>火</td>--}}
-{{--									<td class="text-center" nowrap>14:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>4.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.5</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr class="table-danger-c">--}}
-{{--									<td class="text-center" nowrap>2020/4/29</td>--}}
-{{--									<td class="text-center" nowrap>水</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
-{{--								<tr>--}}
-{{--									<td class="text-center" nowrap>2020/4/30</td>--}}
-{{--									<td class="text-center" nowrap>木</td>--}}
-{{--									<td class="text-center" nowrap>9:00</td>--}}
-{{--									<td class="text-center" nowrap>18:00</td>--}}
-{{--									<td class="text-center" nowrap>1.00</td>--}}
-{{--									<td class="text-center" nowrap>8.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>0.00</td>--}}
-{{--									<td class="text-center" nowrap>15.00</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--									<td class="text-center" nowrap>0.0</td>--}}
-{{--								</tr>--}}
 							</tbody>
+							@else
+								該当のデータは存在しません。
+							@endif
 						</table>
 					</div>
 				</div>
 				<div class="card-footer">
 					<div class="row">
 						<div class="col-sm-8">
-
 							<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
 								<div class="btn-group mr-2" role="group" aria-label="First group">
-									<button type="button" class="btn btn-secondary"><</button>
-									<button type="button" class="btn btn-secondary active">当月</button>
-									<button type="button" class="btn btn-secondary">></button>
+									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route("person.work.dates", ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->subMonth()->format('Ym')]) }}'"><</button>
+									<button type="button" class="btn btn-secondary active" onclick="window.location='{{ route("person.work.dates") }}'">当月</button>
+									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route("person.work.dates", ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->addMonth()->format('Ym')]) }}'">></button>
 								</div>
 							</div>
 						</div>

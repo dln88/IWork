@@ -2,79 +2,230 @@
 
 namespace App\Http\Controllers\Person;
 
-use App\Http\Controllers\Controller;
-use App\Models\WorkDate;
-use App\Repositories\Repository;
-use App\Repositories\WorkDateRepository;
-use App\Utils\Common;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Repositories\Interfaces\WorkDatesRepositoryInterface;
+use App\Utils\LogActionUtil;
+use App\Utils\OperatorName;
 
 class WorkDatesController extends Controller
 {
-    protected $repository;
-    public function __construct(WorkDateRepository $repository)
+    protected $workDatesRepository;
+
+    /**
+     * Create a new controller instance function.
+     *
+     * @param WorkDatesRepositoryInterface $workDatesRepository
+     * @return void
+     */
+    public function __construct(WorkDatesRepositoryInterface $workDatesRepository)
     {
         $this->middleware('person');
 
-        $this->repository = $repository;
+        $this->workDatesRepository = $workDatesRepository;
     }
 
     public function index(Request $request){
-        dd('word_date');
-        $date = $this->repository->findWhere(['work_date' => date('Y/m/d')])->first();
-
-        $headers = ['日付', '曜日', '開始', '終了', '休憩時間', '実働時間　（00.00）', '残業時間　（00.00）', '深夜残業　（00.00）', 'インターバル', '有休', '振休', '特休'];
-
-        for ($i = 1; $i<= 30; $i++) {
-            $data[] = [
-                '2020/04/'. $i ,Common::getDateOfWeek('2020/04/'. $i), '9:00', '18:00', '1.00', '8.00', '0.00', '0.00', '15.00', '0.0', '0.0', '0.0'
-            ];
+        if (!session('user')) {
+            return redirect(route('login'));
         }
-        return view('person.work', ['date' => $date, 'data' => $data, 'headers' => $headers]);
+        
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => OperatorName::operatorName((array) session('user')),
+            'screen_id' => 'W000001',
+            'screen_name' => '勤怠一覧',
+            'operation' => '初期処理',
+            'contents' => 'なし',
+        ];
+        LogActionUtil::logAction($dataLog);
+
+        $intialTime = $this->getTimePost();
+        $yearMonth = $this->getYearMonth($request);
+        $workDates = $this->getWorkDates($yearMonth);
+        $overTime = $this->checkOverTime($yearMonth);
+        return view('person.work', compact('intialTime', 'workDates', 'yearMonth', 'overTime'));
+    }
+
+    /**
+     * Get attendance time and leave time of the post which belongs to current user.
+     *
+     * @return array
+     */
+    private function getTimePost()
+    {
+        $timePost = $this->workDatesRepository->getTimePost(session('user')->post_cd);
+        return [
+            'att_time' => Carbon::parse($timePost[0]->post_start_time)->format('H:i'),
+            'leav_time' => Carbon::parse($timePost[0]->post_end_time)->format('H:i')
+        ];
+    }
+
+    /**
+     * Get month and year of current time.
+     *
+     * @param Request $request
+     * @return string
+     */
+    private function getYearMonth($request)
+    {
+        if (isset($request->yearMonth)) {
+            return $request->yearMonth;
+        }
+        return Carbon::now()->format('Ym');
+    }
+
+    /**
+     * Check if the current user has an overtime time that exceeds the allowed time
+     *
+     * @param string $yearMonth
+     * @return boolean
+     */
+    private function checkOverTime($yearMonth)
+    {
+        $year = Str::substr($yearMonth, 0, 4);
+        $month = Str::substr($yearMonth, 4, 2);
+        $firstDayofMonth = Carbon::create($year, $month)->startOfMonth()->toDateString();
+        $lastDayofMonth = Carbon::create($year, $month)->endOfMonth()->toDateString();
+
+        return $this->workDatesRepository->isOverTime(session('user')->operator_cd, $firstDayofMonth, $lastDayofMonth);
+    }
+
+    /**
+     * Get work dates of current user in given month.
+     *
+     * @param string $yearMonth
+     * @return collection
+     */
+    private function getWorkDates($yearMonth)
+    {
+        $year = Str::substr($yearMonth, 0, 4);
+        $month = Str::substr($yearMonth, 4, 2);
+        $firstDayofMonth = Carbon::create($year, $month)->startOfMonth()->toDateString();
+        $lastDayofMonth = Carbon::create($year, $month)->endOfMonth()->toDateString();
+
+        return $this->workDatesRepository->getWorkDates(session('user')->operator_cd, $firstDayofMonth, $lastDayofMonth);
     }
 
     public function holiday(Request $request){
         return view('person.holiday');
     }
 
-    public function register(Request $request){
-
-        $this->validate($request, [
-            'start_time' => 'nullable|date_format:H:i',
-            'start_end' => 'nullable|date_format:H:i'
+    public function registerAttendanceTime(Request $request){
+        if (!session('user')) {
+            return redirect(route('login'));
+        }
+        $user = session('user');
+        $validatedData = $request->validate([
+            'att_time' => ['required', 'date_format:H:i'],
         ]);
-        $user = Auth::user();
-        $uid = $user->id;
-        $dates = $this->repository->findWhere(['work_date' => date('Y/m/d')]);
+        
+        // Check attendance time registered
+        if($this->workDatesRepository->checkAttendanceTime($user->operator_cd)) {
+            return back()->withErrors('出席時間は既に登録されています。変更する必要がある場合は、管理者に連絡してください。');
+        };
 
-        if (count($dates) > 0) {
-            $date = $dates[0];
-            $data = [];
-            if ( $request->get('start_time')) {
-                $data['start_time'] = $request->get('start_time');
-            }
-            if ( $request->get('end_time')) {
-                $data['end_time'] = $request->get('end_time');
-            }
-
-            $this->repository->update($data, $date->id);
-            return redirect(route('person.work.dates'))->with('message', 'Add Successful');
+        // register attendance time
+        if(!$this->workDatesRepository->registerAttendanceTime(
+            $user->operator_cd, 
+            $validatedData['att_time']
+        )) {
+            return back()->withErrors('情報の登録に失敗しました');
         }
-        else {
-            if ( $request->get('start_time')) {
-                $data['start_time'] = $request->get('start_time');
-                $this->repository->create([
-                    'user_id' => $user->id,
-                    'work_date' => date('Y/m/d'),
-                    'start_time' => $request->get('start_time') ]);
-            }
-        }
-        return redirect(route('person.work.dates'))->with('message', 'Add Successful');
 
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => $user->operator_cd,
+            'operator_name' => OperatorName::operatorName((array) $user),
+            'screen_id' => 'W000001',
+            'screen_name' => '勤怠一覧',
+            'operation' => '出勤登録',
+            'contents' => '出勤時間: ' .$validatedData['att_time'],
+        ];
+        LogActionUtil::logAction($dataLog);
+
+        // Displays a processing completion message.
+        $request->session()->flash('message', '登録しました。');
+
+        return redirect()->action('Person\WorkDatesController@index');
     }
-    public function add_holiday(Request $request){
 
+    public function registerLeaveTime(Request $request){
+        if (!session('user')) {
+            return redirect(route('login'));
+        }
+        $user = session('user');
+        $validatedData = $request->validate([
+            'leav_time' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/'],
+        ]);
+        
+        if (intval(Str::substr($validatedData['leav_time'], 0, 2)) >= 24) {
+            $currentDate = Carbon::yesterday()->toDateString();
+        } else {
+            $currentDate = Carbon::now()->toDateString();
+        }
+
+        // Check leave time registered.
+        if(!$this->workDatesRepository->checkAttendanceTime($user->operator_cd)) {
+            return back()->withErrors('出勤時間が登録されていないため、退勤時間の登録ができません。');
+        };
+
+        // Check work time and leave time
+        if(!$this->workDatesRepository->checkLeavTimeGreaterAttTime(
+            $user->operator_cd, 
+            $validatedData['leav_time']
+        )) {
+            return back()->withErrors('出勤時間より前の時間は登録できません。');
+        };
+        
+         // Check leave time registered.
+        if($this->workDatesRepository->checkLeaveTime($user->operator_cd)) {
+            return back()->withErrors('休暇時間は既に登録されています。 変更する必要がある場合は、管理者に連絡してください。');
+        };
+
+        // Checking the maximum time to leave
+        if($validatedData['leav_time'] > config('define.max_leave_time.max')) {
+            return back()->withErrors('退勤時間最大値を超えています。');
+        }
+
+        if(!$this->workDatesRepository->registLeaveTime(
+            $user->operator_cd, 
+            $validatedData['leav_time']
+        )) {
+            return back()->withErrors('情報の登録に失敗しました');
+        }
+        
+        // Caculate working time, break time, overtime, late night overtime 
+        $this->workDatesRepository->caculateAndRegistTime($user->operator_cd);
+
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => $user->operator_cd,
+            'operator_name' => OperatorName::operatorName((array) $user),
+            'screen_id' => 'W000001',
+            'screen_name' => '勤怠一覧',
+            'operation' => '退勤登録',
+            'contents' => '退勤時間: ' .$validatedData['leav_time'],
+        ];
+        LogActionUtil::logAction($dataLog);
+
+        // Displays a processing completion message.
+        $request->session()->flash('message', '登録しました。');
+
+        return redirect()->action('Person\WorkDatesController@index');
+    }
+
+    public function add_holiday(Request $request){
+        //
     }
 
 }
