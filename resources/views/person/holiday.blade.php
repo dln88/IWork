@@ -9,22 +9,21 @@
 
 	<!--========== CSS ==========-->
 	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<!-- Font Awesome CSS -->
-	<link rel="stylesheet" href="{{asset('css/font-awesome-all.min.css')}}">
+	<link rel="stylesheet" href="css/font-awesome-all.min.css">
 	<!-- drawer -->
-	<link rel="stylesheet" href="{{asset('css/zdo_drawer_menu.css')}}">
+	<link rel="stylesheet" href="css/zdo_drawer_menu.css">
 	<!-- datepicker -->
-	<link rel="stylesheet" href="{{asset('css/tempusdominus-bootstrap-4.min.css')}}">
+	<link rel="stylesheet" href="css/tempusdominus-bootstrap-4.min.css">
 	<!-- style CSS -->
-	<link rel="stylesheet" href="{{asset('css/style.css')}}">
+	<link rel="stylesheet" href="css/style.css">
 
-	<link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
+	<link rel="shortcut icon" href="img/favicon.ico">
 	<!--========== CSS ==========-->
-	<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js" type="text/javascript"></script>
 
-	<title>i-work</title>
+
+    <title>i-work</title>
 </head>
 <body>
 
@@ -60,6 +59,16 @@
 				</button>
 			</div>
 		@endif
+		@if (count($errors) > 0)
+			<div class="alert alert-danger alert-dismissible fade show" role="alert" >
+				@foreach($errors->all() as $error)
+					{{ $error }}
+				@endforeach
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		@endif
 		<div class="container-fluid mb-3 errors" style="display: none">
 			<div class="alert alert-danger alert-dismissible fade show" role="alert" >
 				<div class="error-section"></div>
@@ -73,7 +82,7 @@
 			@csrf
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="custom-control custom-radio custom-control-inline">
-					<input type="radio" id="customRadioInline1" name="type" value="1" class="custom-control-input">
+					<input type="radio" id="customRadioInline1" name="type" value="1" class="custom-control-input" checked="checked">
 					<label class="custom-control-label" for="customRadioInline1">有休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
@@ -102,8 +111,9 @@
 					</div>
 				</div>
 			</div>
-			<button type="submit" class="btn btn-warning mb-2" onclick="add()">申請</button>
+			<button type="submit" class="btn btn-warning mb-2" onclick="return confirm('登録休暇を実行します。よろしいですか？')">申請</button>
 		</form>
+
 		<script type="text/javascript">
 			function add() {
 				$('.error-section').html('');
@@ -147,6 +157,24 @@
 			}
 
 		</style>
+
+		<hr style="margin-bottom:2rem;">
+
+		<div class="form-group mx-sm-1 mb-2">
+			<div class="input-group mb-3">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="inputGroup-sizing-default">有休残</span>
+				</div>
+				<input type="text" class="form-control text-center bg-white" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ $paidVacationDays[0]->grant_days ?? 0.00 }}" style="font-weight:bold;" readonly>
+
+				<div class="input-group-prepend" style="margin-left:2rem;">
+					<span class="input-group-text" id="inputGroup-sizing-default">振休残</span>
+				</div>
+				<input type="text" class="form-control text-center bg-white" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ $balanceLeft ?? 0.00 }}" style="font-weight:bold;" readonly>
+			</div>
+		</div>
+
+		@if (isset($vacationList) && count($vacationList) > 0)
 		<div class="table-responsive mb-2">
 			<table class="table table-bordered mb-0 table-striped">
 				<thead class="thead-light">
@@ -155,153 +183,25 @@
 						<th class="text-center" scope="col" nowrap>休暇形態</th>
 						<th class="text-center" scope="col" nowrap>休暇種別</th>
 						<th class="text-center" scope="col" nowrap>取得状況</th>
-						<th class="text-center" scope="col" nowrap>残日数</th>
 					</tr>
 				</thead>
 				<tbody>
+					@foreach ($vacationList as $vacation)
 					<tr>
-						<td class="text-center" nowrap>2020/4/21</td>
+						<td class="text-center" nowrap>{{ $vacation->acquisition_ymd }}</td>
 						<td class="text-center" nowrap>有休</td>
 						<td class="text-center" nowrap>午前休暇</td>
-						<td class="text-center " nowrap>予定</td>
-						<td class="text-center" nowrap>9.5</td>
+						<td class="text-center" nowrap>{{ $vacation->acquisition_st }}</td>
 					</tr>
-					<tr>
-						<td class="text-center" nowrap>2020/3/21</td>
-						<td class="text-center" nowrap>振休</td>
-						<td class="text-center" nowrap>全日休暇</td>
-						<td class="text-center text-success" nowrap>取得済</td>
-						<td class="text-center" nowrap>0.5</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>2020/3/21</td>
-						<td class="text-center" nowrap>振休</td>
-						<td class="text-center" nowrap>午後休暇</td>
-						<td class="text-center text-danger" nowrap>取消</td>
-						<td class="text-center" nowrap>1.5</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>2020/3/1</td>
-						<td class="text-center" nowrap>振休</td>
-						<td class="text-center" nowrap>午後休暇</td>
-						<td class="text-center text-success" nowrap>取得済</td>
-						<td class="text-center" nowrap>1.5</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>2020/2/1</td>
-						<td class="text-center" nowrap>有休</td>
-						<td class="text-center" nowrap>全日休暇</td>
-						<td class="text-center text-success" nowrap>取得済</td>
-						<td class="text-center" nowrap>10.5</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
-					<tr>
-						<td class="text-center" nowrap>yyyy/mm/dd</td>
-						<td class="text-center" nowrap>○休</td>
-						<td class="text-center" nowrap>○○休暇</td>
-						<td class="text-center text-success" nowrap>○○○</td>
-						<td class="text-center" nowrap>99.99</td>
-					</tr>
+					@endforeach
 				</tbody>
 			</table>
 		</div>
+		@else
+			<div class="container">
+				<p>該当のデータは存在しません。</p>
+			</div>
+		@endif
 		<!-- 休暇申請 -->
 
 	</div>
@@ -314,13 +214,14 @@
 
 
 <!--========== JavaScript ==========-->
-<!-- jQuery first, then Popper.js')}}, then Bootstrap JS -->
-<script src="{{asset('js/bootstrap.bundle.min.js')}}"></script>
-<script src="{{asset('js/zdo_drawer_menu.js')}}"></script>
-<script src="{{asset('js/moment.js')}}"></script>
-<script src="{{asset('js/locale/ja.js')}}"></script>
-<script src="{{asset('js/tempusdominus-bootstrap-4.min.js')}}"></script>
-<script src="{{asset('js/common.js')}}"></script>
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/zdo_drawer_menu.js"></script>
+<script src="js/moment.js"></script>
+<script src="js/locale/ja.js"></script>
+<script src="js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="js/common.js"></script>
 <!--========== JavaScript ==========-->
 <script type="text/javascript">
 $(function() {
