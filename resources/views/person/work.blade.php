@@ -211,7 +211,7 @@
 										@endswitch
 										</td>
 										<td class="text-center" nowrap>{{ isset($workDate->start_time) ? \Carbon\Carbon::parse($workDate->start_time)->format('H:i') : number_format(0, 2) }}</td>
-										<td class="text-center" nowrap>{{ isset($workDate->end_time) ? \Carbon\Carbon::parse($workDate->end_time)->format('H:i') : number_format(0, 2) }}</td>
+										<td class="text-center" nowrap>{{ isset($workDate->end_time) ? $workDate->end_time : number_format(0, 2) }}</td>
 										<td class="text-center" nowrap>{{ $workDate->break_time ?? number_format(00, 2) }}</td>
 										<td class="text-center" nowrap>{{ $workDate->working_time ?? number_format(00, 2) }}</td>
 										<td class="text-center" nowrap>{{ $workDate->over_time ?? number_format(00, 2) }}</td>
@@ -229,15 +229,17 @@
 						</table>
 					</div>
 				</div>
+				
 				<div class="card-footer">
 					<div class="row">
 						<div class="col-sm-8">
 							<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
 								<div class="btn-group mr-2" role="group" aria-label="First group">
-									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route('person.work.dates', ['year' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->subMonth()->format('Ym')]) }}'"><</button>
+									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route('person.work.dates', ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->subMonth()->format('Ym')]) }}'"><</button>
 									<button type="button" class="btn btn-secondary active" onclick="window.location='{{ route('person.work.dates') }}'">当月</button>
 									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route('person.work.dates', ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->addMonth()->format('Ym')]) }}'">></button>
 								</div>
+								
 							</div>
 						</div>
 					</div>
