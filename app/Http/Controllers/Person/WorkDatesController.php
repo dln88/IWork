@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Person;
 
 use Carbon\Carbon;
+use App\Utils\Common;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\WorkDatesRepositoryInterface;
 use App\Utils\LogActionUtil;
-use App\Utils\OperatorName;
 
 class WorkDatesController extends Controller
 {
@@ -37,7 +37,7 @@ class WorkDatesController extends Controller
             'operation_timestamp' => Carbon::now()->timestamp,
             'ip_address' => \Request::ip(),
             'operator_cd' => session('user')->operator_cd,
-            'operator_name' => OperatorName::operatorName((array) session('user')),
+            'operator_name' => Common::operatorName((array) session('user')),
             'screen_id' => 'W000001',
             'screen_name' => '勤怠一覧',
             'operation' => '初期処理',
@@ -143,7 +143,7 @@ class WorkDatesController extends Controller
             'operation_timestamp' => Carbon::now()->timestamp,
             'ip_address' => \Request::ip(),
             'operator_cd' => $user->operator_cd,
-            'operator_name' => OperatorName::operatorName((array) $user),
+            'operator_name' => Common::operatorName((array) $user),
             'screen_id' => 'W000001',
             'screen_name' => '勤怠一覧',
             'operation' => '出勤登録',
@@ -210,7 +210,7 @@ class WorkDatesController extends Controller
             'operation_timestamp' => Carbon::now()->timestamp,
             'ip_address' => \Request::ip(),
             'operator_cd' => $user->operator_cd,
-            'operator_name' => OperatorName::operatorName((array) $user),
+            'operator_name' => Common::operatorName((array) $user),
             'screen_id' => 'W000001',
             'screen_name' => '勤怠一覧',
             'operation' => '退勤登録',
