@@ -154,7 +154,7 @@ class WorkDatesController extends Controller
         // Displays a processing completion message.
         $request->session()->flash('message', '登録しました。');
 
-        return redirect()->action('person\WorkDatesController@index');
+        return redirect()->action('Person\WorkDatesController@index');
     }
 
     public function registerLeaveTime(Request $request){
@@ -221,7 +221,7 @@ class WorkDatesController extends Controller
         // Displays a processing completion message.
         $request->session()->flash('message', '登録しました。');
 
-        return redirect()->action('person\WorkDatesController@index');
+        return redirect()->action('Person\WorkDatesController@index');
     }
 
     public function add_holiday(Request $request){

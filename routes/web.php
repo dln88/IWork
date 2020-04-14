@@ -41,20 +41,20 @@ Route::group(['prefix' => 'admin',  'middleware' => 'admin', 'namespace' => 'Adm
 
 Route::group([ 'middleware' => 'person'], function()
 {
-    Route::get('/',  'person\HomeController@index')->name('person.dashboard');
-    Route::get('work/dates', 'person\WorkDatesController@index')
+    Route::get('/',  'Person\HomeController@index')->name('person.dashboard');
+    Route::get('work/dates', 'Person\WorkDatesController@index')
         ->name('person.work.dates');
 
-    Route::post('work/register-attendance-time', 'person\WorkDatesController@registerAttendanceTime')
+    Route::post('work/register-attendance-time', 'Person\WorkDatesController@registerAttendanceTime')
         ->name('person.work.register_attendance_time');
 
-    Route::post('work/register-leave-time', 'person\WorkDatesController@registerLeaveTime')
+    Route::post('work/register-leave-time', 'Person\WorkDatesController@registerLeaveTime')
         ->name('person.work.register_leave_time');
 
-    Route::get('holiday', 'person\HolidayController@index')
+    Route::get('holiday', 'Person\HolidayController@index')
         ->name('person.holiday');
 
-    Route::post('add_holiday', 'person\HolidayController@store')
+    Route::post('add_holiday', 'Person\HolidayController@store')
         ->name('person.add_holiday');
 
 });

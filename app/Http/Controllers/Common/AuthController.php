@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Common;
 
-use Carbon\Carbon;
 use App\Utils\LogLoginUtil;
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\AuthRepositoryInterface;
