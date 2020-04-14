@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect(route('login'));
 });
-
+Route::get('/test', 'Common\TestController@test')->name('test');
 Route::get('/login', 'Common\AuthController@showLogin')->name('login');
 Route::post('/doLogin', 'Common\AuthController@doLogin')->name('login.post');
 Route::post('/doLoginAdmin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');
