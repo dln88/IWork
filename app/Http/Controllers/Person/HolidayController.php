@@ -27,6 +27,12 @@ class HolidayController extends Controller
         $this->holidayRepository = $holidayRepository;
     }
 
+    /**
+     * Holiday Vacation Page.
+     *
+     * @param Request $request
+     * @return view
+     */
     public function index(Request $request)
     {
         $paidVacationDays = $this->holidayRepository->getPaidVacationDays();
@@ -35,12 +41,12 @@ class HolidayController extends Controller
             $paidVacationDays[0]->target_end
         );
         $paidLeave = $paidVacationDays[0]->grant_days - $daysOff[0]->cnt;
+
         $holidayLeave = $this->holidayRepository->getHolidayLeaveDays();
         $numberDaysOff = $this->holidayRepository->getNumberOfDaysOff(
             $holidayLeave[0]->target_start,
             $holidayLeave[0]->target_end
         );
-
         $balanceLeft = $holidayLeave[0]->grant_days - $numberDaysOff[0]->cnt;
         $vacationList = $this->holidayRepository->getVacationList();
         
@@ -51,30 +57,38 @@ class HolidayController extends Controller
             'operator_cd' => session('user')->operator_cd,
             'operator_name' => Common::operatorName((array) session('user')),
             'screen_id' => 'H000001',
-            'screen_name' => '休暇登録',
+            'screen_name' => Common::getScreenName('H000001'),
             'operation' => '初期処理',
             'contents' => 'なし',
         ];
         LogActionUtil::logAction($dataLog);
-
-        return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidVacationDays'));
+        return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidLeave'));
     }
 
+    /**
+     * Regist a vacation.
+     *
+     * @param StoreHolidayRequest $request
+     * @return view
+     */
     public function store(StoreHolidayRequest $request)
     {
         $dateRegister = $request->date;
 
-        // if(!$this->checkApplicationDatePast($dateRegister)) {
-        //     return back()->withErrors('');
-        // };
+        if(!$this->checkApplicationDatePast($dateRegister)) {
+            $holidayAppPast = config('define.holiday_app_past_mm.max');
+            return back()->withErrors("$holidayAppPast ヶ月前の申請はできません。");
+        };
 
-        // if(!$this->checkApplicationDateFuture($dateRegister)) {
-        //     return back()->withErrors('');
-        // };
+        if(!$this->checkApplicationDateFuture($dateRegister)) {
+            $holidayAppFuture = config('define.holiday_app_fu_mm.max');
+            return back()->withErrors("$holidayAppFuture ヶ月先の申請はできません。");
+        };
 
-        // if(!$this->doubleCheck($dateRegister)) {
-        //     return back()->withErrors('');
-        // };
+        if($this->doubleCheck($dateRegister)) {
+            return back()->withErrors('既に休暇申請されています。');
+        };
+        
         $this->holidayRepository->registHoliday($request->all());
 
         // Log action
@@ -84,9 +98,9 @@ class HolidayController extends Controller
             'operator_cd' => session('user')->operator_cd,
             'operator_name' => Common::operatorName((array) session('user')),
             'screen_id' => 'H000001',
-            'screen_name' => '休暇登録',
+            'screen_name' => Common::getScreenName('H000001'),
             'operation' => '休暇申請',
-            'contents' => '休暇形態：vacation form, 休暇種別: vacation type, 休暇申請日: date',
+            'contents' => "休暇形態：$request->type, 休暇種別: $request->type_day, 休暇申請日: $dateRegister",
         ];
         LogActionUtil::logAction($dataLog);
 
@@ -115,6 +129,6 @@ class HolidayController extends Controller
 
     private function doubleCheck($dateRegister)
     {
-        return true;
+        return $this->holidayRepository->checkExistRegisterDate($dateRegister);
     }
 }

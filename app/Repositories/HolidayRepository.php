@@ -14,8 +14,8 @@ class HolidayRepository implements HolidayRepositoryInterface
         $holidayPassMM = Carbon::now()->subMonths(config('define.holiday_past_mm.max') - 1)->toDateString();
         $query = "select 
             hl.acquisition_ymd,
-            holiday_form_name.item_name,
-            holiday_class_name.item_name,
+            holiday_form_name.item_name as holiday_form,
+            holiday_class_name.item_name as holiday_class,
             hl.withdrawal_kbn,
             case
                 when hl.withdrawal_kbn = 1 then '取消'
@@ -135,5 +135,20 @@ class HolidayRepository implements HolidayRepositoryInterface
             'update_date' =>  Carbon::now()->toDateTimeString(),
             'update_app' => 0,
         ]);
+    }
+    
+    public function checkExistRegisterDate(string $dateRegister)
+    {
+        $query = "select hl.acquisition_num
+            from trn_holiday hl
+            where
+                hl.delete_flg = 0
+                and hl.operator_cd = ?
+                and hl.acquisition_ymd = ?";
+        $holiday = DB::select($query, [session('user')->operator_cd, $dateRegister]);
+        if(count($holiday) > 0) {
+            return true;
+        }
+        return false;
     }
 }

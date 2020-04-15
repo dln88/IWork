@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class Formula
@@ -20,7 +21,7 @@ class Formula
       $startMinute = Str::substr($startTime, 3, 2);
       $endMinute = Str::substr($endTime, 3, 2);
       
-      $totalMinute = $endMinute - $startMinute;
+      $totalMinute = intval($endMinute) - intval($startMinute);
       if ($totalMinute < 0) {
          $startHour += 1;
          if ($totalMinute == -30) {
@@ -82,9 +83,37 @@ class Formula
             if ($latenightOvertimeMinute == 30) {
                return $latenightOvertimeHour + 0.5;
             }
+
+            if ($latenightOvertimeHour + $latenightOvertimeMinute/100 > 7.0) {
+               return 7.0;
+            }
             return $latenightOvertimeHour + $latenightOvertimeMinute/100;
          }
       }
       return 0;
+   }
+
+   /**
+    * Calculation of interval time
+    *
+    * @return void
+    */
+   public static function calculateIntervalTime($attTime)
+   {
+      $query = "select att.regi_date, att.end_time
+         from trn_attendance att
+         where
+            att.delete_flg = 0
+            and att.operator_cd = ?
+         order by att.regi_date desc
+         limit 1";
+      $attendance = DB::select($query, [session('user')->operator_cd]);
+      $attTime =  Carbon::parse($attTime);
+      $endTime = Carbon::parse($attendance[0]->end_time);
+      $interval = $attTime->diffInHours($endTime);
+      if ($interval > 99.99) {
+         return 99.99;
+      }
+      return $interval;
    }
 }

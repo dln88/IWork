@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Person;
 use Carbon\Carbon;
 use App\Utils\Common;
 use Illuminate\Support\Str;
+use App\Utils\LogActionUtil;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\WorkDatesRepositoryInterface;
-use App\Utils\LogActionUtil;
 
 class WorkDatesController extends Controller
 {
@@ -31,7 +31,7 @@ class WorkDatesController extends Controller
         if (!session('user')) {
             return redirect(route('login'));
         }
-        
+
         // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
@@ -39,7 +39,7 @@ class WorkDatesController extends Controller
             'operator_cd' => session('user')->operator_cd,
             'operator_name' => Common::operatorName((array) session('user')),
             'screen_id' => 'W000001',
-            'screen_name' => '勤怠一覧',
+            'screen_name' => Common::getScreenName('W000001'),
             'operation' => '初期処理',
             'contents' => 'なし',
         ];
@@ -61,8 +61,8 @@ class WorkDatesController extends Controller
     {
         $timePost = $this->workDatesRepository->getTimePost(session('user')->post_cd);
         return [
-            'att_time' => Carbon::parse($timePost[0]->post_start_time)->format('H:i'),
-            'leav_time' => Carbon::parse($timePost[0]->post_end_time)->format('H:i')
+            'start_time' => Carbon::parse($timePost[0]->post_start_time)->format('H:i'),
+            'end_time' => Carbon::parse($timePost[0]->post_end_time)->format('H:i')
         ];
     }
 
@@ -112,17 +112,13 @@ class WorkDatesController extends Controller
         return $this->workDatesRepository->getWorkDates(session('user')->operator_cd, $firstDayofMonth, $lastDayofMonth);
     }
 
-    public function holiday(Request $request){
-        return view('person.holiday');
-    }
-
     public function registerAttendanceTime(Request $request){
         if (!session('user')) {
             return redirect(route('login'));
         }
         $user = session('user');
         $validatedData = $request->validate([
-            'att_time' => ['required', 'date_format:H:i'],
+            'start_time' => ['required', 'date_format:H:i'],
         ]);
         
         // Check attendance time registered
@@ -133,7 +129,7 @@ class WorkDatesController extends Controller
         // register attendance time
         if(!$this->workDatesRepository->registerAttendanceTime(
             $user->operator_cd, 
-            $validatedData['att_time']
+            $validatedData['start_time']
         )) {
             return back()->withErrors('情報の登録に失敗しました');
         }
@@ -145,9 +141,9 @@ class WorkDatesController extends Controller
             'operator_cd' => $user->operator_cd,
             'operator_name' => Common::operatorName((array) $user),
             'screen_id' => 'W000001',
-            'screen_name' => '勤怠一覧',
+            'screen_name' => Common::getScreenName('W000001'),
             'operation' => '出勤登録',
-            'contents' => '出勤時間: ' .$validatedData['att_time'],
+            'contents' => '出勤時間: ' . $validatedData['start_time'],
         ];
         LogActionUtil::logAction($dataLog);
 
@@ -163,10 +159,10 @@ class WorkDatesController extends Controller
         }
         $user = session('user');
         $validatedData = $request->validate([
-            'leav_time' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/'],
+            'end_time' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/'],
         ]);
         
-        if (intval(Str::substr($validatedData['leav_time'], 0, 2)) >= 24) {
+        if (intval(Str::substr($validatedData['end_time'], 0, 2)) >= 24) {
             $currentDate = Carbon::yesterday()->toDateString();
         } else {
             $currentDate = Carbon::now()->toDateString();
@@ -178,9 +174,9 @@ class WorkDatesController extends Controller
         };
 
         // Check work time and leave time
-        if(!$this->workDatesRepository->checkLeavTimeGreaterAttTime(
+        if(!$this->workDatesRepository->checkEndTimeGreaterStartTime(
             $user->operator_cd, 
-            $validatedData['leav_time']
+            $validatedData['end_time']
         )) {
             return back()->withErrors('出勤時間より前の時間は登録できません。');
         };
@@ -191,13 +187,13 @@ class WorkDatesController extends Controller
         };
 
         // Checking the maximum time to leave
-        if($validatedData['leav_time'] > config('define.max_leave_time.max')) {
+        if($validatedData['end_time'] > config('define.max_leave_time.max')) {
             return back()->withErrors('退勤時間最大値を超えています。');
         }
 
         if(!$this->workDatesRepository->registLeaveTime(
             $user->operator_cd, 
-            $validatedData['leav_time']
+            $validatedData['end_time']
         )) {
             return back()->withErrors('情報の登録に失敗しました');
         }
@@ -212,9 +208,9 @@ class WorkDatesController extends Controller
             'operator_cd' => $user->operator_cd,
             'operator_name' => Common::operatorName((array) $user),
             'screen_id' => 'W000001',
-            'screen_name' => '勤怠一覧',
+            'screen_name' => Common::getScreenName('W000001'),
             'operation' => '退勤登録',
-            'contents' => '退勤時間: ' .$validatedData['leav_time'],
+            'contents' => '退勤時間: ' .$validatedData['end_time'],
         ];
         LogActionUtil::logAction($dataLog);
 
@@ -223,9 +219,4 @@ class WorkDatesController extends Controller
 
         return redirect()->action('Person\WorkDatesController@index');
     }
-
-    public function add_holiday(Request $request){
-        //
-    }
-
 }
