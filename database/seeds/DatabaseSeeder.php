@@ -15,5 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call(CalendarSeeder::class);
         $this->call(PaidVacationSeeder::class);
         $this->call(ExchangeDaySeeder::class);
+        $this->call(ItemNameSeeder::class);
+        $this->call(ScreenSeeder::class);
+        $this->call(SystemConfigSeeder::class);
     }
 }

@@ -53,10 +53,10 @@ interface WorkDatesRepositoryInterface
      * whether leave time greater than attendance time
      *
      * @param integer $operatorCd
-     * @param string $attTime
+     * @param string $endTime
      * @return boolean
      */
-    public function checkLeavTimeGreaterAttTime(int $operatorCd, string $leavTime);
+    public function checkEndTimeGreaterStartTime(int $operatorCd, string $endTime);
 
     /**
      * Check leave information of current user.

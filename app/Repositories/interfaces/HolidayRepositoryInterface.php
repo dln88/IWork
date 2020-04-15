@@ -10,4 +10,5 @@ interface HolidayRepositoryInterface
     public function getHolidayLeaveDays();
     public function getNumberOfDaysOff($targetStart, $targetEnd);
     public function registHoliday(array $data);
+    public function checkExistRegisterDate(string $dateRegister);
 }

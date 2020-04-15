@@ -15,7 +15,7 @@ class CreateMstScreenTable extends Migration
     {
         Schema::create('mst_screen', function (Blueprint $table) {
             $table->string('screen_id', 15)->primary(); // 機能ID管理票.画面IDで管理
-            $table->string('sreen_name');
+            $table->string('screen_name');
             $table->integer('child_screen')->default(0); // 1：子画面 (child screen)
             $table->integer('delete_flg')->default(0);
             $table->string('delete_date')->nullable();

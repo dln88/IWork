@@ -165,7 +165,7 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text" id="inputGroup-sizing-default">有休残</span>
 				</div>
-				<input type="text" class="form-control text-center bg-white" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ $paidVacationDays[0]->grant_days ?? 0.00 }}" style="font-weight:bold;" readonly>
+				<input type="text" class="form-control text-center bg-white" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" value="{{ $paidLeave ?? 0.00 }}" style="font-weight:bold;" readonly>
 
 				<div class="input-group-prepend" style="margin-left:2rem;">
 					<span class="input-group-text" id="inputGroup-sizing-default">振休残</span>
@@ -189,8 +189,8 @@
 					@foreach ($vacationList as $vacation)
 					<tr>
 						<td class="text-center" nowrap>{{ $vacation->acquisition_ymd }}</td>
-						<td class="text-center" nowrap>有休</td>
-						<td class="text-center" nowrap>午前休暇</td>
+						<td class="text-center" nowrap>{{ $vacation->holiday_form }}</td>
+						<td class="text-center" nowrap>{{ $vacation->holiday_class }}</td>
 						<td class="text-center" nowrap>{{ $vacation->acquisition_st }}</td>
 					</tr>
 					@endforeach

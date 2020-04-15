@@ -143,13 +143,13 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
    }
 
    /**
-    * Regist attendance time of current user.
+    * Regist start time of current user.
     *
     * @param integer $operatorCd
-    * @param string $attTime
+    * @param string $startTime
     * @return collection
     */
-   public function registerAttendanceTime(int $operatorCd, string $attTime)
+   public function registerAttendanceTime(int $operatorCd, string $startTime)
    {
       return DB::table('trn_attendance')->insert([
          'operator_cd' => $operatorCd,
@@ -157,8 +157,8 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
          'post_cd' =>  session('user')->post_cd,
          'emp_no' => session('user')->emp_no,
          'target_ym' => 0,
-         'att_time' => $attTime,
-         'start_time' => $attTime,
+         'att_time' => Carbon::now()->toDateTimeString(),
+         'start_time' => $startTime,
          'break_time' => 0.00,
          'working_time' => 0.00,
          'over_time' => 0.00,
@@ -177,24 +177,24 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     * whether leave time greater than attendance time
     *
     * @param integer $operatorCd
-    * @param string $attTime
+    * @param string $endTime
     * @return boolean
     */
-   public function checkLeavTimeGreaterAttTime(int $operatorCd, string $leavTime)
+   public function checkEndTimeGreaterStartTime(int $operatorCd, string $endTime)
    {
       $currentDate = Carbon::now()->toDateString();
-      $query = "select att_time
+      $query = "select start_time
          from trn_attendance 
          where operator_cd = ?
          and regi_date = ?";
 
-      $attTime = DB::select($query, [$operatorCd, $currentDate]);
+      $startTime = DB::select($query, [$operatorCd, $currentDate]);
       
       if (
-         (intval(Str::substr($leavTime, 0, 2)) > intval(Str::substr($attTime[0]->att_time, 0, 2)) ) or 
+         (intval(Str::substr($endTime, 0, 2)) > intval(Str::substr($startTime[0]->start_time, 0, 2)) ) or 
          (
-            intval(Str::substr($leavTime, 0, 2)) === intval(Str::substr($attTime[0]->att_time, 0, 2)) and
-            intval(Str::substr($leavTime, 2, 2)) > intval(Str::substr($attTime[0]->att_time, 2, 2))
+            intval(Str::substr($endTime, 0, 2)) === intval(Str::substr($startTime[0]->start_time, 0, 2)) and
+            intval(Str::substr($endTime, 2, 2)) > intval(Str::substr($startTime[0]->start_time, 2, 2))
          )
       ) {
          return true;
@@ -239,7 +239,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             'operator_cd' => $operatorCd,
             'regi_date' => $currentDate,
          ])->update([
-            'leav_time' => $leavTime,
+            'leav_time' => Carbon::now()->toDateTimeString(),
             'end_time' => $leavTime,
             'break_time' => 0.00,
             'working_time' => 0.00,
@@ -247,11 +247,8 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             'late_over_time' => 0.00,
             'ex_statutory_wk_time' => 0.00,
             'memo' => 0,
-            'creater_cd' => $operatorCd,
-            'create_date' => Carbon::now()->toDateTimeString(),
             'updater_cd' => $operatorCd,
             'update_date' => Carbon::now()->toDateTimeString(),
-            'update_app' => 0,
          ]);
    }
 
@@ -264,14 +261,14 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
    public function caculateAndRegistTime(int $operatorCd)
    {
       $currentDate = Carbon::now()->toDateString();
-      $time = $this->getAttTimeandLeavTime($operatorCd);
-      $attTime = $time[0]->att_time;
-      $leavTime = $time[0]->leav_time;
-      $totalWorkingTime = Formula::calculateWorkingTime($attTime, $leavTime);
+      $time = $this->getStartTimeandEndTime($operatorCd);
+      $startTime = $time[0]->start_time;
+      $endTime = $time[0]->end_time;
+      $totalWorkingTime = Formula::calculateWorkingTime($startTime, $endTime);
       $breakTime = Formula::calculateBreakTime($totalWorkingTime);
       $actualWorkingTime = $totalWorkingTime - $breakTime;
       $overTime = Formula::calculateOverTime($actualWorkingTime);
-      $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $leavTime);
+      $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
       
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,
@@ -281,24 +278,21 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             'working_time' => $actualWorkingTime,
             'over_time' => $overTime,
             'late_over_time' => $lateNightOverTime,
-            'creater_cd' => $operatorCd,
-            'create_date' => Carbon::now()->toDateTimeString(),
             'updater_cd' => $operatorCd,
             'update_date' => Carbon::now()->toDateTimeString(),
-            'update_app' => 0,
          ]);
    }
 
    /**
-    * Get attendance time and leave time of current user.
+    * Get start time and end time of current user.
     *
     * @param integer $operatorCd
     * @return collection
     */
-   private function getAttTimeandLeavTime(int $operatorCd)
+   private function getStartTimeandEndTime(int $operatorCd)
    {
       $currentDate = Carbon::now()->toDateString();
-      $query = "select att.att_time, att.leav_time
+      $query = "select att.start_time, att.end_time
          from trn_attendance att
          where
             att.delete_flg = 0
