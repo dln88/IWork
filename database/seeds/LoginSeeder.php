@@ -28,16 +28,6 @@ class LoginSeeder extends Seeder
             'update_app' => '0',
         ]);
 
-        DB::table('mst_post')->insert([
-            'post_cd' => '1',
-            'post_name' => 'php',
-            'post_start_time' => '08:00',
-            'post_end_time' => '18:00',
-            'create_date' => '2020-04-01',
-            'update_date' => '2020-04-01',
-            'update_app' => '0',
-        ]);
-
         for ($i=1; $i <= 10; $i++) { 
             DB::table('mst_operator')->insert([
                 'operator_cd' => $i,
@@ -48,7 +38,7 @@ class LoginSeeder extends Seeder
                 'user_id' => 'user' .$i,
                 'password' => 'password' .$i,
                 'join_day' => '2020-04-01',
-                'post_cd' => 1,
+                'post_cd' => rand(1, 10),
                 'admin_div' => 0,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
@@ -66,7 +56,7 @@ class LoginSeeder extends Seeder
                 'user_id' => 'admin' .$i,
                 'password' => 'password' .$i,
                 'join_day' => '2020-04-01',
-                'post_cd' => 1,
+                'post_cd' => rand(1, 10),
                 'admin_div' => 1,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',

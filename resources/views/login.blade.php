@@ -81,11 +81,11 @@
             <div class="card-body">
                 <!-- ログインID -->
                 <div class="form-group">
-                    <input type="text" name="user_id"  value="{{old('user_id', Session::get('user_id') ? Session::get('user_id') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
+                    <input type="text" autofocus name="user_id"  value="{{old('user_id', Session::get('user_id') ? Session::get('user_id') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
                 </div>
                 <!-- パスワード -->
                 <div class="form-group">
-                    <input type="password" name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30"></input>
+                    <input type="password" name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ request()->old('password') ?? null }}"></input>
                 </div>
                 <!-- ボタン -->
                 <button class="btn btn-lg btn-info btn-block" type="submit" onclick="login()" >

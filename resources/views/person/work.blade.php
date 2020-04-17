@@ -94,12 +94,12 @@
 				<div class="card text-center">
 					<div class="card-body">
 						<div class="input-group date datepicker_time" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-							<input name="att_time" novalidate type="text" class="form-control datetimepicker-input text-center" value="{{ $intialTime['start_time'] }}" data-target="#datetimepicker"/>
+							<input name="start_time" autofocus novalidate type="text" class="form-control datetimepicker-input text-center" value="{{ request()->old('start_time') ?? $intialTime['start_time'] }}" data-target="#datetimepicker"/>
 							<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 								<div class="input-group-text"><i class="far fa-clock"></i></div>
 							</div>
 						</div>
-						<button class="btn btn-info btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location = '{{ route('person.work.register_attendance_time') }}'">出勤</button>
+						<button class="btn btn-info btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location = '{{ route('person.work.register_attendance_time') }}';">出勤</button>
 					</div>
 				</div>
 			</div>
@@ -109,12 +109,12 @@
 				<div class="card text-center">
 					<div class="card-body">
 						<div class="input-group date datepicker_time" id="datepicker_2" data-target-input="nearest" style="margin-right:10px;">
-							<input name="end_time" novalidate type="text" class="form-control datetimepicker-input text-center" value="{{ $intialTime['end_time'] }}" data-target="#datetimepicker"/>
+							<input name="end_time" novalidate type="text" class="form-control datetimepicker-input text-center" value="{{ request()->old('end_time') ?? $intialTime['end_time'] }}" data-target="#datetimepicker"/>
 							<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 								<div class="input-group-text"><i class="far fa-clock"></i></div>
 							</div>
 						</div>
-						<button class="btn btn-warning btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location='{{ route('person.work.register_leave_time') }}'">退勤</button>
+						<button class="btn btn-warning btn-block btn-lg" type="button" style="margin-top:1rem;" onclick="window.location='{{ route('person.work.register_leave_time') }}';">退勤</button>
 					</div>
 				</div>
 			</div>
@@ -131,7 +131,7 @@
 						@csrf
 						<div class="input-group" style="margin-bottom:1rem;">
 							<label for="inputStart" class="sr-only">出勤時間</label>
-							<input type="text" class="form-control text-center" value="{{ $intialTime['start_time'] }}" id="inputStart" name="start_time" placeholder="{{ $intialTime['start_time'] }}" required>
+							<input type="text" class="form-control text-center" value="{{ request()->old('start_time') ?? $intialTime['start_time'] }}" id="inputStart" name="start_time" placeholder="{{ $intialTime['start_time'] }}" autofocus required>
 							<div class="input-group-append" id="button-addon4">
 								<button class="btn btn-info" type="submit">出勤</button>
 							</div>
@@ -143,7 +143,7 @@
 						@csrf
 						<div class="input-group" style="margin-bottom:1rem;">
 							<label for="inputEnd" class="sr-only">退勤時間</label>
-							<input type="text" class="form-control text-center" value="{{ $intialTime['end_time'] }}" id="inputEnd"  name="end_time" placeholder="{{ $intialTime['end_time'] }}" required>
+							<input type="text" class="form-control text-center" value="{{ request()->old('end_time') ?? $intialTime['end_time'] }}" id="inputEnd"  name="end_time" placeholder="{{ $intialTime['end_time'] }}" required>
 							<div class="input-group-append" id="button-addon4">
 								<button class="btn btn-warning" type="submit">退勤</button>
 							</div>
