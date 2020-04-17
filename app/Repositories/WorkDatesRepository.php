@@ -239,6 +239,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             'operator_cd' => $operatorCd,
             'regi_date' => $currentDate,
          ])->update([
+            'target_ym' => Carbon::parse($currentDate)->format('Ym'),
             'leav_time' => Carbon::now()->toDateTimeString(),
             'end_time' => $leavTime,
             'break_time' => 0.00,
@@ -246,7 +247,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             'over_time' => 0.00,
             'late_over_time' => 0.00,
             'ex_statutory_wk_time' => 0.00,
-            'memo' => 0,
+            'memo' => '',
             'updater_cd' => $operatorCd,
             'update_date' => Carbon::now()->toDateTimeString(),
          ]);

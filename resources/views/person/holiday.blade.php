@@ -105,7 +105,7 @@
 
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="input-group date datepicker" id="datepicker_1" data-target-input="nearest">
-					<input type="text" name="date" class="form-control datetimepicker-input" value="2020/01/01" data-target="#datetimepicker"/>
+					<input type="text" autofocus name="date" class="form-control datetimepicker-input" value="2020/01/01" data-target="#datetimepicker"/>
 					<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 						<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 					</div>
