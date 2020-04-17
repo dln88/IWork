@@ -290,7 +290,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     * @param integer $operatorCd
     * @return collection
     */
-   private function getStartTimeandEndTime(int $operatorCd)
+   public function getStartTimeandEndTime(int $operatorCd)
    {
       $currentDate = Carbon::now()->toDateString();
       $query = "select att.start_time, att.end_time

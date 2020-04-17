@@ -65,6 +65,14 @@ interface WorkDatesRepositoryInterface
      * @return boolean
      */
     public function checkLeaveTime(int $operatorCd);
+    
+    /**
+     * Get start time attendance of current user.
+     *
+     * @param integer $operatorCd
+     * @return collection
+     */
+    public function getStartTimeandEndTime(int $operatorCd);
 
     /**
      * Regist leave time of current user.
