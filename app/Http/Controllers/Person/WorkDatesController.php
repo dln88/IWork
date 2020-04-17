@@ -49,6 +49,11 @@ class WorkDatesController extends Controller
         $yearMonth = $this->getYearMonth($request);
         $workDates = $this->getWorkDates($yearMonth);
         $overTime = $this->checkOverTime($yearMonth);
+
+        $attendance = $this->workDatesRepository->getStartTimeandEndTime(session('user')->operator_cd);
+        if (count($attendance) > 0) {
+           $intialTime['start_time'] =  $attendance[0]->start_time;
+        }
         return view('person.work', compact('intialTime', 'workDates', 'yearMonth', 'overTime'));
     }
 
@@ -149,7 +154,7 @@ class WorkDatesController extends Controller
 
         // Displays a processing completion message.
         $request->session()->flash('message', '登録しました。');
-
+        $request->flash();
         return redirect()->action('Person\WorkDatesController@index');
     }
 
@@ -216,7 +221,7 @@ class WorkDatesController extends Controller
 
         // Displays a processing completion message.
         $request->session()->flash('message', '登録しました。');
-
+        $request->flash();
         return redirect()->action('Person\WorkDatesController@index');
     }
 }
