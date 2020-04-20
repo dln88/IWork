@@ -116,6 +116,9 @@ class Formula
             Carbon::parse($attTime)->format('Y-m-d')
          ]
       );
+      if (count($attendance) == 0 || is_null($attendance[0]->regi_date) || is_null($attendance[0]->end_time)) {
+         return 0.00;
+      }
       $previousDate = $attendance[0]->regi_date;
       $previousEndTime = $attendance[0]->end_time;
       $year = Str::substr($previousDate, 0, 4);
