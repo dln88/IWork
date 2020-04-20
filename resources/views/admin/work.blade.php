@@ -62,7 +62,7 @@
 
 			<div id="collapseOne" class="collapse " aria-labelledby="headingOne">
 				<div class="card-body">
-					<form method="get" action="{{route('admin.work_dates')}}" id="frmSearch">
+					<form method="get" action="{{ route('admin.search_work_dates') }}" id="frmSearch">
 						<!-- card group -->
 						<div class="card" style="margin-bottom:30px;">
 							<div class="card-body">
@@ -74,7 +74,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text search_item_lbl_width" id="name">社員番号</span>
 												</div>
-												<input type="text" class="form-control" id="shainNo" name="code" aria-describedby="emailHelp" placeholder="" value="{{request('code', null)}}">
+												<input type="text" class="form-control" id="shainNo" name="emp_num" aria-describedby="emailHelp" placeholder="" value="{{request('code', null)}}">
 											</div>
 										</div>
 									</div>
@@ -86,10 +86,11 @@
 												</div>
 												<select class="form-control" id="department" name="department_id">
 													<option></option>
-													<option value="1" {{request('department_id') == 1 ? 'selected' : ''}}>設計部</option>
-													<option value="2" {{request('department_id') == 2 ? 'selected' : ''}}>工務部</option>
-													<option value="3" {{request('department_id') == 3? 'selected' : ''}}>営業部</option>
-													<option value="4" {{request('department_id') == 4? 'selected' : ''}}>総務部</option>
+													@if (isset($comboBoxChoice) && count($comboBoxChoice) > 0)
+														@foreach ($comboBoxChoice as $postCd)
+															<option value="{{ $postCd->post_cd }}">{{ $postCd->post_name }}</option>
+														@endforeach
+													@endif
 												</select>
 											</div>
 										</div>
@@ -117,14 +118,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="targetMM">対象年月</label>
 												<div class="input-group date datepickerMM" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{request('from_month', date('Y/m/d'))}}" data-target="#datetimepicker"/>
+													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{request('from_month', date('Y/m'))}}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepickerMM" id="datepicker_2" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{request('from_month', date('Y/m/d'))}}" data-target="#datetimepicker"/>
+													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{request('to_month', date('Y/m'))}}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
@@ -194,13 +195,12 @@
 		<div class="row">
 			<div class="col-sm-12 text-right">
 				<button type="button" class="btn btn-info" onclick="search()">検索</button>
-				<button type="button" class="btn btn-light" onclick="reset()">クリア</button>
+				<a href="{{ route('admin.work_dates') }}">
+					<button type="button" class="btn btn-light" onclick="return confirm('検索条件をクリアします。よろしいですか？')">クリア</button>
+				</a>
 				<script type="text/javascript">
 					function  search() {
 						$('#frmSearch').submit();
-					}
-					function reset() {
-						window.location.href = "{{route('admin.work_dates')}}";
 					}
 				</script>
 			</div>
@@ -213,15 +213,12 @@
 			<div class="card-header">
 				<i class="fas fa-list" style="margin-right:1rem;"></i>勤怠一覧
 				<div class="float-right">
-					<a class="btn btn-outline-primary btn-sm" href="{{route('admin.work_csv')}}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
+					<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
 				</div>
 			</div>
 			<div class="card-body">
 				<div class="table-responsive mb-3">
 					<table class="table table-hover table-bordered mb-0">
-						@php
-							$uid = '000001';
-						@endphp
 						<thead class="thead-dark">
 							<tr>
 								<th class="text-center" scope="col" nowrap></th>
@@ -239,287 +236,28 @@
 							</tr>
 						</thead>
 						<tbody>
+						@if (isset($timeList) && count($timeList) > 0)
+							@foreach ($timeList as $val)
 							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
+								<td class="text-center" nowrap><a href="{{ route('admin.work_personal', $val->operator_cd)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
+								<td class="text-center" nowrap>{{ $val->emp_no }}</td>
+								<td class="text-center" nowrap>{{ $val->post_name }}</td>
+								<td class="text-center" nowrap>{{ $val->operator_name }}</td>
+								<td class="text-center" nowrap>{{ \Carbon\Carbon::parse($val->target_ym)->format('Y年m月') }}</td>
+								<td class="text-center" nowrap>{{ $val->sum_working_time }}</td>
+								<td class="text-center" nowrap>{{ $val->sum_over_time }}</td>
+								<td class="text-center" nowrap>{{ $val->late_over_time }}</td>
+								<td class="text-center" nowrap>{{ $val->att_date }}</td>
+								<td class="text-center" nowrap>{{ $val->paid_vacation_cnt }}</td>
+								<td class="text-center" nowrap>{{ $val->exchange_day_cnt }}</td>
+								<td class="text-center" nowrap>{{ $val->special_leave_cnt }}</td>
 							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>鈴木太郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>青木太郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>遠藤太郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>木原太郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>工務部</td>
-								<td class="text-center" nowrap>佐藤次郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>工務部</td>
-								<td class="text-center" nowrap>山田次郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>工務部</td>
-								<td class="text-center" nowrap>村本次郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>工務部</td>
-								<td class="text-center" nowrap>中村次郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>工務部</td>
-								<td class="text-center" nowrap>小川次郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>営業部</td>
-								<td class="text-center" nowrap>小川三郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>営業部</td>
-								<td class="text-center" nowrap>藤堂三郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>営業部</td>
-								<td class="text-center" nowrap>香川三郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>営業部</td>
-								<td class="text-center" nowrap>松本三郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>営業部</td>
-								<td class="text-center" nowrap>浜田三郎</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>総務部</td>
-								<td class="text-center" nowrap>山田四朗</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>総務部</td>
-								<td class="text-center" nowrap>青山四朗</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>総務部</td>
-								<td class="text-center" nowrap>田中四朗</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>総務部</td>
-								<td class="text-center" nowrap>川島四朗</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><a href="{{route('admin.work_personal', $uid)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>総務部</td>
-								<td class="text-center" nowrap>立花四朗</td>
-								<td class="text-center" nowrap>2020年4月</td>
-								<td class="text-center" nowrap>160.00</td>
-								<td class="text-center" nowrap>20.00</td>
-								<td class="text-center" nowrap>5.00</td>
-								<td class="text-center" nowrap>20</td>
-								<td class="text-center" nowrap>2.0</td>
-								<td class="text-center" nowrap>1.5</td>
-								<td class="text-center" nowrap>0.0</td>
-							</tr>
-
+							@endforeach
+						@else
+							<div class="container">
+								<p>該当のデータは存在しません。</p>
+							</div>
+						@endif
 						</tbody>
 					</table>
 				</div>
@@ -528,15 +266,17 @@
 				<div class="row">
 					<div class="col-sm-8">
 						<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+							<form action="{{ route('admin.work_dates') }}" method="get">
 							<div class="btn-group mr-2" role="group" aria-label="First group">
-								<button type="button" class="btn btn-secondary"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button>
-								<button type="button" class="btn btn-secondary">1</button>
-								<button type="button" class="btn btn-secondary">2</button>
-								<button type="button" class="btn btn-secondary">3</button>
-								<button type="button" class="btn btn-secondary">4</button>
-								<button type="button" class="btn btn-secondary">5</button>
-								<button type="button" class="btn btn-secondary"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
-							</div>
+									<button type="submit" name="page" value="{{ $page > 1 ? $page - 1 : 1 }}" class="btn btn-secondary"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button>
+									<button type="submit" name="page" value="1" class="btn btn-secondary">1</button>
+									<button type="submit" name="page" value="2" class="btn btn-secondary">2</button>
+									<button type="submit" name="page" value="3" class="btn btn-secondary">3</button>
+									<button type="submit" name="page" value="4" class="btn btn-secondary">4</button>
+									<button type="submit" name="page" value="5" class="btn btn-secondary">5</button>
+									<button type="submit" name="page" value="{{ $page + 1 }}" class="btn btn-secondary"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
