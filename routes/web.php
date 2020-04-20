@@ -40,10 +40,8 @@ Route::group(['prefix' => 'admin',  'middleware' => 'admin', 'namespace' => 'Adm
     Route::get('work/personal_csv/{id}', 'WorkDatesController@personalCSV')
         ->name('admin.personal_csv');
 
-    Route::get('/work/personal/ajax_load/{id}/{date}', 'WorkDatesController@ajaxLoadPersonalDate')
-        ->name('admin.ajax.load_personal_date');
-
-    Route::post('/work/personal/update/{id}', 'WorkDatesController@ajaxUpdatePersonalDate')->name('admin.ajax.update_personal_date');
+    Route::post('/work/personal/update/{id}', 'WorkDatesController@updateWorkDate')
+        ->name('admin.work_personal.update');
 });
 
 Route::group([ 'middleware' => 'person'], function()

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Carbon\Carbon;
+use App\Utils\Formula;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Interfaces\AdminWorkRepositoryInterface;
@@ -368,5 +369,100 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                 and hl.acquisition_ymd = ?";
         
         return DB::select($query, [$id, $date]);
+    }
+
+    public function findWorkDate($id, $date)
+    {
+        $query = "
+            select post_cd, emp_no, att_time, leav_time, start_time, end_time
+            from trn_attendance
+            where operator_cd = ?
+            and regi_date = ?
+        ";
+
+        return DB::select($query, [$id, $date]);
+    }
+
+    public function updateWorkDate($id, $data)
+    {
+        $startTime = $data['start'];
+        $endTime = $data['end'];
+        $totalWorkingTime = Formula::calculateWorkingTime($startTime, $endTime);
+        $breakTime = Formula::calculateBreakTime($totalWorkingTime);
+        $actualWorkingTime = $totalWorkingTime - $breakTime;
+        $overTime = Formula::calculateOverTime($actualWorkingTime);
+        $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
+        $intervalTime = Formula::calculateIntervalTime($startTime);
+
+        return DB::table('trn_attendance')->where([
+            'operator_cd' => $id,
+            'regi_date' => $data['date'],
+        ])->update([
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'break_time' => $breakTime,
+            'working_time' => $actualWorkingTime,
+            'over_time' => $overTime,
+            'late_over_time' => $lateNightOverTime,
+            'interval_time' => $intervalTime,
+            'memo' => $data['memo'],
+            'updater_cd' => $id,
+            'update_date' => Carbon::now()->toDateTimeString(),
+        ]);
+    }
+
+    public function insertWorkDate($id, $data)
+    {
+        $startTime = $data['start'];
+        $endTime = $data['end'];
+        $totalWorkingTime = Formula::calculateWorkingTime($startTime, $endTime);
+        $breakTime = Formula::calculateBreakTime($totalWorkingTime);
+        $actualWorkingTime = $totalWorkingTime - $breakTime;
+        $overTime = Formula::calculateOverTime($actualWorkingTime);
+        $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
+        $intervalTime = Formula::calculateIntervalTime($startTime);
+
+        return DB::table('trn_attendance')->insert([
+            'operator_cd' => $id,
+            'regi_date' => $data['date'],
+            'post_cd' =>  session('user')->post_cd,
+            'emp_no' => session('user')->emp_no,
+            'target_ym' => Carbon::parse($data['date'])->format('Ym'),
+            'att_time' => Carbon::now()->toDateTimeString(),
+            'start_time' => $startTime,
+            'leav_time' => Carbon::now()->toDateTimeString(),
+            'end_time' => $endTime,
+            'break_time' => $breakTime,
+            'working_time' => $actualWorkingTime,
+            'over_time' => $overTime,
+            'late_over_time' => $lateNightOverTime,
+            'interval_time' => $intervalTime,
+            'memo' => $data['memo'],
+            'creater_cd' => $id,
+            'create_date' => Carbon::now()->toDateTimeString(),
+            'updater_cd' => $id,
+            'update_date' => Carbon::now()->toDateTimeString(),
+            'update_app' => 0,
+        ]);
+    }
+
+    public function updateVacation($id, $data)
+    {
+        if(!is_null($data['paid'])) {
+            $holidayForm = 1;
+        } elseif (!is_null($data['exchange'])) {
+            $holidayForm = 2;
+        } else {
+            $holidayForm = 3;
+        }
+
+        return DB::table('trn_holiday')->where([
+            'operator_cd' => $id,
+            'acquisition_ymd' => $data['date'],
+            'delete_flg' => 0
+        ])->update([
+            'holiday_form' => $holidayForm,
+            'update_date' => Carbon::now()->toDateTimeString(),
+        ]);
     }
 }
