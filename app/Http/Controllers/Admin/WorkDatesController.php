@@ -39,7 +39,6 @@ class WorkDatesController extends Controller
         }
         $comboBoxChoice = $this->getPostCD();
         $timeList = $this->adminWorkRepository->getTimeList($page);
-        dd($timeList);
         // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
