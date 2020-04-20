@@ -4,6 +4,7 @@ namespace App\Utils;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class Formula
 {
@@ -100,16 +101,29 @@ class Formula
     */
    public static function calculateIntervalTime($attTime)
    {
+      $attTime =  Carbon::parse($attTime);
       $query = "select att.regi_date, att.end_time
          from trn_attendance att
          where
             att.delete_flg = 0
             and att.operator_cd = ?
+            and att.regi_date < ?
          order by att.regi_date desc
          limit 1";
-      $attendance = DB::select($query, [session('user')->operator_cd]);
-      $attTime =  Carbon::parse($attTime);
-      $endTime = Carbon::parse($attendance[0]->end_time);
+      $attendance = DB::select($query,
+         [
+            session('user')->operator_cd,
+            Carbon::parse($attTime)->format('Y-m-d')
+         ]
+      );
+      $previousDate = $attendance[0]->regi_date;
+      $previousEndTime = $attendance[0]->end_time;
+      $year = Str::substr($previousDate, 0, 4);
+      $month = Str::substr($previousDate, 5, 2);
+      $day = Str::substr($previousDate, 8, 2);
+      $hour = Str::substr($previousEndTime, 0, 2);
+      $minute = Str::substr($previousEndTime, 3, 2);
+      $endTime = Carbon::create($year, $month, $day, $hour, $minute);
       $interval = $attTime->diffInHours($endTime);
       if ($interval > 99.99) {
          return 99.99;

@@ -21,9 +21,8 @@
 
 	<link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
 	<!--========== CSS ==========-->
-	<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js" type="text/javascript"></script>
-	<title>i-work</title>
+
+    <title>i-work</title>
 </head>
 <body>
 
@@ -33,55 +32,51 @@
 	<nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
 		<ul class="navbar-nav mr-auto">
 			<a class="navbar-brand" href="#">
-				<img src="{{asset('/img/logo.png')}}" width="33" height="30" alt="">
+				<img src="./img/logo.png" width="33" height="30" alt="">
 			</a>
 			<li class="nav-item active">
 				<a class="nav-link" href="#">設計部門　山田太郎<span class="sr-only">(current)</span></a>
 			</li>
 		</ul>
 		<ul class="navbar-nav navbar-light">
-			<div style="margin-right:1rem;"><a href="{{route('admin.work_dates')}}"><button type="button" class="btn btn-outline-secondary mb-2">一覧に戻る</button></a></div>
+			<div style="margin-right:1rem;"><a href="{{ url()->previous() }}"><button type="button" class="btn btn-outline-secondary mb-2">一覧に戻る</button></a></div>
 		</ul>
 		<ul class="navbar-nav navbar-light">
-			<div style="margin-right:1rem;"><a href="{{route('logout')}}"><button type="button" class="btn btn-outline-secondary mb-2">ログアウト</button></a></div>
+			<div style="margin-right:1rem;"><a href="{{ route('login') }}"><button type="button" class="btn btn-outline-secondary mb-2">ログアウト</button></a></div>
 		</ul>
 	</nav>
-
-	<!-- drawer -->
-<!-- 	<div class="zdo_drawer_menu left"> -->
-<!-- 		<div class="zdo_drawer_bg"></div> -->
-<!-- 		<button type="button" class="zdo_drawer_button"> -->
-<!-- 			<span class="zdo_drawer_bar zdo_drawer_bar1"></span> -->
-<!-- 			<span class="zdo_drawer_bar zdo_drawer_bar2"></span> -->
-<!-- 			<span class="zdo_drawer_bar zdo_drawer_bar3"></span> -->
-<!-- 			<span class="zdo_drawer_menu_text zdo_drawer_text">MENU</span> -->
-<!-- 			<span class="zdo_drawer_close zdo_drawer_text">CLOSE</span> -->
-<!-- 		</button> -->
-<!-- 		<nav class="zdo_drawer_nav_wrapper"> -->
-<!-- 			<ul class="zdo_drawer_nav"> -->
-<!-- 				<li><span class="text-secondary" style="font-size: 1rem;">設計部門　山田太郎</span></li> -->
-<!-- 				<li><a href="work_holiday.html">休暇登録</a></li> -->
-<!-- 				<li><a href="#">メニュー2</a></li> -->
-<!-- 				<li><a href="#">メニュー3</a></li> -->
-<!-- 				<li><a href="#">メニュー4</a></li> -->
-<!-- 				<li><a href="#">メニュー5</a></li> -->
-<!-- 				<li><a href="#">メニュー6</a></li> -->
-<!-- 			</ul> -->
-<!-- 		</nav> -->
-<!-- 	</div> -->
 </header>
 <!-- ----------------------------------------------------------------------------------------------------------------------- -->
 
-<!-- <main role="main" class="container"> -->
-
-	<!-- search result -->
-	<div class="container-fluid">
+		@if (Session::get('message'))
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				{{Session::get('message')}}
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		@endif
+		@if (count($errors) > 0)
+			<div class="alert alert-danger alert-dismissible fade show" role="alert" >
+				@foreach($errors->all() as $error)
+					{{ $error }}
+				@endforeach
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+		@endif
+		<!-- search result -->
+		<div class="container-fluid">
 		<div class="card">
 			<div class="card-header">
-				<i class="fas fa-list" style="margin-right:1rem;"></i>月報
-				<div class="float-right">
-						<a class="btn btn-outline-primary btn-sm" href="{{route('admin.personal_csv', $uid)}}"  target="_blank" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
+				<i class="fas fa-list" style="margin-right:1rem;"></i>
+				<h5 class="d-inline"><span class="badge badge-secondary" style="margin-right:1rem;">社員番号</span>{{ $user->emp_no }}</h5>
+				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">部門</span>{{ $user->post_name }}</h5>
+				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">氏名</span>{{ $user->operator_name }}</h5>
 
+				<div class="float-right">
+					<a class="btn btn-outline-primary btn-sm" href="#" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
 				</div>
 			</div>
 			<div class="card-body">
@@ -90,9 +85,6 @@
 						<thead class="thead-dark">
 							<tr>
 								<th class="text-center" scope="col" nowrap></th>
-								<th class="text-center" scope="col" nowrap>社員番号</th>
-								<th class="text-center" scope="col" nowrap>部門</th>
-								<th class="text-center" scope="col" nowrap>氏名</th>
 								<th class="text-center" scope="col" nowrap>日付</th>
 								<th class="text-center" scope="col" nowrap>曜日</th>
 								<th class="text-center" scope="col" nowrap>開始</th>
@@ -109,676 +101,59 @@
 							</tr>
 						</thead>
 						<tbody>
+						@if (isset($monthlyReport) && count($monthlyReport) > 0)
+							@foreach ($monthlyReport as $val)
 							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/1</td>
-								<td class="text-center" nowrap>水</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/2</td>
-								<td class="text-center" nowrap>木</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/3</td>
-								<td class="text-center" nowrap>金</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/4</td>
-								<td class="text-center" nowrap>土</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/5</td>
-								<td class="text-center" nowrap>日</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/6</td>
-								<td class="text-center" nowrap>月</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/7</td>
-								<td class="text-center" nowrap>火</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/8</td>
-								<td class="text-center" nowrap>水</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/9</td>
-								<td class="text-center" nowrap>木</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/10</td>
-								<td class="text-center" nowrap>金</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/11</td>
-								<td class="text-center" nowrap>土</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/12</td>
-								<td class="text-center" nowrap>日</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/13</td>
-								<td class="text-center" nowrap>月</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/14</td>
-								<td class="text-center" nowrap>火</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/15</td>
-								<td class="text-center" nowrap>水</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/16</td>
-								<td class="text-center" nowrap>木</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/17</td>
-								<td class="text-center" nowrap>金</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/18</td>
-								<td class="text-center" nowrap>土</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/19</td>
-								<td class="text-center" nowrap>日</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/20</td>
-								<td class="text-center" nowrap>月</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/21</td>
-								<td class="text-center" nowrap>火</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/22</td>
-								<td class="text-center" nowrap>水</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/23</td>
-								<td class="text-center" nowrap>木</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/24</td>
-								<td class="text-center" nowrap>金</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/25</td>
-								<td class="text-center" nowrap>土</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/26</td>
-								<td class="text-center" nowrap>日</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/27</td>
-								<td class="text-center" nowrap>月</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/28</td>
-								<td class="text-center" nowrap>火</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/29</td>
-								<td class="text-center" nowrap>水</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
-							<tr>
-								<td class="text-center" nowrap><button type="button" class="btn btn-info btn-sm btn-edit" data-id="20200401" id="btnEdit" >修正</button></td>
-								<td class="text-center" nowrap>999999</td>
-								<td class="text-center" nowrap>設計部</td>
-								<td class="text-center" nowrap>山田太郎</td>
-								<td class="text-center" nowrap>2020/4/30</td>
-								<td class="text-center" nowrap>木</td>
-								<td class="text-center" nowrap>9:00</td>
-								<td class="text-center" nowrap>18:00</td>
-								<td class="text-center" nowrap>1.00</td>
-								<td class="text-center" nowrap>8.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>0.00</td>
-								<td class="text-center" nowrap>15.00</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>0.0</td>
-								<td class="text-center" nowrap>○○○○○○○○○○○○○○○○</td>
-							</tr>
+								<td class="text-center" nowrap><button type="button" onclick="updateWorkDate($val->operator_cd, $val->calendar_ymd);"
+										class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal">修正</button></td>
+								<td class="text-center" nowrap>{{ $val->calendar_ymd }}</td>
+								<td class="text-center" nowrap>
+									@switch(\Carbon\Carbon::parse($val->calendar_ymd)->dayOfWeek)
+										@case(1)
+											月
+											@break
+										@case(2)
+											火
+											@break
+										@case(3)
+											水
+											@break
+										@case(4)
+											木
+											@break
+										@case(5)
+											金
+											@break
+										@case(6)
+											土
+											@break
+										@default
+											日
+									@endswitch
+								</td>
+								<td class="text-center" nowrap>{{ $val->start_time }}</td>
+								<td class="text-center" nowrap>{{ $val->end_time }}</td>
+								<td class="text-center" nowrap>{{ $val->break_time }}</td>
+								<td class="text-center" nowrap>{{ $val->working_time }}</td>
+								<td class="text-center" nowrap>{{ $val->over_time }}</td>
+								<td class="text-center" nowrap>{{ $val->late_over_time }}</td>
+								<td class="text-center" nowrap>{{ $val->interval_time }}</td>
+								<td class="text-center" nowrap>{{ $val->paid_vacation_cnt }}</td>
+								<td class="text-center" nowrap>{{ $val->exchange_day_cnt }}</td>
+								<td class="text-center" nowrap>{{ $val->special_leave_cnt }}</td>
+								<td class="text-center" nowrap>{{ $val->memo }}</td>
+							</tr>	
+							@endforeach
+						@else
+							<div class="container">
+								<p>該当のデータは存在しません。</p>
+							</div>
+						@endif
 						</tbody>
 					</table>
-					<script type="text/javascript">
-						$('.btn-edit').click(function () {
-							var date = $(this).data('id');
-							console.log(date);
-							$.ajax({
-								url: '/admin/work/personal/ajax_load/{{$uid}}/' + date ,
-								type: 'get',
-								dataType: "json",
-								data: {
-									date: date,
-									uid: '{{$uid}}'
-								},
-								success: function(response){
-									console.log(response);
-									$('#labelDate').html(response.data.work_date);
-									$('#labelName').html(response.data.name);
-									$('#txtDate').val(response.data.work_date);
-									$('#startTime').val(response.data.start_time);
-									$('#endTime').val(response.data.end_time);
-									$('#memo').val(response.data.break_time);
-									$('#modal').modal('show');
-								}
-							});
-						})
-						$.validator.addMethod("time24", function(value, element) {
-							if (/^([0-9]{1}|[01]?[0-9]{2}|2[0-3]{2}):[0-5][0-9]$/.test(value)) return true;
-							return false;
-						}, 'Time format is not right');
-
-						function save() {
-							$("#frmEdit").validate({
-								// Specify validation rules
-								rules: {
-									// The key name on the left side is the name attribute
-									// of an input field. Validation rules are defined
-									// on the right side
-									startTime: {
-										required: true,
-										pattern : '([0-9]{1}|[01]?[0-9]{2}|2[0-3]{2}):[0-5][0-9]'
-									},
-									endTime: {
-										required: true,
-										pattern : '([0-9]{1}|[01]?[0-9]{2}|2[0-3]{2}):[0-5][0-9]'
-									},
-									breakTime: {
-										required: true,
-										pattern : '([0-9]{1}|[01]?[0-9]{2}|2[0-3]{2}):[0-5][0-9]'
-									},
-								},
-								// Specify validation error messages
-								messages: {
-
-								},
-								invalidHandler: function(event, validator) {
-									// 'this' refers to the form
-									// var errors = validator.numberOfInvalids();
-									// if (errors) {
-									// 	var message = errors == 1
-									// 			? 'You missed 1 field. It has been highlighted'
-									// 			: 'You missed ' + errors + ' fields. They have been highlighted';
-									// 	console.log(message);
-									// 	$("div.error span").html(message);
-									// 	$("div.error").show();
-									// } else {
-									// 	$("div.error").hide();
-									// }
-								},
-								// Make sure the form is submitted to the destination defined
-								// in the "action" attribute of the form when valid
-								success: function(form) {
-									//$("#frmEdit").submit();
-									// $('#modal').modal('hide');
-
-								},
-								submitHandler: function(form) {
-
-								}
-							});
-
-							if ($("#frmEdit").valid()) {
-								$.ajax({
-									url: '{{route('admin.ajax.update_personal_date', $uid)}}' ,
-									type: 'post',
-									dataType: "json",
-									data: $('#frmEdit').serialize(),
-									success: function(response){
-										console.log(response);
-										$('#modal').modal('hide');
-										location.reload();
-									}
-								});
-							}
-						}
-					</script>
 				</div>
 			</div>
 		</div>
-	</div>
 	<!-- search result end -->
 
 <!-- Modal -->
@@ -787,8 +162,8 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<div class="modal-title" id="exampleModalLabel">
-					<p>設計部　<span id="labelName">山田太郎</span></p>　
-					<h5><strong id="labelDate">2020/4/10</strong></h5></div>
+					<p>設計部　山田太郎</p>　
+					<h5><strong>2020/4/10</strong></h5></div>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
@@ -797,52 +172,43 @@
 				<!-- エラーメッセージ -->
 				<p class="text-danger">開始時間は時刻形式（hh:mm）で入力してください。</p>
 
-				<form id="frmEdit" method="POST">
-					@csrf
-					<input type="hidden" name="work_date" id="txtDate" value="">
+				<form>
 					<div class="form-group">
 						<label for="startTime">開始</label>
-						<input type="text" class="form-control" id="startTime" name="startTime" placeholder="9:00"  >
+						<input type="text" class="form-control" id="startTime" placeholder="9:00">
 					</div>
 					<div class="form-group">
 						<label for="endTime">終了</label>
-						<input type="text" class="form-control" id="endTime" name="endTime" placeholder="18:00">
+						<input type="text" class="form-control" id="endTime" placeholder="18:00">
 					</div>
 					<div class="form-group">
 						<label for="endTime">備考</label>
-						<input type="text" class="form-control" id="memo" name="breakTime" placeholder="" >
+						<input type="text" class="form-control" id="memo" placeholder="">
 					</div>
 					<div class="form-group">
 						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
-							<input type="checkbox" class="custom-control-input" id="customSwitch1" name="is_closed_date">
+							<input type="checkbox" class="custom-control-input" id="customSwitch1">
 							<label class="custom-control-label" for="customSwitch1">休暇取消を実施する <span class="badge badge-warning">有休</span></label>
 						</div>
 						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
-							<input type="checkbox" class="custom-control-input" id="customSwitch2" name="is_rest_date">
+							<input type="checkbox" class="custom-control-input" id="customSwitch2">
 							<label class="custom-control-label" for="customSwitch2">休暇取消を実施する <span class="badge badge-info">振休</span></label>
 						</div>
 						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
-							<input type="checkbox" class="custom-control-input" id="customSwitch3" name="is_special_date">
+							<input type="checkbox" class="custom-control-input" id="customSwitch3">
 							<label class="custom-control-label" for="customSwitch3">休暇取消を実施する <span class="badge badge-dark">特休</span></label>
 						</div>
 					</div>
-
-					<div class="modal-footer">
-						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-						<button type="button" class="btn btn-warning" onclick="save()">Save</button>
-					</div>
 				</form>
 			</div>
-
+			<div class="modal-footer">
+				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-warning">Save</button>
+			</div>
 		</div>
 	</div>
 </div>
-<style>
-	.error {
-		color: red;
-	}
-</style>
-<!-- </main> -->
+</div>
 
 <footer>
   <p class="small text-center">&copy; 2020 by <a href="#">xxxxxxxxxxxxxxx</a> v1.0.0</p>
@@ -851,8 +217,7 @@
 
 <!--========== JavaScript ==========-->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js" type="text/javascript"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/additional-methods.min.js" type="text/javascript"></script>
+<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
 <script src="{{asset('js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset('js/zdo_drawer_menu.js')}}"></script>
 <script src="{{asset('js/moment.js')}}"></script>

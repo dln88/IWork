@@ -31,7 +31,6 @@ class WorkDatesController extends Controller
         if (!session('user')) {
             return redirect(route('login'));
         }
-
         // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
@@ -52,7 +51,12 @@ class WorkDatesController extends Controller
 
         $attendance = $this->workDatesRepository->getStartTimeandEndTime(session('user')->operator_cd);
         if (count($attendance) > 0) {
-           $intialTime['start_time'] =  $attendance[0]->start_time;
+            if (!is_null($attendance[0]->start_time)) {
+                $intialTime['start_time'] =  $attendance[0]->start_time;
+            }
+            if (!is_null($attendance[0]->end_time)) {
+                $intialTime['end_time'] =  $attendance[0]->end_time;
+            }
         }
         return view('person.work', compact('intialTime', 'workDates', 'yearMonth', 'overTime'));
     }
