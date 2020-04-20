@@ -9,6 +9,7 @@ use App\Utils\LogActionUtil;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\WorkDatesRepositoryInterface;
+use App\Utils\Formula;
 
 class WorkDatesController extends Controller
 {
@@ -31,6 +32,7 @@ class WorkDatesController extends Controller
         if (!session('user')) {
             return redirect(route('login'));
         }
+        
         // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
@@ -113,12 +115,11 @@ class WorkDatesController extends Controller
      */
     private function getWorkDates($yearMonth)
     {
-        $year = Str::substr($yearMonth, 0, 4);
-        $month = Str::substr($yearMonth, 4, 2);
-        $firstDayofMonth = Carbon::create($year, $month)->startOfMonth()->toDateString();
-        $lastDayofMonth = Carbon::create($year, $month)->endOfMonth()->toDateString();
+        $currentTimeTarget = Formula::calculateClosingDate($yearMonth);
+        $currentTimeTargetStartDate = $currentTimeTarget[0];
+        $currentTimeTargetEndDate = $currentTimeTarget[1];
 
-        return $this->workDatesRepository->getWorkDates(session('user')->operator_cd, $firstDayofMonth, $lastDayofMonth);
+        return $this->workDatesRepository->getWorkDates(session('user')->operator_cd, $currentTimeTargetStartDate, $currentTimeTargetEndDate);
     }
 
     public function registerAttendanceTime(Request $request){
@@ -202,7 +203,8 @@ class WorkDatesController extends Controller
 
         if(!$this->workDatesRepository->registLeaveTime(
             $user->operator_cd, 
-            $validatedData['end_time']
+            $validatedData['end_time'],
+            $currentDate
         )) {
             return back()->withErrors('情報の登録に失敗しました');
         }

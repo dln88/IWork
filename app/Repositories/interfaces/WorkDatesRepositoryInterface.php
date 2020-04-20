@@ -79,9 +79,10 @@ interface WorkDatesRepositoryInterface
      *
      * @param integer $operatorCd
      * @param string $leavTime
+     * @param string $currentDate
      * @return collection
      */
-    public function registLeaveTime(int $operatorCd, string $leavTime);
+    public function registLeaveTime(int $operatorCd, string $leavTime, string $currentDate);
 
     /**
      *  Caculate working time, break time, overtime, late night overtime and save them to db.

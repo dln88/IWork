@@ -3,6 +3,7 @@
 namespace App\Utils;
 
 use Carbon\Carbon;
+use App\Utils\Common;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -132,5 +133,67 @@ class Formula
          return 99.99;
       }
       return $interval;
+   }
+
+   public static function calculateClosingDate($yearMonth)
+   {
+      $closingdate = Common::getSystemConfig('CLOSING_DATE');
+      $currentYear = Str::substr($yearMonth, 0, 4);
+      $currentMonth = Str::substr($yearMonth, 4, 2);
+      $currentDate = Carbon::now()->format('d');
+      $currentEndDate = Carbon::createFromFormat('m', $currentMonth)->lastOfMonth()->format('d');
+      $startDateCurrentMonth = '';
+      $endDateCurrentMonth = '';
+      switch ($closingdate) {
+         case '1':
+            if ($currentDate > $closingdate) {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth + 1, $closingdate)->format('Y-m-d');
+            } else {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth - 1, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate)->format('Y-m-d');
+            }
+            break;
+         case '10':
+            if ($currentDate > $closingdate) {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth +1, $closingdate)->format('Y-m-d');
+            } else {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth - 1, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate)->format('Y-m-d');
+            }
+            break;
+         case '15':
+            if ($currentDate > $closingdate) {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth +1, $closingdate)->format('Y-m-d');
+            } else {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth - 1, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate)->format('Y-m-d');
+            }
+            break;
+         case '20':
+            if ($currentDate > $closingdate) {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth + 1, $closingdate)->format('Y-m-d');
+            } else {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth - 1, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate)->format('Y-m-d');
+            }
+            break;
+         case '25':
+            if ($currentDate > $closingdate) {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth + 1, $closingdate)->format('Y-m-d');
+            } else {
+               $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth - 1, $closingdate + 1)->format('Y-m-d');
+               $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $closingdate)->format('Y-m-d');
+            }
+            break;
+         default:
+            $startDateCurrentMonth = Carbon::create($currentYear, $currentMonth, 1)->format('Y-m-d');
+            $endDateCurrentMonth = Carbon::create($currentYear, $currentMonth, $currentEndDate)->format('Y-m-d');
+      }
+      return [$startDateCurrentMonth, $endDateCurrentMonth];
    }
 }
