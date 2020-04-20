@@ -61,8 +61,9 @@ class HolidayController extends Controller
             'operation' => '初期処理',
             'contents' => 'なし',
         ];
+        $currentDate = Carbon::now()->format('Y/m/d');
         LogActionUtil::logAction($dataLog);
-        return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidLeave'));
+        return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidLeave', 'currentDate'));
     }
 
     /**
