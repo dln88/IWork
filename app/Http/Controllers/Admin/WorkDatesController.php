@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Utils\Csv;
 use Carbon\Carbon;
 use App\Utils\Common;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Utils\LogActionUtil;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateWorkDateRequest;
 use App\Http\Requests\SearchWorkDatesRequest;
 use App\Repositories\Interfaces\AdminWorkRepositoryInterface;
-
 class WorkDatesController extends Controller
 {
     protected $adminWorkRepository;
@@ -130,26 +131,60 @@ class WorkDatesController extends Controller
         return view('admin.work_personal', compact('user', 'monthlyReport'));
     }
 
-    /**
-     * @param $id
-     * @param $date
-     * @return false|string
-     */
-    function ajaxLoadPersonalDate($id, $date) {
-        $user = $this->adminWorkRepository->getUserByKey($id);
-        $user = $user[0];
-        $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id);
-        $attendance = $this->adminWorkRepository->getAttendanceByDate($id, $date);
-        $attendance = $attendance[0];
-        $vacation = $this->adminWorkRepository->getVacationInformationByDate($id, $date);
-        $vacation = $vacation[0];
-        return view('admin.work_personal', compact('attendance', 'vacation', 'user', 'monthlyReport'));
+    public function updateWorkDate(UpdateWorkDateRequest $request, $id)
+    {
+        if(!$this->checkEndTimeGreaterThanStartTime($request->start, $request->end)) {
+            return back()->withErrors('終了時間は開始時間より後の時間を設定してください。');
+        };
+
+        $data['date'] = $request->date;
+        $data['start']= $request->start;
+        $data['end'] = $request->end;
+        $data['memo'] = $request->memo;
+        $data['paid'] = $request->paid;
+        $data['exchange'] = $request->exchange;
+        $data['special'] = $request->special;
+        
+        $workDate = $this->adminWorkRepository->findWorkDate($id, $request->date);
+        if (count($workDate) > 0) {
+            $this->adminWorkRepository->updateWorkDate($id, $data);
+        } else {
+            $this->adminWorkRepository->insertWorkDate($id, $data);
+        }
+
+        $this->adminWorkRepository->updateVacation($id, $data);
+        
+         // Log action
+         $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => Common::operatorName((array) session('user')),
+            'screen_id' => 'W000003',
+            'screen_name' => Common::getScreenName('W000003'),
+            'operation' => '勤怠修正',
+            'contents' => '日付: ' . $data['date'] . ', ' .
+                '開始: ' .  $data['start'] . ', ' .
+                '終了: ' .  $data['end'] . ',' .
+                '備考: ' .  $data['memo']
+        ];
+        LogActionUtil::logAction($dataLog);
+        $request->session()->flash('message', '更新しました。');
+        return redirect()->route('admin.work_personal', $id);
     }
 
-    public function ajaxUpdatePersonalDate(Request $request, $uid) {
-        // TODO Update Data
-
-        // return response()->json(array('success'=> true), 200);
+    private function checkEndTimeGreaterThanStartTime($startTime, $endTime)
+    {
+        if (
+            (intval(Str::substr($endTime, 0, 2)) > intval(Str::substr($startTime, 0, 2)) ) or 
+            (
+                intval(Str::substr($endTime, 0, 2)) === intval(Str::substr($startTime, 0, 2)) and
+                intval(Str::substr($endTime, 2, 2)) > intval(Str::substr($startTime, 2, 2))
+            )
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**

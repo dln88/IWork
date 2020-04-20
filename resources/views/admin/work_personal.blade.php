@@ -32,7 +32,7 @@
 	<nav class="navbar navbar-expand-sm navbar-light bg-light fixed-top">
 		<ul class="navbar-nav mr-auto">
 			<a class="navbar-brand" href="#">
-				<img src="./img/logo.png" width="33" height="30" alt="">
+				<img src="{{asset('img/logo.png')}}" width="33" height="30" alt="">
 			</a>
 			<li class="nav-item active">
 				<a class="nav-link" href="#">設計部門　山田太郎<span class="sr-only">(current)</span></a>
@@ -104,8 +104,21 @@
 						@if (isset($monthlyReport) && count($monthlyReport) > 0)
 							@foreach ($monthlyReport as $val)
 							<tr class="table-danger-c">
-								<td class="text-center" nowrap><button type="button" onclick="updateWorkDate($val->operator_cd, $val->calendar_ymd);"
-										class="btn btn-info btn-sm" data-toggle="modal" data-target="#modal">修正</button></td>
+								<td class="text-center" nowrap>
+									<button type="button"
+										class="btn btn-info btn-sm"
+										data-date="{{ $val->calendar_ymd }}"
+										data-starttime="{{ $val->start_time }}"
+										data-endtime="{{ $val->end_time }}"
+										data-memo="{{ $val->memo }}"
+										data-paid="{{ $val->paid_vacation_cnt > 0 ? 'on' : 'off' }}"
+										data-exchange="{{ $val->exchange_day_cnt > 0 ? 'on' : 'off' }}"
+										data-special="{{ $val->special_leave_cnt > 0 ? 'on' : 'off' }}"
+										data-toggle="modal"
+										data-target="#modal">
+										修正
+									</button>
+								</td>
 								<td class="text-center" nowrap>{{ $val->calendar_ymd }}</td>
 								<td class="text-center" nowrap>
 									@switch(\Carbon\Carbon::parse($val->calendar_ymd)->dayOfWeek)
@@ -163,48 +176,50 @@
 			<div class="modal-header">
 				<div class="modal-title" id="exampleModalLabel">
 					<p>設計部　山田太郎</p>　
-					<h5><strong>2020/4/10</strong></h5></div>
+					<h5><strong id="date" name='date'></strong></h5>
+				</div>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<div class="modal-body">
-				<!-- エラーメッセージ -->
-				<p class="text-danger">開始時間は時刻形式（hh:mm）で入力してください。</p>
-
-				<form>
+			<form action="{{ route('admin.work_personal.update', request()->id) }}" id="update" method="post">
+				{{ csrf_field() }}
+				<div class="modal-body">
+					<!-- エラーメッセージ -->
+					<input type="hidden" name="date" id='target-date'/>
+					<p class="text-danger">開始時間は時刻形式（hh:mm）で入力してください。</p>
 					<div class="form-group">
 						<label for="startTime">開始</label>
-						<input type="text" class="form-control" id="startTime" placeholder="9:00">
+						<input type="text" class="form-control" id="startTime" name='start'>
 					</div>
 					<div class="form-group">
 						<label for="endTime">終了</label>
-						<input type="text" class="form-control" id="endTime" placeholder="18:00">
+						<input type="text" class="form-control" id="endTime" name='end'>
 					</div>
 					<div class="form-group">
 						<label for="endTime">備考</label>
-						<input type="text" class="form-control" id="memo" placeholder="">
+						<input type="text" class="form-control" id="memo" name='memo'>
 					</div>
 					<div class="form-group">
 						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
-							<input type="checkbox" class="custom-control-input" id="customSwitch1">
+							<input type="checkbox" class="custom-control-input"  id="customSwitch1" name='paid'>
 							<label class="custom-control-label" for="customSwitch1">休暇取消を実施する <span class="badge badge-warning">有休</span></label>
 						</div>
 						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
-							<input type="checkbox" class="custom-control-input" id="customSwitch2">
+							<input type="checkbox" class="custom-control-input" id="customSwitch2" name='exchange'>
 							<label class="custom-control-label" for="customSwitch2">休暇取消を実施する <span class="badge badge-info">振休</span></label>
 						</div>
 						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
-							<input type="checkbox" class="custom-control-input" id="customSwitch3">
+							<input type="checkbox" class="custom-control-input" id="customSwitch3" name='special'>
 							<label class="custom-control-label" for="customSwitch3">休暇取消を実施する <span class="badge badge-dark">特休</span></label>
 						</div>
 					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-warning">Save</button>
-			</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-warning" onclick="save()">Save</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -224,6 +239,40 @@
 <script src="{{asset('js/locale/ja.js')}}"></script>
 <script src="{{asset('js/tempusdominus-bootstrap-4.min.js')}}"></script>
 <script src="{{asset('js/common.js')}}"></script>
+
+<script>
+	$('#modal').on('show.bs.modal', function (event) {
+		var button = $(event.relatedTarget)
+		var date = button.data('date')
+		var start = button.data('starttime')
+		var end = button.data('endtime')
+		var memo = button.data('memo')
+		var paid = button.data('paid')
+		var exchange = button.data('exchange')
+		var special = button.data('special')
+
+		$('#date').html(date);
+		var modal = $(this)
+		modal.find('.modal-body #startTime').val(start)
+		modal.find('.modal-body #endTime').val(end)
+		modal.find('.modal-body #memo').val(memo)
+		modal.find('.modal-body #target-date').val(date)
+
+		if (paid === 'on') {
+			$('#customSwitch1').attr('checked', true)
+		}
+		if (exchange === 'on') {
+			$('#customSwitch2').attr('checked', true)
+		}
+		if (special === 'on') {
+			$('#customSwitch3').attr('checked', true)
+		}
+	});
+	function save() {
+		$('#update').submit();
+	}
+</script>
+
 <!--========== JavaScript ==========-->
 
 </body>
