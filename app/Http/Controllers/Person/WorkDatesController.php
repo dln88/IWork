@@ -133,7 +133,7 @@ class WorkDatesController extends Controller
         
         // Check attendance time registered
         if($this->workDatesRepository->checkAttendanceTime($user->operator_cd)) {
-            return back()->withErrors('出席時間は既に登録されています。変更する必要がある場合は、管理者に連絡してください。');
+            return back()->withInput()->withErrors('出席時間は既に登録されています。変更する必要がある場合は、管理者に連絡してください。');
         };
 
         // register attendance time
@@ -141,7 +141,7 @@ class WorkDatesController extends Controller
             $user->operator_cd, 
             $validatedData['start_time']
         )) {
-            return back()->withErrors('情報の登録に失敗しました');
+            return back()->withInput()->withErrors('情報の登録に失敗しました');
         }
 
         // Log action
@@ -180,7 +180,7 @@ class WorkDatesController extends Controller
 
         // Check leave time registered.
         if(!$this->workDatesRepository->checkAttendanceTime($user->operator_cd)) {
-            return back()->withErrors('出勤時間が登録されていないため、退勤時間の登録ができません。');
+            return back()->withInput()->withErrors('出勤時間が登録されていないため、退勤時間の登録ができません。');
         };
 
         // Check work time and leave time
@@ -188,17 +188,17 @@ class WorkDatesController extends Controller
             $user->operator_cd, 
             $validatedData['end_time']
         )) {
-            return back()->withErrors('出勤時間より前の時間は登録できません。');
+            return back()->withInput()->withErrors('出勤時間より前の時間は登録できません。');
         };
         
          // Check leave time registered.
         if($this->workDatesRepository->checkLeaveTime($user->operator_cd)) {
-            return back()->withErrors('休暇時間は既に登録されています。 変更する必要がある場合は、管理者に連絡してください。');
+            return back()->withInput()->withErrors('休暇時間は既に登録されています。 変更する必要がある場合は、管理者に連絡してください。');
         };
 
         // Checking the maximum time to leave
-        if($validatedData['end_time'] > config('define.max_leave_time.max')) {
-            return back()->withErrors('退勤時間最大値を超えています。');
+        if($validatedData['end_time'] > intval(Common::getSystemConfig('MAX_LEAVE_TIME'))) {
+            return back()->withInput()->withErrors('退勤時間最大値を超えています。');
         }
 
         if(!$this->workDatesRepository->registLeaveTime(
@@ -206,7 +206,7 @@ class WorkDatesController extends Controller
             $validatedData['end_time'],
             $currentDate
         )) {
-            return back()->withErrors('情報の登録に失敗しました');
+            return back()->withInput()->withErrors('情報の登録に失敗しました');
         }
         
         // Caculate working time, break time, overtime, late night overtime 

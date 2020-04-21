@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Carbon\Carbon;
+use App\Utils\Common;
 use App\Utils\Formula;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         if ($page == 0) {
             $offset = 0;
         } else {
-            $offset = ($page - 1) * config('define.work_admin_rows.max');
+            $offset = ($page - 1) * intval(Common::getSystemConfig('WORK_ADMIN_ROWS'));
         }
         $query = "
             select
@@ -126,7 +127,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         
         $condition = [
             Carbon::now()->format('Ym'),
-            config('define.work_admin_rows.max'),
+            Common::getSystemConfig('WORK_ADMIN_ROWS'),
             $offset
         ];
         return DB::select($query, $condition);
@@ -145,7 +146,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         if ($page == 0) {
             $offset = 0;
         } else {
-            $offset = ($page - 1) * config('define.work_admin_rows.max');
+            $offset = ($page - 1) * intval(Common::getSystemConfig('WORK_ADMIN_ROWS'));
         }
         $query = "
             select
@@ -263,7 +264,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $condition = [
             $validatedData['from_month'],
             $validatedData['to_month'],
-            config('define.work_admin_rows.max'),
+            Common::getSystemConfig('WORK_ADMIN_ROWS'),
             $offset
         ];
         return DB::select($query, $condition);

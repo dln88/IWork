@@ -134,7 +134,7 @@ class WorkDatesController extends Controller
     public function updateWorkDate(UpdateWorkDateRequest $request, $id)
     {
         if(!$this->checkEndTimeGreaterThanStartTime($request->start, $request->end)) {
-            return back()->withErrors('終了時間は開始時間より後の時間を設定してください。');
+            return back()->withInput()->withErrors('終了時間は開始時間より後の時間を設定してください。');
         };
 
         $data['date'] = $request->date;

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use Carbon\Carbon;
+use App\Utils\Common;
 use App\Utils\Formula;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -100,10 +101,8 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
          and regi_date between ? and ?";
 
       $sumOverTime = DB::select($query, [$operatorCd, $firstDayofMonth, $lastDayofMonth]);
-      if (intval($sumOverTime[0]->sum) >= config('define.alert_over_time.max')) {
-         return true;
-      }
-      return false;
+      $overTimeMax = Common::getSystemConfig('ALERT_OVER_TIME');
+      return intval($sumOverTime[0]->sum) >= $overTimeMax;
    }
 
    /**
@@ -229,11 +228,11 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     * Regist leave time of current user.
     *
     * @param integer $operatorCd
-    * @param string $leavTime
+    * @param string $endTime
     * @param string $currentDate
     * @return collection
     */
-   public function registLeaveTime(int $operatorCd, string $leavTime, string $currentDate)
+   public function registLeaveTime(int $operatorCd, string $endTime, string $currentDate)
    {
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,
@@ -241,7 +240,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
          ])->update([
             'target_ym' => Carbon::parse($currentDate)->format('Ym'),
             'leav_time' => Carbon::now()->toDateTimeString(),
-            'end_time' => $leavTime,
+            'end_time' => $endTime,
             'break_time' => 0.00,
             'working_time' => 0.00,
             'over_time' => 0.00,
