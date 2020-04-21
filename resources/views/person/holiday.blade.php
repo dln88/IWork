@@ -77,35 +77,39 @@
 				</button>
 			</div>
 		</div>
+
 		<!-- 休暇申請 -->
 		<form method="POST" action="{{route('person.add_holiday')}}" class="form-inline" style="margin-top:2rem;margin-bottom:2rem;" id="form">
 			@csrf
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="custom-control custom-radio custom-control-inline">
-					<input type="radio" id="customRadioInline1" name="type" value="1" class="custom-control-input" checked="checked">
+					<input type="radio" id="customRadioInline1" name="type" value="1" 
+						class="custom-control-input" checked="{{ request()->old('type') == 1 ? 'selected' : '' }}">
 					<label class="custom-control-label" for="customRadioInline1">有休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
-					<input type="radio" id="customRadioInline2" name="type" value="2" class="custom-control-input">
+					<input type="radio" id="customRadioInline2" name="type" value="2" 
+						class="custom-control-input" checked="{{ request()->old('type') == 2 ? 'selected' : '' }}">
 					<label class="custom-control-label" for="customRadioInline2">振休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
-					<input type="radio" id="customRadioInline3" name="type" value="3" class="custom-control-input">
+					<input type="radio" id="customRadioInline3" name="type" value="3" 
+						class="custom-control-input"  checked="{{ request()->old('type') == 3 ? 'selected' : '' }}">
 					<label class="custom-control-label" for="customRadioInline3">特休</label>
 				</div>
 			</div>
 
 			<div class="form-group mx-sm-1 mb-2">
 				<select class="form-control" id="exampleFormControlSelect1" name="day_type">
-					<option value="1">全日休暇</option>
-					<option value="2">午前休暇</option>
-					<option value="3">午後休暇</option>
+					<option value="1"  {{ request()->old('day_type') == 1 ? 'selected' : '' }}>全日休暇</option>
+					<option value="2" {{ request()->old('day_type') == 2 ? 'selected' : '' }}>午前休暇</option>
+					<option value="3" {{ request()->old('day_type') == 3 ? 'selected' : '' }}>午後休暇</option>
 				</select>
 			</div>
 
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="input-group date datepicker" id="datepicker_1" data-target-input="nearest">
-					<input type="text" autofocus name="date" class="form-control datetimepicker-input" value="{{ $currentDate }}" data-target="#datetimepicker"/>
+					<input type="text" autofocus name="date" class="form-control datetimepicker-input" value="{{ request()->old('date') ?? $currentDate }}" data-target="#datetimepicker"/>
 					<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 						<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 					</div>

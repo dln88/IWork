@@ -230,11 +230,11 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     *
     * @param integer $operatorCd
     * @param string $leavTime
+    * @param string $currentDate
     * @return collection
     */
-   public function registLeaveTime(int $operatorCd, string $leavTime)
+   public function registLeaveTime(int $operatorCd, string $leavTime, string $currentDate)
    {
-      $currentDate = Carbon::now()->toDateString();
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,
             'regi_date' => $currentDate,
