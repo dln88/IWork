@@ -51,7 +51,7 @@ class WorkDatesController extends Controller
         $workDates = $this->getWorkDates($yearMonth);
         $overTime = $this->checkOverTime($yearMonth);
 
-        $attendance = $this->workDatesRepository->getStartTimeandEndTime(session('user')->operator_cd);
+        $attendance = $this->workDatesRepository->getStartTimeandEndTime(session('user')->operator_cd, Carbon::now()->format('Y-m-d'));
         if (count($attendance) > 0) {
             if (!is_null($attendance[0]->start_time)) {
                 $intialTime['start_time'] =  $attendance[0]->start_time;
@@ -99,12 +99,13 @@ class WorkDatesController extends Controller
      */
     private function checkOverTime($yearMonth)
     {
-        $year = Str::substr($yearMonth, 0, 4);
-        $month = Str::substr($yearMonth, 4, 2);
-        $firstDayofMonth = Carbon::create($year, $month)->startOfMonth()->toDateString();
-        $lastDayofMonth = Carbon::create($year, $month)->endOfMonth()->toDateString();
+        $currentTimeTarget = Formula::calculateClosingDate($yearMonth);
 
-        return $this->workDatesRepository->isOverTime(session('user')->operator_cd, $firstDayofMonth, $lastDayofMonth);
+        return $this->workDatesRepository->isOverTime(
+            session('user')->operator_cd,
+            $currentTimeTarget[0],
+            $currentTimeTarget[1]
+        );
     }
 
     /**
@@ -116,10 +117,12 @@ class WorkDatesController extends Controller
     private function getWorkDates($yearMonth)
     {
         $currentTimeTarget = Formula::calculateClosingDate($yearMonth);
-        $currentTimeTargetStartDate = $currentTimeTarget[0];
-        $currentTimeTargetEndDate = $currentTimeTarget[1];
 
-        return $this->workDatesRepository->getWorkDates(session('user')->operator_cd, $currentTimeTargetStartDate, $currentTimeTargetEndDate);
+        return $this->workDatesRepository->getWorkDates(
+            session('user')->operator_cd,
+            $currentTimeTarget[0],
+            $currentTimeTarget[1]
+        );
     }
 
     public function registerAttendanceTime(Request $request){
@@ -210,7 +213,7 @@ class WorkDatesController extends Controller
         }
         
         // Caculate working time, break time, overtime, late night overtime 
-        $this->workDatesRepository->caculateAndRegistTime($user->operator_cd);
+        $this->workDatesRepository->caculateAndRegistTime($user->operator_cd, $currentDate);
 
         // Log action
         $dataLog = [

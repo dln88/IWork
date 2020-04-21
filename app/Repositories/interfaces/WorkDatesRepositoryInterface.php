@@ -70,9 +70,10 @@ interface WorkDatesRepositoryInterface
      * Get start time attendance of current user.
      *
      * @param integer $operatorCd
+     * @param string $currentDate
      * @return collection
      */
-    public function getStartTimeandEndTime(int $operatorCd);
+    public function getStartTimeandEndTime(int $operatorCd, string $currentDate);
 
     /**
      * Regist leave time of current user.
@@ -88,7 +89,8 @@ interface WorkDatesRepositoryInterface
      *  Caculate working time, break time, overtime, late night overtime and save them to db.
      *
      * @param int $operatorCd
+     * @param string $currentDate
      * @return boolean
      */
-    public function caculateAndRegistTime(int $operatorCd);
+    public function caculateAndRegistTime(int $operatorCd, string $currentDate);
 }

@@ -30,9 +30,6 @@ class Csv
         // Insert the UTF-8 BOM in the file
         fputs($fp, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 
-        // I add the array keys as CSV headers
-       // fputcsv($fp, array_keys($data[0]), $delimiter, $enclosure);
-
         // Add all the data in the file
         foreach ($data as $fields) {
             fputcsv($fp, $fields,$delimiter,$enclosure);
@@ -44,18 +41,4 @@ class Csv
         // Stop the script
         die();
     }
-
-    private function arrayToCSV($rows) {
-        $fp = fopen('php://temp', 'r+b');
-        foreach($rows as $fields) {
-            fputcsv($fp, $fields);
-        }
-        rewind($fp);
-        // Convert CRLF
-        $tmp = str_replace(PHP_EOL, "\r\n", stream_get_contents($fp));
-        fclose($fp);
-        // Convert row data from UTF-8 to Shift-JS
-        return mb_convert_encoding($tmp, 'SJIS', 'UTF-8');
-    }
-
 }

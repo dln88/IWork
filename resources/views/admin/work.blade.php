@@ -49,6 +49,28 @@
 
 
 
+	@if (session('message'))
+	<div class="container-fluid">
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			{{ session('message') }}
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	@endif
+	@if (count($errors) > 0)
+	<div class="container-fluid">
+		<div class="alert alert-danger alert-dismissible fade show" role="alert" >
+			@foreach($errors->all() as $error)
+				{{ $error }}
+			@endforeach
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
+	@endif
 	<!-- search item -->
 	<div class="container-fluid" style="margin-bottom:30px;">
 		<div class="card">
@@ -62,11 +84,10 @@
 
 			<div id="collapseOne" class="collapse " aria-labelledby="headingOne">
 				<div class="card-body">
-					<form method="get" action="{{ route('admin.search_work_dates') }}" id="frmSearch">
+					<form method="get" action="{{ route('admin.work_dates') . '#result' }}" id="frmSearch">
 						<!-- card group -->
 						<div class="card" style="margin-bottom:30px;">
 							<div class="card-body">
-
 								<div class="row">
 									<div class="col-lg-4 col-md-6 col-sm-12">
 										<div class="form-group">
@@ -74,7 +95,8 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text search_item_lbl_width" id="name">社員番号</span>
 												</div>
-												<input type="text" class="form-control" id="shainNo" name="emp_num" aria-describedby="emailHelp" placeholder="" value="{{request('code', null)}}">
+												<input type="text" class="form-control" id="shainNo" name="emp_num" 
+													aria-describedby="emailHelp" value="{{ request()->get('emp_num') ?? '' }}">
 											</div>
 										</div>
 									</div>
@@ -88,7 +110,7 @@
 													<option></option>
 													@if (isset($comboBoxChoice) && count($comboBoxChoice) > 0)
 														@foreach ($comboBoxChoice as $postCd)
-															<option value="{{ $postCd->post_cd }}">{{ $postCd->post_name }}</option>
+															<option value="{{ $postCd->post_cd }}" {{ request()->get('department_id') == $postCd->post_cd ? 'selected' : '' }}>{{ $postCd->post_name }}</option>
 														@endforeach
 													@endif
 												</select>
@@ -101,7 +123,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text search_item_lbl_width" id="name">氏名</span>
 												</div>
-												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placeholder="" value="{{request('name', null)}}">
+												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placehgeter="" value="{{ request()->get('name') ?? '' }}">
 											</div>
 										</div>
 									</div>
@@ -118,14 +140,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="targetMM">対象年月</label>
 												<div class="input-group date datepickerMM" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{request('from_month', date('Y/m'))}}" data-target="#datetimepicker"/>
+													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{ request()->get('from_month') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepickerMM" id="datepicker_2" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{request('to_month', date('Y/m'))}}" data-target="#datetimepicker"/>
+													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{ request()->get('to_month') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
@@ -140,14 +162,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="orvertime">残業時間（合計）</label>
 												<div class="input-group date datepicker_time" id="datepicker_3" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{request('ot_min', null)}}" data-target="#datetimepicker"/>
+													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ request()->get('ot_min') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_3" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-clock"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepicker_time" id="datepicker_4" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{request('ot_max', null)}}{{request('ot_min', null)}}" data-target="#datetimepicker"/>
+													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ request()->get('ot_max') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_4" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-clock"></i></div>
 													</div>
@@ -162,14 +184,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="midnight">深夜時間（合計）</label>
 												<div class="input-group date datepicker_time" id="datepicker_5" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{request('on_min', null)}}" data-target="#datetimepicker"/>
+													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ request()->get('on_min') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_5" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-clock"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepicker_time" id="datepicker_6" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{request('on_max', null)}}" data-target="#datetimepicker"/>
+													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ request()->get('on_max') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_6" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-clock"></i></div>
 													</div>
@@ -208,7 +230,7 @@
 	</div>
 
 	<!-- search result -->
-	<div class="container-fluid">
+	<div class="container-fluid" id="result">
 		<div class="card">
 			<div class="card-header">
 				<i class="fas fa-list" style="margin-right:1rem;"></i>勤怠一覧
@@ -266,17 +288,7 @@
 				<div class="row">
 					<div class="col-sm-8">
 						<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-							<form action="{{ route('admin.work_dates') }}" method="get">
-							<div class="btn-group mr-2" role="group" aria-label="First group">
-									<button type="submit" name="page" value="{{ $page > 1 ? $page - 1 : 1 }}" class="btn btn-secondary"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button>
-									<button type="submit" name="page" value="1" class="btn btn-secondary">1</button>
-									<button type="submit" name="page" value="2" class="btn btn-secondary">2</button>
-									<button type="submit" name="page" value="3" class="btn btn-secondary">3</button>
-									<button type="submit" name="page" value="4" class="btn btn-secondary">4</button>
-									<button type="submit" name="page" value="5" class="btn btn-secondary">5</button>
-									<button type="submit" name="page" value="{{ $page + 1 }}" class="btn btn-secondary"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
-								</div>
-							</form>
+							{{ $timeList->links() }}
 						</div>
 					</div>
 				</div>

@@ -93,7 +93,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
      * @param string $lastDayofMonth
      * @return boolean
      */
-    public function isOverTime(int $operatorCd, $firstDayofMonth, $lastDayofMonth)
+   public function isOverTime(int $operatorCd, $firstDayofMonth, $lastDayofMonth)
    {
       $query = "select sum(over_time) 
          from trn_attendance 
@@ -256,12 +256,12 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
      *  Caculate working time, break time, overtime, late night overtime and save them to db.
      *
      * @param int $operatorCd
+     * @param string $currentDate
      * @return boolean
      */
-   public function caculateAndRegistTime(int $operatorCd)
+   public function caculateAndRegistTime(int $operatorCd, string $currentDate)
    {
-      $currentDate = Carbon::now()->toDateString();
-      $time = $this->getStartTimeandEndTime($operatorCd);
+      $time = $this->getStartTimeandEndTime($operatorCd, $currentDate);
       $startTime = $time[0]->start_time;
       $endTime = $time[0]->end_time;
       $totalWorkingTime = Formula::calculateWorkingTime($startTime, $endTime);
@@ -289,11 +289,11 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     * Get start time and end time of current user.
     *
     * @param integer $operatorCd
+    * @param string $currentDate
     * @return collection
     */
-   public function getStartTimeandEndTime(int $operatorCd)
+   public function getStartTimeandEndTime(int $operatorCd, string $currentDate)
    {
-      $currentDate = Carbon::now()->toDateString();
       $query = "select att.start_time, att.end_time
          from trn_attendance att
          where

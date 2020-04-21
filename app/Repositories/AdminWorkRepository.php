@@ -20,134 +20,31 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             order by post.post_cd";
         return DB::select($query);
     }
-
-    public function getTimeList($page = 1)
-    {
-        if ($page == 0) {
-            $offset = 0;
-        } else {
-            $offset = ($page - 1) * intval(Common::getSystemConfig('WORK_ADMIN_ROWS'));
-        }
-        $query = "
-            select
-                ope.emp_no,
-                ope.post_cd,
-                post.post_name,
-                ope.operator_cd,
-                ope.operator_last_name || ope.operator_first_name as operator_name,
-                att.target_ym,
-                coalesce (sum (att.working_time), 0.00) as sum_working_time,
-                coalesce (sum (att.over_time), 0.00) as sum_over_time,
-                coalesce (sum (att.late_over_time), 0.00) as late_over_time,
-                coalesce (count (att.working_time), 0) as att_date,
-                coalesce (paid_vacation.cnt, 0.00) as paid_vacation_cnt,
-                coalesce (exchange_day.cnt, 0.00) as exchange_day_cnt,
-                coalesce (special_leave.cnt, 0.00) as special_leave_cnt
-            from
-                mst_calendar cl
-                inner join mst_operator ope
-                    on ope.delete_flg = 0
-                inner join mst_post post
-                    on ope.post_cd = post.post_cd
-                    and post.delete_flg = 0
-                left outer join trn_attendance att
-                    on cl.calendar_ymd = att.regi_date
-                    and ope.operator_cd = att.operator_cd
-                    and att.delete_flg = 0
-                left outer join (
-                    select
-                        hl.operator_cd,
-                        hl.target_ym,
-                        sum (hl.acquisition_num) as cnt
-                    from
-                        trn_holiday hl
-                    where
-                        hl.delete_flg = 0
-                        and hl.withdrawal_kbn = 0
-                        and hl.holiday_form = 1
-                    group by
-                        hl.operator_cd,
-                        hl.target_ym
-                ) paid_vacation
-                    on ope.operator_cd = att.operator_cd
-                    and att.target_ym = paid_vacation.target_ym					
-                left outer join (
-                    select
-                        hl.operator_cd,
-                        hl.target_ym,
-                        sum (hl.acquisition_num) as cnt
-                    from
-                        trn_holiday hl
-                    where
-                        hl.delete_flg = 0
-                        and hl.withdrawal_kbn = 0
-                        and hl.holiday_form = 2
-                    group by
-                        hl.operator_cd,
-                        hl.target_ym
-                ) exchange_day
-                    on ope.operator_cd = exchange_day.operator_cd
-                    and att.target_ym = exchange_day.target_ym
-                left outer join (
-                    select
-                        hl.operator_cd,
-                        hl.target_ym,
-                        sum (hl.acquisition_num) as cnt
-                    from
-                        trn_holiday hl
-                    where
-                        hl.delete_flg = 0
-                        and hl.withdrawal_kbn = 0
-                        and hl.holiday_form = 3
-                    group by
-                        hl.operator_cd,
-                        hl.target_ym
-                ) special_leave
-                    on ope.operator_cd = special_leave.operator_cd
-                    and att.target_ym = special_leave.target_ym
-            where
-                cl.delete_flg = 0
-                and att.target_ym = ?
-            group by
-                ope.operator_cd,
-                ope.post_cd,
-                ope.emp_no,
-                att.target_ym,
-                ope.operator_last_name,
-                ope.operator_first_name,
-                post.post_name,
-                paid_vacation.cnt,
-                exchange_day.cnt,
-                special_leave.cnt
-            order by
-                att.target_ym,
-                ope.emp_no
-            limit ?
-            offset ?";
-        
-        $condition = [
-            Carbon::now()->format('Ym'),
-            Common::getSystemConfig('WORK_ADMIN_ROWS'),
-            $offset
-        ];
-        return DB::select($query, $condition);
-    }
     
-    public function getTimeListByCondition($page = 1, array $validatedData)
+    public function getTimeListByCondition(array $validatedData)
     {
-        $validatedData['from_month'] = Carbon::create(
-            Str::substr($validatedData['from_month'], 0, 4),
-            Str::substr($validatedData['from_month'], 5, 2)
-            )->format('Ym');
-        $validatedData['to_month'] = Carbon::create(
-            Str::substr($validatedData['to_month'], 0, 4),
-            Str::substr($validatedData['to_month'], 5, 2)
-            )->format('Ym');
-        if ($page == 0) {
-            $offset = 0;
+        if (isset($validatedData['from_month'])) {
+            $validatedData['from_month'] = Carbon::create(
+                Str::substr($validatedData['from_month'], 0, 4),
+                Str::substr($validatedData['from_month'], 5, 2)
+                )->format('Ym');
         } else {
-            $offset = ($page - 1) * intval(Common::getSystemConfig('WORK_ADMIN_ROWS'));
+            $currentYearMonth = Carbon::now()->format('Ym');
+            $currentTimeTarget = Formula::calculateClosingDate($currentYearMonth);
+            $validatedData['from_month'] = Carbon::parse($currentTimeTarget[0])->format('Ym');
         }
+
+        if (isset($validatedData['to_month'])) {
+            $validatedData['to_month'] = Carbon::create(
+                Str::substr($validatedData['to_month'], 0, 4),
+                Str::substr($validatedData['to_month'], 5, 2)
+                )->format('Ym');
+        } else {
+            $currentYearMonth = Carbon::now()->format('Ym');
+            $currentTimeTarget = Formula::calculateClosingDate($currentYearMonth);
+            $validatedData['to_month'] = Carbon::parse($currentTimeTarget[1])->format('Ym');
+        }
+        
         $query = "
             select
                 ope.emp_no,
@@ -227,19 +124,19 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                     and att.target_ym = special_leave.target_ym
             where
                 cl.delete_flg = 0
-                and att.target_ym >= ?
-                and att.target_ym <= ?";
-        if(!is_null($validatedData['emp_num'])) {
+                and att.target_ym >= ? 
+                and att.target_ym <= ? ";
+        if(isset($validatedData['emp_num'])) {
             $empNum = $validatedData['emp_num'];
             $query .= " and to_number (ope.emp_no, '999999999999999') = $empNum";
         };
 
-        if(!is_null($validatedData['department_id'])) {
+        if(isset($validatedData['department_id'])) {
             $departmentId = $validatedData['department_id'];
             $query .= " and ope.post_cd =  $departmentId";
         };
 
-        if(!is_null($validatedData['name'])) {
+        if(isset($validatedData['name'])) {
             $fullname = $validatedData['name'];
             $query .= " and ope.operator_last_name || ope.operator_first_name like '%$fullname%'";
         }
@@ -254,20 +151,51 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                 post.post_name,
                 paid_vacation.cnt,
                 exchange_day.cnt,
-                special_leave.cnt
-            order by
-                att.target_ym,
-                ope.emp_no
-            limit ?
-            offset ?";
+                special_leave.cnt";
+
+        if(
+            isset($validatedData['ot_min']) || isset($validatedData['ot_max']) ||
+            isset($validatedData['on_min']) || isset($validatedData['on_max'])
+        ) {
+            $query .= " having ";
+        };
+
+        if(isset($validatedData['ot_min'])) {
+            $otMin = Str::replaceFirst(':', '.', $validatedData['ot_min']);
+            $query .= " COALESCE(SUM(ATT.OVER_TIME), '0.00') >= $otMin";
+            if (isset($validatedData['ot_max']) || isset($validatedData['on_min']) || isset($validatedData['on_max'])) {
+                $query .= " and ";
+            }
+        };
+
+        if(isset($validatedData['ot_max'])) {
+            $otMax = Str::replaceFirst(':', '.', $validatedData['ot_max']);
+            $query .= " SUM (ATT.OVER_TIME) <= $otMax";
+            if (isset($validatedData['on_min']) || isset($validatedData['on_max'])) {
+                $query .= " and ";
+            }
+        };
+
+        if(isset($validatedData['on_min'])) {
+            $onMin = Str::replaceFirst(':', '.', $validatedData['on_min']);
+            $query .= " COALESCE(SUM(ATT.LATE_OVER_TIME), '0.00') >= $onMin";
+            if (isset($validatedData['on_max'])) {
+                $query .= " and ";
+            }
+        };
+
+        if(isset($validatedData['on_max'])) {
+            $onMax = Str::replaceFirst(':', '.', $validatedData['on_max']);
+            $query .= " SUM (ATT.LATE_OVER_TIME) <= $onMax";
+        };
         
-        $condition = [
+        $query .= " order by
+                att.target_ym,
+                ope.emp_no";
+        return DB::select(DB::raw($query), array(
             $validatedData['from_month'],
             $validatedData['to_month'],
-            Common::getSystemConfig('WORK_ADMIN_ROWS'),
-            $offset
-        ];
-        return DB::select($query, $condition);
+        ));
     }
     
     public function getUserByKey($id)
@@ -288,7 +216,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                 ope.delete_flg = 0
                 and ope.operator_cd = ?";
 
-    return DB::select($query, [$id]);
+        return DB::select($query, [$id]);
     }
 
     public function getMonthlyReport($id, $yearMonth = '202004')
