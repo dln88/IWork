@@ -27,9 +27,6 @@ Route::group(['prefix' => 'admin',  'middleware' => 'admin', 'namespace' => 'Adm
 {
     Route::get('work_dates', 'WorkDatesController@index')
         ->name('admin.work_dates');
-
-    Route::get('work_dates/search', 'WorkDatesController@search')
-        ->name('admin.search_work_dates');
     
     Route::get('work/csv', 'WorkDatesController@workCSV')
         ->name('admin.work_csv');

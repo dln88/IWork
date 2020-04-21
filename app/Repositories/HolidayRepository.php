@@ -11,7 +11,8 @@ class HolidayRepository implements HolidayRepositoryInterface
 {
     public function getVacationList()
     {
-        $holidayPassMM = Carbon::now()->subMonths(config('define.holiday_past_mm.max') - 1)->toDateString();
+        $holidayRow = Common::getSystemConfig('HOLIDAY_ROWS');
+        $holidayPassMM = Carbon::now()->subMonths(Common::getSystemConfig('HOLIDAY_PAST_MM') - 1)->toDateString();
         $query = "select 
             hl.acquisition_ymd,
             holiday_form_name.item_name as holiday_form,
@@ -47,7 +48,7 @@ class HolidayRepository implements HolidayRepositoryInterface
         $condition = [
             session('user')->operator_cd,
             $holidayPassMM,
-            config('define.holiday_rows.max')
+            $holidayRow
         ];
         return DB::select($query, $condition);
     }

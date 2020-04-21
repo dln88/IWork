@@ -76,12 +76,12 @@ class HolidayController extends Controller
     {
         $dateRegister = $request->date;
         if($this->checkApplicationDatePast($dateRegister)) {
-            $holidayAppPast = config('define.holiday_app_past_mm.max');
+            $holidayAppPast = Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
             return back()->withInput($request->input())->withErrors("$holidayAppPast ヶ月前の申請はできません。");
         };
 
         if($this->checkApplicationDateFuture($dateRegister)) {
-            $holidayAppFuture = config('define.holiday_app_fu_mm.max');
+            $holidayAppFuture = Common::getSystemConfig('HOLIDAY_APP_FU_MM');
             return back()->withInput()->withErrors("$holidayAppFuture ヶ月先の申請はできません。");
         };
 
@@ -111,7 +111,7 @@ class HolidayController extends Controller
     {
         $currentTime = Carbon::now()->format('Ym');
         $dateRegister = Carbon::parse($dateRegister)->format('Ym');
-        return $dateRegister < $currentTime - config('define.holiday_app_past_mm.max');
+        return $dateRegister < $currentTime - Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
     }
 
     private function checkApplicationDateFuture($dateRegister)
@@ -119,7 +119,7 @@ class HolidayController extends Controller
         $currentTime = Carbon::now()->format('Ym');
         $dateRegister = Carbon::parse($dateRegister)->format('Ym');
 
-        return $dateRegister > $currentTime + config('define.holiday_app_fu_mm.max');
+        return $dateRegister > $currentTime + Common::getSystemConfig('HOLIDAY_APP_FU_MM');
     }
 
     private function doubleCheck($dateRegister)

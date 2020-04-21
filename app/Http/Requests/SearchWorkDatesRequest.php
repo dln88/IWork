@@ -29,10 +29,10 @@ class SearchWorkDatesRequest extends FormRequest
             'name' => 'nullable|string|max:30',
             'from_month' => 'nullable|date_format:Y/m',
             'to_month' => 'nullable|date_format:Y/m',
-            'ot_min' => 'nullable|numeric|between:0,99.99',
-            'ot_max' => 'nullable|numeric|between:0,99.99',
-            'on_min' => 'nullable|numeric|between:0,99.99',
-            'on_max' => 'nullable|numeric|between:0,99.99',
+            'ot_min' => 'nullable|string|max:5',
+            'ot_max' => 'nullable|string|max:5',
+            'on_min' => 'nullable|string|max:5',
+            'on_max' => 'nullable|string|max:5',
         ];
     }
 }

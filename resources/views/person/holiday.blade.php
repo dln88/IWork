@@ -84,17 +84,17 @@
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="custom-control custom-radio custom-control-inline">
 					<input type="radio" id="customRadioInline1" name="type" value="1" 
-						class="custom-control-input" checked="{{ request()->old('type') == 1 ? 'selected' : '' }}">
+						class="custom-control-input" checked>
 					<label class="custom-control-label" for="customRadioInline1">有休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
 					<input type="radio" id="customRadioInline2" name="type" value="2" 
-						class="custom-control-input" checked="{{ request()->old('type') == 2 ? 'selected' : '' }}">
+						class="custom-control-input" {{ request()->old('type') == 2 ? 'checked' : 'null' }}>
 					<label class="custom-control-label" for="customRadioInline2">振休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
 					<input type="radio" id="customRadioInline3" name="type" value="3" 
-						class="custom-control-input"  checked="{{ request()->old('type') == 3 ? 'selected' : '' }}">
+						class="custom-control-input" {{ request()->old('type') == 3 ? 'checked' : 'null' }}>
 					<label class="custom-control-label" for="customRadioInline3">特休</label>
 				</div>
 			</div>

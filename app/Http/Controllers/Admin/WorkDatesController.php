@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Utils\Csv;
 use Carbon\Carbon;
+use App\Utils\Csv;
 use App\Utils\Common;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -11,7 +11,9 @@ use App\Utils\LogActionUtil;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateWorkDateRequest;
 use App\Http\Requests\SearchWorkDatesRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Repositories\Interfaces\AdminWorkRepositoryInterface;
+
 class WorkDatesController extends Controller
 {
     protected $adminWorkRepository;
@@ -34,12 +36,6 @@ class WorkDatesController extends Controller
      */
     public function index(SearchWorkDatesRequest $request)
     {
-        $page = 1;
-        if (isset($request->page) && $request->page > 1) {
-            $page = intval($request->page);
-        }
-        $comboBoxChoice = $this->getPostCD();
-        $timeList = $this->adminWorkRepository->getTimeList($page);
         // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
@@ -53,46 +49,77 @@ class WorkDatesController extends Controller
         ];
         LogActionUtil::logAction($dataLog);
 
-        return view('admin.work', compact('timeList', 'page', 'comboBoxChoice'));
-    }
-
-    public function search(SearchWorkDatesRequest $request)
-    {
         $validatedData = $request->all();
-        $comboBoxChoice = $this->getPostCD();
+        
+        if (isset($validatedData['from_month']) || isset($validatedData['to_month']) ) {
+            // Log action
+            $dataLog = [
+                'operation_timestamp' => Carbon::now()->timestamp,
+                'ip_address' => \Request::ip(),
+                'operator_cd' => session('user')->operator_cd,
+                'operator_name' => Common::operatorName((array) session('user')),
+                'screen_id' => 'W000002',
+                'screen_name' => Common::getScreenName('W000002'),
+                'operation' => '検索処理',
+                'contents' => ''
+            ];
+            
+            if (isset($validatedData['emp_num'])) {
+                $dataLog['contents'] .= '社員番号: ' . $validatedData['emp_num'] . ', ';
+            }
+            if (isset($validatedData['department_id'])) {
+                $dataLog['contents'] .= '部門: ' .  $validatedData['department_id'] . ', ';
+            }
+            if (isset($validatedData['from_month']) && isset($validatedData['to_month']) ) {
+                $dataLog['contents'] .= '対象年月: ' .
+                            $validatedData['from_month'] . ' ~ ' .
+                            $validatedData['to_month'] . ', ';
+            }
+            if (isset($validatedData['ot_min']) && isset($validatedData['ot_max'])) {
+                $dataLog['contents'] .= '残業時間（合計）: ' .
+                    $validatedData['ot_min'] . ' ~ ' .
+                    $validatedData['ot_max'] . ', ';
+            }
+            if (isset($validatedData['on_min']) && isset($validatedData['on_max'])) {
+                $dataLog['contents'] .= '深夜時間（合計）: ' .
+                    $validatedData['on_min'] . ' ~ ' .
+                    $validatedData['on_max'];
+            }
+            
+            LogActionUtil::logAction($dataLog);
+        }
 
         $page = 1;
         if (isset($request->page) && $request->page > 1) {
             $page = intval($request->page);
         }
 
-        $timeList = $this->adminWorkRepository->getTimeListByCondition($page, $validatedData);
-        // Log action
-        $dataLog = [
-            'operation_timestamp' => Carbon::now()->timestamp,
-            'ip_address' => \Request::ip(),
-            'operator_cd' => session('user')->operator_cd,
-            'operator_name' => Common::operatorName((array) session('user')),
-            'screen_id' => 'W000002',
-            'screen_name' => Common::getScreenName('W000002'),
-            'operation' => '検索処理',
-            'contents' =>
-                '社員番号: ' . $validatedData['emp_num'] . ', ' .
-                '部門: ' .  $validatedData['department_id'] . ', ' .
-                '氏名: ' .  $validatedData['name'] . ', ' .
-                '対象年月: ' .
-                    $validatedData['from_month'] . ' ~ ' .
-                    $validatedData['to_month'] . ', ' .
-                '残業時間（合計）: ' .
-                    $validatedData['ot_min'] . ' ~ ' .
-                    $validatedData['ot_max'] . ', ' .
-                '深夜時間（合計）: ' .
-                    $validatedData['on_min'] . ' ~ ' .
-                    $validatedData['on_max']
-        ];
-        LogActionUtil::logAction($dataLog);
+        $comboBoxChoice = $this->getPostCD();
+        $timeListArray = $this->adminWorkRepository->getTimeListByCondition($validatedData);
+        $timeList = $this->arrayPaginator($timeListArray, $page, $request);
+
+        // save param query to search
+        session([
+            'emp_num' => $validatedData['emp_num'] ?? null,
+            'department_id' => $validatedData['department_id'] ?? null,
+            'name' => $validatedData['name'] ?? null,
+            'from_month' => $validatedData['from_month'] ?? null,
+            'to_month' => $validatedData['to_month'] ?? null,
+            'ot_min' => $validatedData['ot_min'] ?? null,
+            'ot_max' => $validatedData['ot_max'] ?? null,
+            'on_min' => $validatedData['on_min'] ?? null,
+            'on_max' => $validatedData['on_max'] ?? null
+        ]);
 
         return view('admin.work', compact('timeList', 'page', 'comboBoxChoice'));
+    }
+
+    private function arrayPaginator($array, $page, $request) {
+        $perPage = Common::getSystemConfig('WORK_ADMIN_ROWS');
+        $offset = ($page * $perPage) - $perPage;
+    
+        return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
+            ['path' => $request->url(), 'query' => $request->query()]);
     }
 
     private function getPostCD()
@@ -134,7 +161,7 @@ class WorkDatesController extends Controller
     public function updateWorkDate(UpdateWorkDateRequest $request, $id)
     {
         if(!$this->checkEndTimeGreaterThanStartTime($request->start, $request->end)) {
-            return back()->withErrors('終了時間は開始時間より後の時間を設定してください。');
+            return back()->withInput()->withErrors('終了時間は開始時間より後の時間を設定してください。');
         };
 
         $data['date'] = $request->date;
@@ -154,8 +181,8 @@ class WorkDatesController extends Controller
 
         $this->adminWorkRepository->updateVacation($id, $data);
         
-         // Log action
-         $dataLog = [
+        // Log action
+        $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
             'ip_address' => \Request::ip(),
             'operator_cd' => session('user')->operator_cd,
@@ -187,45 +214,55 @@ class WorkDatesController extends Controller
         return false;
     }
 
-    /**
-     * @param Request $request
-     * @param $uid
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function personalCSV(Request $request, $uid){
-        // $data[] = [
-        //     "社員番号", "部門",	"氏名",	"日付", "曜日", "開始",	"終了", "休憩時間", "実働時間　（00.00）",	"残業時間　（00.00）", "深夜残業　（00.00）",
-        //     "インターバル", "有休","振休",	"特休",	"備考"
-        // ];
-
-        // for ($i = 1; $i<= 30; $i++) {
-        //     $data[] = [
-        //         "$uid", '設計部', '山田太郎', '2020/04/'. $i ,Common::getDateOfWeek('2020/04/'. $i), '9:00', '18:00', '1.00', '8.00', '0.00', '0.00', '15.00', '0.0', '0.0', '0.0', '○○○○○○○○○○○○○○○○'
-        //     ];
-        // }
-
-        // Csv::downloadCSV($data, $uid . '_dates');
-
-        // return ;
-    }
-
-    /**
-     * @param Request $request
-     */
-    public function workCSV(Request $request){
-        $nameCSV = 'work' . Carbon::now()->format('Ymd_His');
-        $data[] = [
+    public function workCSV()
+    {
+        $data['emp_num'] = session('emp_num');
+        $data['department_id'] = session('department_id');
+        $data['name'] = session('name');
+        $data['from_month'] = session('from_month');
+        $data['to_month'] = session('to_month');
+        $data['ot_min'] = session('ot_min');
+        $data['ot_max'] = session('ot_max');
+        $data['on_min'] = session('on_min');
+        $data['on_max'] = session('on_max');
+        $timeListArray = $this->adminWorkRepository->getTimeListByCondition($data);
+        if (count($timeListArray) < 1) {
+            return back()->withInput()->withErrors('対象データがありません。');
+        }
+        
+        // name file of csv
+        $nameCSV = 'attendancelist'. '_' . Carbon::now()->format('YmdHis');
+        
+        // Header of csv
+        $header = [
             '社員番号', '部門', '氏名', '対象年月', '実働時間（合計）', '残業時間（合計）', '深夜残業（合計）', '出勤日数', '有休', '振休', '特休'
         ];
 
-        for ($i = 1; $i< 10; $i++) {
-            $data[] = [
-                '00000'. $i, '設計部', '山田太郎', '2020年4月', '160.00', '20.00', '5.00', '20', '2.0', '1.5', '0.0'
-            ];
-        }
-        Csv::downloadCSV($data, $nameCSV);
-        
-        return back()->with('message', 'ダウンロード成功');
-    }
+        foreach ($timeListArray as $key => $timeList) {
+            unset($timeList->post_cd);
+            unset($timeList->operator_cd);
 
+            $dataCSV[] = (array) $timeList;
+        }
+
+        // Prepend header
+        array_unshift($dataCSV, $header);
+
+        Csv::downloadCSV($dataCSV, $nameCSV);
+        
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => Common::operatorName((array) session('user')),
+            'screen_id' => 'W000002',
+            'screen_name' => Common::getScreenName('W000002'),
+            'operation' => 'CSV出力',
+            'contents' => 'なし'
+        ];
+        LogActionUtil::logAction($dataLog);
+        session()->flash('message', 'ダウンロード成功');
+        return back()->withInput();
+    }
 }
