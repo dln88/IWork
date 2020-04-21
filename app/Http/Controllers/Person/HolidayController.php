@@ -75,19 +75,18 @@ class HolidayController extends Controller
     public function store(StoreHolidayRequest $request)
     {
         $dateRegister = $request->date;
-
-        if(!$this->checkApplicationDatePast($dateRegister)) {
+        if($this->checkApplicationDatePast($dateRegister)) {
             $holidayAppPast = config('define.holiday_app_past_mm.max');
-            return back()->withErrors("$holidayAppPast ヶ月前の申請はできません。");
+            return back()->withInput($request->input())->withErrors("$holidayAppPast ヶ月前の申請はできません。");
         };
 
-        if(!$this->checkApplicationDateFuture($dateRegister)) {
+        if($this->checkApplicationDateFuture($dateRegister)) {
             $holidayAppFuture = config('define.holiday_app_fu_mm.max');
-            return back()->withErrors("$holidayAppFuture ヶ月先の申請はできません。");
+            return back()->withInput()->withErrors("$holidayAppFuture ヶ月先の申請はできません。");
         };
 
         if($this->doubleCheck($dateRegister)) {
-            return back()->withErrors('既に休暇申請されています。');
+            return back()->withInput()->withErrors('既に休暇申請されています。');
         };
         
         $this->holidayRepository->registHoliday($request->all());
@@ -105,27 +104,22 @@ class HolidayController extends Controller
         ];
         LogActionUtil::logAction($dataLog);
 
-        return back()->with('message', '登録しました。');
+        return back()->withInput()->with('message', '登録しました。');
     }
 
     private function checkApplicationDatePast($dateRegister)
     {
         $currentTime = Carbon::now()->format('Ym');
         $dateRegister = Carbon::parse($dateRegister)->format('Ym');
-        if ($dateRegister >= $currentTime - config('define.holiday_app_past_mm.max')) {
-            return true;
-        }
-        return false;
+        return $dateRegister < $currentTime - config('define.holiday_app_past_mm.max');
     }
 
     private function checkApplicationDateFuture($dateRegister)
     {
         $currentTime = Carbon::now()->format('Ym');
         $dateRegister = Carbon::parse($dateRegister)->format('Ym');
-        if ($dateRegister <= $currentTime + config('define.holiday_app_fu_mm.max')) {
-            return true;
-        }
-        return false;
+
+        return $dateRegister > $currentTime + config('define.holiday_app_fu_mm.max');
     }
 
     private function doubleCheck($dateRegister)
