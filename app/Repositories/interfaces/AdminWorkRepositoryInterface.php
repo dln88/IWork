@@ -7,7 +7,7 @@ interface AdminWorkRepositoryInterface
     public function getPostCD();
     public function getTimeListByCondition(array $validatedData);
     public function getUserByKey(int $id);
-    public function getMonthlyReport($id, $yearMonth = '202004');
+    public function getMonthlyReport($id, $yearMonth);
     public function getAttendanceByDate($id, $date);
     public function getVacationInformationByDate($id, $date);
     public function findWorkDate($id, $date);

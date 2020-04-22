@@ -75,12 +75,12 @@ class HolidayController extends Controller
     public function store(StoreHolidayRequest $request)
     {
         $dateRegister = $request->date;
-        if($this->checkApplicationDatePast($dateRegister)) {
+        if($this->isOverApplicationDatePast($dateRegister)) {
             $holidayAppPast = Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
             return back()->withInput($request->input())->withErrors("$holidayAppPast ヶ月前の申請はできません。");
         };
 
-        if($this->checkApplicationDateFuture($dateRegister)) {
+        if($this->isOverApplicationDateFuture($dateRegister)) {
             $holidayAppFuture = Common::getSystemConfig('HOLIDAY_APP_FU_MM');
             return back()->withInput()->withErrors("$holidayAppFuture ヶ月先の申請はできません。");
         };
@@ -107,14 +107,14 @@ class HolidayController extends Controller
         return back()->withInput()->with('message', '登録しました。');
     }
 
-    private function checkApplicationDatePast($dateRegister)
+    private function isOverApplicationDatePast($dateRegister)
     {
         $currentTime = Carbon::now()->format('Ym');
         $dateRegister = Carbon::parse($dateRegister)->format('Ym');
         return $dateRegister < $currentTime - Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
     }
 
-    private function checkApplicationDateFuture($dateRegister)
+    private function isOverApplicationDateFuture($dateRegister)
     {
         $currentTime = Carbon::now()->format('Ym');
         $dateRegister = Carbon::parse($dateRegister)->format('Ym');

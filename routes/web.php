@@ -23,40 +23,42 @@ Route::post('/doLogin', 'Common\AuthController@doLogin')->name('login.post');
 Route::post('/doLoginAdmin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');
 Route::get('/logout', 'Common\AuthController@logout')->name('logout');
 
-Route::group(['prefix' => 'admin',  'middleware' => 'admin', 'namespace' => 'Admin'], function()
-{
-    Route::get('work_dates', 'WorkDatesController@index')
-        ->name('admin.work_dates');
-    
-    Route::get('work/csv', 'WorkDatesController@workCSV')
-        ->name('admin.work_csv');
-
-    Route::get('work_personal/{id}', 'WorkDatesController@personal')
-        ->name('admin.work_personal');
-
-    Route::get('work/personal_csv/{id}', 'WorkDatesController@personalCSV')
-        ->name('admin.personal_csv');
-
-    Route::post('/work/personal/update/{id}', 'WorkDatesController@updateWorkDate')
-        ->name('admin.work_personal.update');
-});
-
 Route::group([ 'middleware' => 'person'], function()
 {    
-    Route::get('work/dates', 'Person\WorkDatesController@index')
+    Route::get('pages/work/', 'Person\WorkDatesController@index')
         ->name('person.work.dates');
 
-    Route::post('work/register-attendance-time', 'Person\WorkDatesController@registerAttendanceTime')
+    Route::post('pages/work/regist-start-time', 'Person\WorkDatesController@registerAttendanceTime')
         ->name('person.work.register_attendance_time');
 
-    Route::post('work/register-leave-time', 'Person\WorkDatesController@registerLeaveTime')
+    Route::post('pages/work/regist-end-time', 'Person\WorkDatesController@registerLeaveTime')
         ->name('person.work.register_leave_time');
 
-    Route::get('holiday', 'Person\HolidayController@index')
+    Route::get('pages/holiday', 'Person\HolidayController@index')
         ->name('person.holiday');
 
-    Route::post('add_holiday', 'Person\HolidayController@store')
+    Route::post('pages/add_holiday', 'Person\HolidayController@store')
         ->name('person.add_holiday');
 
 });
+
+Route::group(['middleware' => 'admin', 'namespace' => 'Admin'], function()
+{
+    Route::get('pages/work_admin', 'WorkDatesController@index')
+        ->name('admin.work_dates');
+    
+    Route::get('pages/work_admin/csv', 'WorkDatesController@workCSV')
+        ->name('admin.work_csv');
+
+    Route::get('pages/work_admin_personal/{id}/{date}', 'WorkDatesController@personal')
+        ->name('admin.work_personal');
+
+    Route::get('pages/work_admin_personal/csv', 'WorkDatesController@personalCSV')
+        ->name('admin.work_personal_csv');
+
+    Route::post('pages/work_admin_personal/{id}', 'WorkDatesController@updateWorkDate')
+        ->name('admin.work_personal.update');
+});
+
+
 

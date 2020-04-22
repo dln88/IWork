@@ -86,7 +86,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                         hl.operator_cd,
                         hl.target_ym
                 ) paid_vacation
-                    on ope.operator_cd = att.operator_cd
+                    on ope.operator_cd = paid_vacation.operator_cd
                     and att.target_ym = paid_vacation.target_ym					
                 left outer join (
                     select
@@ -123,7 +123,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                     on ope.operator_cd = special_leave.operator_cd
                     and att.target_ym = special_leave.target_ym
             where
-                cl.delete_flg = 0
+                att.delete_flg = 0
                 and att.target_ym >= ? 
                 and att.target_ym <= ? ";
         if(isset($validatedData['emp_num'])) {
@@ -192,6 +192,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $query .= " order by
                 att.target_ym,
                 ope.emp_no";
+
         return DB::select(DB::raw($query), array(
             $validatedData['from_month'],
             $validatedData['to_month'],
@@ -219,7 +220,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         return DB::select($query, [$id]);
     }
 
-    public function getMonthlyReport($id, $yearMonth = '202004')
+    public function getMonthlyReport($id, $yearMonth)
     {
         $query = "
             select

@@ -32,7 +32,10 @@ class WorkDatesController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Show work dates page.
+     *
+     * @param SearchWorkDatesRequest $request
+     * @return view
      */
     public function index(SearchWorkDatesRequest $request)
     {
@@ -85,7 +88,6 @@ class WorkDatesController extends Controller
                     $validatedData['on_min'] . ' ~ ' .
                     $validatedData['on_max'];
             }
-            
             LogActionUtil::logAction($dataLog);
         }
 
@@ -114,7 +116,16 @@ class WorkDatesController extends Controller
         return view('admin.work', compact('timeList', 'page', 'comboBoxChoice'));
     }
 
-    private function arrayPaginator($array, $page, $request) {
+    /**
+     * pagination for the given data
+     *
+     * @param array $array
+     * @param int $page
+     * @param Request $request
+     * @return LengthAwarePaginator
+     */
+    private function arrayPaginator(array $array, int $page, Request $request)
+    {
         $perPage = Common::getSystemConfig('WORK_ADMIN_ROWS');
         $offset = ($page * $perPage) - $perPage;
     
@@ -122,25 +133,37 @@ class WorkDatesController extends Controller
             ['path' => $request->url(), 'query' => $request->query()]);
     }
 
+    /**
+     * Get all departments.
+     *
+     * @return collection
+     */
     private function getPostCD()
     {
         return $this->adminWorkRepository->getPostCD();
     }
 
     /**
+     * Displays all working day information of current user in a month.
+     * 
      * @param Request $request
      * @param int $id
      * @param string $yearMonth
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function personal(Request $request, int $id)
+    public function personal(Request $request, int $id, string $date)
     {
-        if(is_null($id)) {
+        session([
+            'operatorId' => $id,
+            'yearMonth' => $date
+        ]);
+
+        if (is_null($id)) {
             session()->flash('message', '前画面からの情報が不正です。管理者へ連絡してください。'); 
         }
         $user = $this->adminWorkRepository->getUserByKey($id);
         $user = $user[0];
-        $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id);
+        $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id, $date);
         
         // Log action
         $dataLog = [
@@ -158,9 +181,16 @@ class WorkDatesController extends Controller
         return view('admin.work_personal', compact('user', 'monthlyReport'));
     }
 
-    public function updateWorkDate(UpdateWorkDateRequest $request, $id)
+    /**
+     * Updates to working days for specific users with a given date.
+     *
+     * @param UpdateWorkDateRequest $request
+     * @param int $id
+     * @return View
+     */
+    public function updateWorkDate(UpdateWorkDateRequest $request, int $id)
     {
-        if(!$this->checkEndTimeGreaterThanStartTime($request->start, $request->end)) {
+        if (!$this->isEndTimeGreaterThanStartTime($request->start, $request->end)) {
             return back()->withInput()->withErrors('終了時間は開始時間より後の時間を設定してください。');
         };
 
@@ -196,11 +226,19 @@ class WorkDatesController extends Controller
                 '備考: ' .  $data['memo']
         ];
         LogActionUtil::logAction($dataLog);
+        $yearMonth = Carbon::parse($request->date)->format('Ym');
         $request->session()->flash('message', '更新しました。');
-        return redirect()->route('admin.work_personal', $id);
+        return redirect()->route('admin.work_personal', [$id, $yearMonth]);
     }
 
-    private function checkEndTimeGreaterThanStartTime($startTime, $endTime)
+    /**
+     * Check end time is greater than start time.
+     *
+     * @param string $startTime
+     * @param string $endTime
+     * @return boolean
+     */
+    private function isEndTimeGreaterThanStartTime(string $startTime, string $endTime)
     {
         if (
             (intval(Str::substr($endTime, 0, 2)) > intval(Str::substr($startTime, 0, 2)) ) or 
@@ -214,6 +252,11 @@ class WorkDatesController extends Controller
         return false;
     }
 
+    /**
+     * CSV export of all user information for a month.
+     *
+     * @return View
+     */
     public function workCSV()
     {
         $data['emp_num'] = session('emp_num');
@@ -238,7 +281,7 @@ class WorkDatesController extends Controller
             '社員番号', '部門', '氏名', '対象年月', '実働時間（合計）', '残業時間（合計）', '深夜残業（合計）', '出勤日数', '有休', '振休', '特休'
         ];
 
-        foreach ($timeListArray as $key => $timeList) {
+        foreach ($timeListArray as $timeList) {
             unset($timeList->post_cd);
             unset($timeList->operator_cd);
 
@@ -262,6 +305,71 @@ class WorkDatesController extends Controller
             'contents' => 'なし'
         ];
         LogActionUtil::logAction($dataLog);
+
+        session()->flash('message', 'ダウンロード成功');
+        return back()->withInput();
+    }
+
+    /**
+     * CSV export of all users' specific working days for the month.
+     *
+     * @return View
+     */
+    public function personalCSV()
+    {
+        $operatorCd = session('operatorId');
+        $yearMonth = session('yearMonth');
+        $monthlyReportArray = $this->adminWorkRepository->getMonthlyReport($operatorCd, $yearMonth);
+
+        if (count($monthlyReportArray) < 1) {
+            return back()->withInput()->withErrors('対象データがありません。');
+        }
+        
+        // name file of csv
+        $nameCSV = 'monthlyreportlist'. '_' . $operatorCd . '_' . Carbon::now()->format('YmdHis');
+        
+        // Header of csv
+        $header = [
+            '社員番号', '部門', '氏名', '日付', '曜日', '開始', '終了', '休憩時間', '実働時間　（00.00）',
+            '残業時間　（00.00）', '深夜残業　（00.00）', 'インターバル', '有休', '振休', '特休', '備考'
+        ];
+        
+        foreach ($monthlyReportArray as $monthlyReport) {
+            unset($monthlyReport->calendar_ymd);
+            unset($monthlyReport->ex_statutory_wk_time);
+            unset($monthlyReport->operator_cd);
+            
+            $monthlyReport = array(
+                'emp_no' => session('user')->emp_no,
+                'post_name' => session('user')->post_name,
+                'operator_name' => Common::operatorName((array) session('user')),
+                'date' => $monthlyReport->regi_date,
+                'day_of_week' => Common::convertToDayOfWeek($monthlyReport->regi_date),
+            ) + (array) $monthlyReport;
+            
+            unset($monthlyReport['regi_date']);
+            
+            $dataCSV[] = $monthlyReport;
+        }
+
+        // Prepend header
+        array_unshift($dataCSV, $header);
+
+        Csv::downloadCSV($dataCSV, $nameCSV);
+        
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => Common::operatorName((array) session('user')),
+            'screen_id' => 'W000003',
+            'screen_name' => Common::getScreenName('W000003'),
+            'operation' => 'CSV出力',
+            'contents' => 'なし'
+        ];
+        LogActionUtil::logAction($dataLog);
+
         session()->flash('message', 'ダウンロード成功');
         return back()->withInput();
     }

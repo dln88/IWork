@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Person;
 
 use Carbon\Carbon;
 use App\Utils\Common;
+use App\Utils\Formula;
 use Illuminate\Support\Str;
 use App\Utils\LogActionUtil;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Interfaces\WorkDatesRepositoryInterface;
-use App\Utils\Formula;
 
 class WorkDatesController extends Controller
 {
@@ -49,7 +49,7 @@ class WorkDatesController extends Controller
         $intialTime = $this->getTimePost();
         $yearMonth = $this->getYearMonth($request);
         $workDates = $this->getWorkDates($yearMonth);
-        $overTime = $this->checkOverTime($yearMonth);
+        $overTime = $this->isOverTime($yearMonth);
 
         $attendance = $this->workDatesRepository->getStartTimeandEndTime(session('user')->operator_cd, Carbon::now()->format('Y-m-d'));
         if (count($attendance) > 0) {
@@ -97,7 +97,7 @@ class WorkDatesController extends Controller
      * @param string $yearMonth
      * @return boolean
      */
-    private function checkOverTime($yearMonth)
+    private function isOverTime($yearMonth)
     {
         $currentTimeTarget = Formula::calculateClosingDate($yearMonth);
 
@@ -135,7 +135,7 @@ class WorkDatesController extends Controller
         ]);
         
         // Check attendance time registered
-        if($this->workDatesRepository->checkAttendanceTime($user->operator_cd)) {
+        if($this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
             return back()->withInput()->withErrors('出席時間は既に登録されています。変更する必要がある場合は、管理者に連絡してください。');
         };
 
@@ -182,12 +182,12 @@ class WorkDatesController extends Controller
         }
 
         // Check leave time registered.
-        if(!$this->workDatesRepository->checkAttendanceTime($user->operator_cd)) {
+        if(!$this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
             return back()->withInput()->withErrors('出勤時間が登録されていないため、退勤時間の登録ができません。');
         };
 
         // Check work time and leave time
-        if(!$this->workDatesRepository->checkEndTimeGreaterStartTime(
+        if(!$this->workDatesRepository->doesEndTimeGreaterStartTime(
             $user->operator_cd, 
             $validatedData['end_time']
         )) {
@@ -195,7 +195,7 @@ class WorkDatesController extends Controller
         };
         
          // Check leave time registered.
-        if($this->workDatesRepository->checkLeaveTime($user->operator_cd)) {
+        if($this->workDatesRepository->isLeaveTime($user->operator_cd)) {
             return back()->withInput()->withErrors('休暇時間は既に登録されています。 変更する必要がある場合は、管理者に連絡してください。');
         };
 

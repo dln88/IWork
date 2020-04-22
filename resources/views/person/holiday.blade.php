@@ -9,17 +9,17 @@
 
 	<!--========== CSS ==========-->
 	<!-- Bootstrap CSS -->
-	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
 	<!-- Font Awesome CSS -->
-	<link rel="stylesheet" href="css/font-awesome-all.min.css">
+	<link rel="stylesheet" href="{{asset('css/font-awesome-all.min.css')}}">
 	<!-- drawer -->
-	<link rel="stylesheet" href="css/zdo_drawer_menu.css">
+	<link rel="stylesheet" href="{{asset('css/zdo_drawer_menu.css')}}">
 	<!-- datepicker -->
-	<link rel="stylesheet" href="css/tempusdominus-bootstrap-4.min.css">
+	<link rel="stylesheet" href="{{asset('css/tempusdominus-bootstrap-4.min.css')}}">
 	<!-- style CSS -->
-	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="{{asset('css/style.css')}}">
 
-	<link rel="shortcut icon" href="img/favicon.ico">
+	<link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
 	<!--========== CSS ==========-->
 
 
@@ -215,18 +215,16 @@
   <p class="small text-center">&copy; 2020 by <a href="#">xxxxxxxxxxxxxxx</a> v1.0.0</p>
 </footer>
 
-
-
 <!--========== JavaScript ==========-->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="js/jquery-3.4.1.min.js"></script>
-<script src="js/bootstrap.bundle.min.js"></script>
-<script src="js/zdo_drawer_menu.js"></script>
-<script src="js/moment.js"></script>
-<script src="js/locale/ja.js"></script>
-<script src="js/tempusdominus-bootstrap-4.min.js"></script>
-<script src="js/common.js"></script>
-<!--========== JavaScript ==========-->
+<script src="{{asset('js/jquery-3.4.1.min.js')}}"></script>
+<script src="{{asset('js/bootstrap.bundle.min.js')}}"></script>
+<script src="{{asset('js/zdo_drawer_menu.js')}}"></script>
+<script src="{{asset('js/moment.js')}}"></script>
+<script src="{{asset('js/locale/ja.js')}}"></script>
+<script src="{{asset('js/tempusdominus-bootstrap-4.min.js')}}"></script>
+<script src="{{asset('js/common.js')}}"></script>
+
 <script type="text/javascript">
 $(function() {
 	$('#editBtn').click(function() {
@@ -234,5 +232,8 @@ $(function() {
 	});
 });
 </script>
+<!--========== JavaScript ==========-->
+
+
 </body>
 </html>
