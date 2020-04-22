@@ -23,7 +23,7 @@ class CalendarSeeder extends Seeder
                 'nationalholiday_name' => 'name ' .$i,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
         for ($i=1; $i <= 30; $i++) { 
@@ -36,7 +36,7 @@ class CalendarSeeder extends Seeder
                 'nationalholiday_name' => 'name ' .$i,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
         for ($i=1; $i <= 30; $i++) { 
@@ -49,7 +49,7 @@ class CalendarSeeder extends Seeder
                 'nationalholiday_name' => 'name ' .$i,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
     }

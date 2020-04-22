@@ -196,4 +196,22 @@ class Formula
       }
       return [$startDateCurrentMonth, $endDateCurrentMonth];
    }
+
+   /**
+    * Calculte target year month.
+    * 
+    * @param string $date
+    * @return string
+    */
+    public static function calculateTargetYearMonth(string $date)
+    {
+        $currentTimeTarget = Formula::calculateClosingDate(Carbon::parse($date)->format('Ym'));
+        if ($date < $currentTimeTarget[0]) {
+            return Carbon::parse($date)->subMonth()->format('Ym');
+        } else if ($date > $currentTimeTarget[1]) {
+            return Carbon::parse($date)->addMonth()->format('Ym');
+        } else {
+            return Carbon::parse($date)->format('Ym');
+        }
+    }
 }

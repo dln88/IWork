@@ -18,7 +18,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '警告する残業時間規定値',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -27,7 +27,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '休暇登録の最大行数',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -36,7 +36,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '管理者勤怠一覧の最大行数',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -45,7 +45,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '会社としての勤怠締日　※1/10/15/20/25/末日（99）の選択制を前提とする。',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -54,7 +54,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '退勤時間登録最大値　※翌日9時を最大値とする。（飯田商事様要望）',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -63,7 +63,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '退勤時間登録最大値　※翌日9時を最大値とする。（飯田商事様要望）',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -72,7 +72,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '休暇申請可能最大過去月',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_systemconfig')->insert([
@@ -81,7 +81,7 @@ class SystemConfigSeeder extends Seeder
             'memo' => '休暇申請可能最大未来月',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
     }
 }

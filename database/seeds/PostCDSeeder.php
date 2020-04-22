@@ -20,7 +20,7 @@ class PostCDSeeder extends Seeder
                 'post_end_time' => '18:00:00',
                 'create_date' => '2020-04-16',
                 'update_date' => '2020-04-16',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
     }

@@ -17,14 +17,14 @@ class ItemNameSeeder extends Seeder
             'item_name' => 'HOLIDAY_FORM',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
         DB::table('mst_item')->insert([
             'item_name_cd' => 2,
             'item_name' => 'HOLIDAY_CLASS',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
         
         DB::table('mst_itemname')->insert([
@@ -33,7 +33,7 @@ class ItemNameSeeder extends Seeder
             'item_name' => '有休',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_itemname')->insert([
@@ -42,7 +42,7 @@ class ItemNameSeeder extends Seeder
             'item_name' => '振休',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_itemname')->insert([
@@ -51,7 +51,7 @@ class ItemNameSeeder extends Seeder
             'item_name' => '特休',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_itemname')->insert([
@@ -61,7 +61,7 @@ class ItemNameSeeder extends Seeder
             'item_num' => 1,
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_itemname')->insert([
@@ -71,7 +71,7 @@ class ItemNameSeeder extends Seeder
             'item_num' => 0.5,
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_itemname')->insert([
@@ -81,7 +81,7 @@ class ItemNameSeeder extends Seeder
             'item_num' => 0.5,
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
     }

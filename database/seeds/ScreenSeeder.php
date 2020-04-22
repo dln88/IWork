@@ -17,7 +17,7 @@ class ScreenSeeder extends Seeder
             'screen_name' => '休暇登録',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_screen')->insert([
@@ -25,7 +25,7 @@ class ScreenSeeder extends Seeder
             'screen_name' => 'ログイン',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_screen')->insert([
@@ -33,7 +33,7 @@ class ScreenSeeder extends Seeder
             'screen_name' => '勤怠一覧',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_screen')->insert([
@@ -41,7 +41,7 @@ class ScreenSeeder extends Seeder
             'screen_name' => '勤怠集計_管理',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_screen')->insert([
@@ -49,7 +49,7 @@ class ScreenSeeder extends Seeder
             'screen_name' => '勤怠一覧_管理',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
     }
 }

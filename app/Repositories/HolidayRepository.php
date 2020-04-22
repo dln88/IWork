@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use Carbon\Carbon;
 use App\Utils\Common;
+use App\Utils\Formula;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\Interfaces\HolidayRepositoryInterface;
 
@@ -121,6 +122,7 @@ class HolidayRepository implements HolidayRepositoryInterface
     
     public function registHoliday(array $data)
     {
+        $targetYm = Formula::calculateTargetYearMonth($data['date']);
         return DB::table('trn_holiday')->insert([
             'operator_cd' => session('user')->operator_cd,
             'acquisition_ymd' => $data['date'],
@@ -128,13 +130,13 @@ class HolidayRepository implements HolidayRepositoryInterface
             'holiday_form' => $data['type'],
             'holiday_class' => $data['day_type'],
             'acquisition_num' => Common::acquisitionNumber($data['day_type']),
-            'target_ym' => Carbon::parse($data['date'])->format('Ym'),
+            'target_ym' => $targetYm,
             'withdrawal_kbn' => 0,
             'creater_cd' => session('user')->operator_cd,
             'create_date' =>  Carbon::now()->toDateTimeString(),
             'updater_cd' => session('user')->operator_cd,
             'update_date' =>  Carbon::now()->toDateTimeString(),
-            'update_app' => 0,
+            'update_app' => '',
         ]);
     }
     

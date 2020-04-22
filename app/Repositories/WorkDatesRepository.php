@@ -168,7 +168,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
          'create_date' => Carbon::now()->toDateTimeString(),
          'updater_cd' => $operatorCd,
          'update_date' => Carbon::now()->toDateTimeString(),
-         'update_app' => 0,
+         'update_app' => '',
       ]);
    }
 
@@ -234,11 +234,12 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     */
    public function registLeaveTime(int $operatorCd, string $endTime, string $currentDate)
    {
+      $targetYm = Formula::calculateTargetYearMonth($currentDate);
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,
             'regi_date' => $currentDate,
          ])->update([
-            'target_ym' => Carbon::parse($currentDate)->format('Ym'),
+            'target_ym' => $targetYm,
             'leav_time' => Carbon::now()->toDateTimeString(),
             'end_time' => $endTime,
             'break_time' => 0.00,

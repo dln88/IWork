@@ -253,13 +253,13 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                 left outer join trn_holiday hl_exchange_day
                     on hl_exchange_day.operator_cd = ?
                     and hl_exchange_day.acquisition_ymd = cl.calendar_ymd
-                    and hl_exchange_day.holiday_form = 1
+                    and hl_exchange_day.holiday_form = 2
                     and hl_exchange_day.withdrawal_kbn = 0
                     and hl_exchange_day.delete_flg = 0
                 left outer join trn_holiday hl_special_leave
                     on hl_special_leave.operator_cd = ?
                     and hl_special_leave.acquisition_ymd = cl.calendar_ymd
-                    and hl_special_leave.holiday_form = 1
+                    and hl_special_leave.holiday_form = 3
                     and hl_special_leave.withdrawal_kbn = 0
                     and hl_special_leave.delete_flg = 0
             where
@@ -351,13 +351,13 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $overTime = Formula::calculateOverTime($actualWorkingTime);
         $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
         $intervalTime = Formula::calculateIntervalTime($startTime);
-
+        $targetYm = Formula::calculateTargetYearMonth($data['date']);
         return DB::table('trn_attendance')->insert([
             'operator_cd' => $id,
             'regi_date' => $data['date'],
             'post_cd' =>  session('user')->post_cd,
             'emp_no' => session('user')->emp_no,
-            'target_ym' => Carbon::parse($data['date'])->format('Ym'),
+            'target_ym' => $targetYm,
             'att_time' => Carbon::now()->toDateTimeString(),
             'start_time' => $startTime,
             'leav_time' => Carbon::now()->toDateTimeString(),
@@ -372,7 +372,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             'create_date' => Carbon::now()->toDateTimeString(),
             'updater_cd' => $id,
             'update_date' => Carbon::now()->toDateTimeString(),
-            'update_app' => 0,
+            'update_app' => '',
         ]);
     }
 
@@ -382,8 +382,10 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             $holidayForm = 1;
         } elseif (!is_null($data['exchange'])) {
             $holidayForm = 2;
-        } else {
+        } elseif (!is_null($data['special'])) {
             $holidayForm = 3;
+        } else {
+            $holidayForm = 0;
         }
 
         return DB::table('trn_holiday')->where([
