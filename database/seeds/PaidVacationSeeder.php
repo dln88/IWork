@@ -20,7 +20,7 @@ class PaidVacationSeeder extends Seeder
                 'target_end' => 20210101,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
     }

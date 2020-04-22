@@ -239,7 +239,6 @@
 									<button type="button" class="btn btn-secondary active" onclick="window.location='{{ route('person.work.dates') }}'">当月</button>
 									<button type="button" class="btn btn-secondary" onclick="window.location='{{ route('person.work.dates', ['yearMonth' => \Carbon\Carbon::create(\Illuminate\Support\Str::substr($yearMonth, 0, 4),\Illuminate\Support\Str::substr($yearMonth, 4, 2))->addMonth()->format('Ym')]) }}'">></button>
 								</div>
-								
 							</div>
 						</div>
 					</div>

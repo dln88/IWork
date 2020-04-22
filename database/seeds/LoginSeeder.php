@@ -17,7 +17,7 @@ class LoginSeeder extends Seeder
             'special_role_name' => 'user',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         DB::table('mst_special_role')->insert([
@@ -25,7 +25,7 @@ class LoginSeeder extends Seeder
             'special_role_name' => 'admin',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
-            'update_app' => '0',
+            'update_app' => '',
         ]);
 
         for ($i=1; $i <= 10; $i++) { 
@@ -42,7 +42,7 @@ class LoginSeeder extends Seeder
                 'admin_div' => 0,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
 
@@ -60,7 +60,7 @@ class LoginSeeder extends Seeder
                 'admin_div' => 1,
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
 
@@ -70,7 +70,7 @@ class LoginSeeder extends Seeder
                 'special_role_key' => 'user',
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
 
@@ -80,7 +80,7 @@ class LoginSeeder extends Seeder
                 'special_role_key' => 'admin',
                 'create_date' => '2020-04-01',
                 'update_date' => '2020-04-01',
-                'update_app' => '0',
+                'update_app' => '',
             ]);
         }
     }
