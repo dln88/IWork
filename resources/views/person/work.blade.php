@@ -224,7 +224,9 @@
 								@endforeach
 							</tbody>
 							@else
-								該当のデータは存在しません。
+								<div class="container">
+									<p>{{ config('messages.000003') }}</p>
+								</div>
 							@endif
 						</table>
 					</div>

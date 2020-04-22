@@ -161,18 +161,12 @@
 										<div class="form-inline">
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="orvertime">残業時間（合計）</label>
-												<div class="input-group date datepicker_time" id="datepicker_3" data-target-input="nearest" style="margin-right:10px;">
+												<div class="input-group" style="margin-right:10px;">
 													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ request()->get('ot_min') ?? '' }}" data-target="#datetimepicker"/>
-													<div class="input-group-append" data-target="#datepicker_3" data-toggle="datetimepicker">
-														<div class="input-group-text"><i class="far fa-clock"></i></div>
-													</div>
 												</div>
 												～
-												<div class="input-group date datepicker_time" id="datepicker_4" data-target-input="nearest" style="margin-left:10px;">
+												<div class="input-group" style="margin-left:10px;">
 													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ request()->get('ot_max') ?? '' }}" data-target="#datetimepicker"/>
-													<div class="input-group-append" data-target="#datepicker_4" data-toggle="datetimepicker">
-														<div class="input-group-text"><i class="far fa-clock"></i></div>
-													</div>
 												</div>
 											</div>
 										</div>
@@ -183,18 +177,12 @@
 										<div class="form-inline">
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="midnight">深夜時間（合計）</label>
-												<div class="input-group date datepicker_time" id="datepicker_5" data-target-input="nearest" style="margin-right:10px;">
+												<div class="input-group" style="margin-right:10px;">
 													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ request()->get('on_min') ?? '' }}" data-target="#datetimepicker"/>
-													<div class="input-group-append" data-target="#datepicker_5" data-toggle="datetimepicker">
-														<div class="input-group-text"><i class="far fa-clock"></i></div>
-													</div>
 												</div>
 												～
-												<div class="input-group date datepicker_time" id="datepicker_6" data-target-input="nearest" style="margin-left:10px;">
+												<div class="input-group" style="margin-left:10px;">
 													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ request()->get('on_max') ?? '' }}" data-target="#datetimepicker"/>
-													<div class="input-group-append" data-target="#datepicker_6" data-toggle="datetimepicker">
-														<div class="input-group-text"><i class="far fa-clock"></i></div>
-													</div>
 												</div>
 											</div>
 										</div>
@@ -277,7 +265,7 @@
 							@endforeach
 						@else
 							<div class="container">
-								<p>該当のデータは存在しません。</p>
+								<p>{{ config('messages.000003') }}</p>
 							</div>
 						@endif
 						</tbody>

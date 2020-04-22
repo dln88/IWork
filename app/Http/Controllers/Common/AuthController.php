@@ -49,8 +49,7 @@ class AuthController extends Controller
             LogLoginUtil::logLoginSuccess();
             return redirect(route('person.work.dates'));
         }
-        return back()->withErrors('ログインID、またはパスワードが正しくありません。')
-            ->withInput();
+        return back()->withErrors(config('messages.010001'))->withInput();
     }
 
     /**
@@ -67,8 +66,7 @@ class AuthController extends Controller
             return redirect(route('admin.work_dates'));
         }
 
-        return back()->withErrors('ログインID、またはパスワードが正しくありません。')
-            ->withInput();
+        return back()->withErrors(config('messages.010001'))->withInput();
     }
 
     /**
@@ -97,7 +95,7 @@ class AuthController extends Controller
         // the user has admin role can access as normal user
         if ($user[0]->admin_div !== $admin) {
             if($user[0]->admin_div === config('define.admin_div.user')) {
-                session()->flash('permission_error', '管理者権限がありません。');
+                session()->flash('permission_error', config('messages.010013'));
                 return false;
             }
         }

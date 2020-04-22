@@ -161,7 +161,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         };
 
         if(isset($validatedData['ot_min'])) {
-            $otMin = Str::replaceFirst(':', '.', $validatedData['ot_min']);
+            $otMin = $validatedData['ot_min'];
             $query .= " COALESCE(SUM(ATT.OVER_TIME), '0.00') >= $otMin";
             if (isset($validatedData['ot_max']) || isset($validatedData['on_min']) || isset($validatedData['on_max'])) {
                 $query .= " and ";
@@ -169,7 +169,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         };
 
         if(isset($validatedData['ot_max'])) {
-            $otMax = Str::replaceFirst(':', '.', $validatedData['ot_max']);
+            $otMax = $validatedData['ot_max'];
             $query .= " SUM (ATT.OVER_TIME) <= $otMax";
             if (isset($validatedData['on_min']) || isset($validatedData['on_max'])) {
                 $query .= " and ";
@@ -177,7 +177,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         };
 
         if(isset($validatedData['on_min'])) {
-            $onMin = Str::replaceFirst(':', '.', $validatedData['on_min']);
+            $onMin = $validatedData['on_min'];
             $query .= " COALESCE(SUM(ATT.LATE_OVER_TIME), '0.00') >= $onMin";
             if (isset($validatedData['on_max'])) {
                 $query .= " and ";
@@ -185,7 +185,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         };
 
         if(isset($validatedData['on_max'])) {
-            $onMax = Str::replaceFirst(':', '.', $validatedData['on_max']);
+            $onMax = $validatedData['on_max'];
             $query .= " SUM (ATT.LATE_OVER_TIME) <= $onMax";
         };
         

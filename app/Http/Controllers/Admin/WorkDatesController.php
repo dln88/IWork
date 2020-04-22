@@ -39,7 +39,6 @@ class WorkDatesController extends Controller
      */
     public function index(SearchWorkDatesRequest $request)
     {
-        // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
             'ip_address' => \Request::ip(),
@@ -52,8 +51,7 @@ class WorkDatesController extends Controller
         ];
         LogActionUtil::logAction($dataLog);
 
-        $validatedData = $request->all();
-        
+        $validatedData = $request->validated();
         if (isset($validatedData['from_month']) || isset($validatedData['to_month']) ) {
             // Log action
             $dataLog = [
@@ -159,7 +157,7 @@ class WorkDatesController extends Controller
         ]);
 
         if (is_null($id)) {
-            session()->flash('message', '前画面からの情報が不正です。管理者へ連絡してください。'); 
+            session()->flash('message', config('messages.010017')); 
         }
         $user = $this->adminWorkRepository->getUserByKey($id);
         $user = $user[0];
@@ -191,7 +189,7 @@ class WorkDatesController extends Controller
     public function updateWorkDate(UpdateWorkDateRequest $request, int $id)
     {
         if (!$this->isEndTimeGreaterThanStartTime($request->start, $request->end)) {
-            return back()->withInput()->withErrors('終了時間は開始時間より後の時間を設定してください。');
+            return back()->withInput()->withErrors(config('messages.010007'));
         };
 
         $data['date'] = $request->date;
@@ -227,7 +225,7 @@ class WorkDatesController extends Controller
         ];
         LogActionUtil::logAction($dataLog);
         $yearMonth = Carbon::parse($request->date)->format('Ym');
-        $request->session()->flash('message', '更新しました。');
+        $request->session()->flash('message', config('messages.000012'));
         return redirect()->route('admin.work_personal', [$id, $yearMonth]);
     }
 
@@ -270,7 +268,7 @@ class WorkDatesController extends Controller
         $data['on_max'] = session('on_max');
         $timeListArray = $this->adminWorkRepository->getTimeListByCondition($data);
         if (count($timeListArray) < 1) {
-            return back()->withInput()->withErrors('対象データがありません。');
+            return back()->withInput()->withErrors(config('messages.000016'));
         }
         
         // name file of csv
@@ -322,7 +320,7 @@ class WorkDatesController extends Controller
         $monthlyReportArray = $this->adminWorkRepository->getMonthlyReport($operatorCd, $yearMonth);
 
         if (count($monthlyReportArray) < 1) {
-            return back()->withInput()->withErrors('対象データがありません。');
+            return back()->withInput()->withErrors(config('messages.000016'));
         }
         
         // name file of csv
