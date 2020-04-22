@@ -2,6 +2,7 @@
 
 namespace App\Utils;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class Common
@@ -61,5 +62,38 @@ class Common
                 and m_s.screen_id = ?";
         $screen =  DB::select($query, [$screenId]);
         return $screen[0]->screen_name;
+    }
+
+    /**
+     * Convert date to day of week.
+     *
+     * @param string $date
+     * @return string
+     */
+    public static function convertToDayOfWeek(string $date)
+    {
+        switch (Carbon::parse($date)->dayOfWeek) {
+            case 1:
+                return  '月';
+                break;
+            case 2:
+                return  '火';
+                break;
+            case 3:
+                return  '水';
+                break;
+            case 4:
+                return  '木';
+                break;
+            case 5:
+                return  '金';
+                break;
+            case 6:
+                return  '土';
+                break;
+           default:
+               return '日';
+               break;
+       }
     }
 }

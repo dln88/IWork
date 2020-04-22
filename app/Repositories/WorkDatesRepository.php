@@ -111,7 +111,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
      * @param integer $operatorCd
      * @return boolean
      */
-   public function checkAttendanceTime(int $operatorCd)
+   public function haveAttendanceTime(int $operatorCd)
    {
       $currentDate = Carbon::now()->toDateString();
       $query = "select
@@ -179,7 +179,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     * @param string $endTime
     * @return boolean
     */
-   public function checkEndTimeGreaterStartTime(int $operatorCd, string $endTime)
+   public function doesEndTimeGreaterStartTime(int $operatorCd, string $endTime)
    {
       $currentDate = Carbon::now()->toDateString();
       $query = "select start_time
@@ -207,7 +207,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     * @param integer $operatorCd
     * @return boolean
     */
-   public function checkLeaveTime(int $operatorCd)
+   public function isLeaveTime(int $operatorCd)
    {
       $currentDate = Carbon::now()->toDateString();
       $query = "select att.leav_time

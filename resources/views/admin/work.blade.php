@@ -261,7 +261,7 @@
 						@if (isset($timeList) && count($timeList) > 0)
 							@foreach ($timeList as $val)
 							<tr>
-								<td class="text-center" nowrap><a href="{{ route('admin.work_personal', $val->operator_cd)}}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
+								<td class="text-center" nowrap><a href="{{ route('admin.work_personal', [$val->operator_cd, $val->target_ym]) }}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
 								<td class="text-center" nowrap>{{ $val->emp_no }}</td>
 								<td class="text-center" nowrap>{{ $val->post_name }}</td>
 								<td class="text-center" nowrap>{{ $val->operator_name }}</td>

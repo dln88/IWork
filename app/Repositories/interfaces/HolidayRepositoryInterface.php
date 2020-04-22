@@ -6,9 +6,9 @@ interface HolidayRepositoryInterface
 {
     public function getVacationList();
     public function getPaidVacationDays();
-    public function getDaysOff($targetStart, $targetEnd);
+    public function getDaysOff(string $targetStart, string $targetEnd);
     public function getHolidayLeaveDays();
-    public function getNumberOfDaysOff($targetStart, $targetEnd);
+    public function getNumberOfDaysOff(string $targetStart, string $targetEnd);
     public function registHoliday(array $data);
     public function checkExistRegisterDate(string $dateRegister);
 }
