@@ -140,14 +140,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="targetMM">対象年月</label>
 												<div class="input-group date datepickerMM" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{ old('from_month') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{ old('from_month') ?? request()->get('from_month') }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepickerMM" id="datepicker_2" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{ old('to_month') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{ old('to_month') ?? request()->get('to_month') }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>

@@ -6,7 +6,7 @@
 <body>
  
  
-<h2><center>The page your looking for is not available</center></h2>
+<h2><center>Server Error: 403 (Forbidden)</center></h2>
 <hr>
 <p>
     <center>
