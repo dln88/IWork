@@ -42,7 +42,8 @@ class AuthController extends Controller
      * @param LoginRequest $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function doLogin(LoginRequest $request) {
+    public function doLogin(LoginRequest $request)
+    {
         $credentials  = $request->only(['user_id', 'password']);
         if ($this->login($credentials['user_id'], $credentials['password'])) {
             // Log login when the user login successfully.
@@ -58,7 +59,8 @@ class AuthController extends Controller
      * @param LoginRequest $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function doLoginAdmin(LoginRequest $request){
+    public function doLoginAdmin(LoginRequest $request)
+    {
         $credentials = $request->only(['user_id', 'password']);
         if ($this->login($credentials['user_id'], $credentials['password'], 1)){
             // Log login when the user login successfully.
@@ -77,7 +79,8 @@ class AuthController extends Controller
      * @param int $admin
      * @return bool
      */
-    private function login($userId, $password, $admin = 0) {
+    private function login($userId, $password, $admin = 0)
+    {
         // only check if whether user_id has exists. 
         $user = $this->authRepository->getUser($userId);
         if (empty($user)) {
@@ -125,7 +128,8 @@ class AuthController extends Controller
     /**
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function logout() {
+    public function logout()
+    {
         session()->forget('user');
         return redirect(route('login'));
     }
