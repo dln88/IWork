@@ -63,7 +63,7 @@
 	<div class="container-fluid">
 		<div class="alert alert-danger alert-dismissible fade show" role="alert" >
 			@foreach($errors->all() as $error)
-				{{ $error }}
+				<li>{{ $error }}</li>
 			@endforeach
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
@@ -246,6 +246,7 @@
 								<th class="text-center" scope="col" nowrap>特休</th>
 							</tr>
 						</thead>
+						@if (!$errors->any())
 						<tbody>
 							@foreach ($timeList as $val)
 							<tr>
@@ -264,6 +265,7 @@
 							</tr>
 							@endforeach
 						</tbody>
+						@endif
 					</table>
 					@else
 						<div class="alert alert-danger">

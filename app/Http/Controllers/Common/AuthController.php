@@ -32,7 +32,8 @@ class AuthController extends Controller
      * 
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function showLogin(){
+    public function showLogin()
+    {
         return view('login');
     }
 

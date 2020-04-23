@@ -15,7 +15,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|string|max:15',
+            'user_id' => 'required|string|max:10',
             'password' => 'required|string|max:30'
         ];
     }
@@ -30,7 +30,7 @@ class LoginRequest extends FormRequest
         return [
             'user_id.required' => 'ログインIDが未入力です。',
             'password.required'  => 'パスワードが未入力です。',
-            'user_id.max'  => 'ログインIDの最大長は15文字です。',
+            'user_id.max'  => 'ログインIDの最大長は10文字です。',
             'password.max'  => 'パスワードの最大長は30文字です。',
             'user_id.string'  => 'ログインIDは半角英数字でなければなりません。',
             'password.string'  => 'パスワードは半角英数字でなければなりません。',

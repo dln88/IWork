@@ -14,7 +14,7 @@ class CreateMstPostTable extends Migration
     public function up()
     {
         Schema::create('mst_post', function (Blueprint $table) {
-            $table->integer('post_cd')->primary();
+            $table->integer('post_cd')->unsigned()->primary();
             $table->string('post_name', 15)->unique();
             $table->time('post_start_time'); // 24時間表記 (24-hour notation)
             $table->time('post_end_time'); // 24時間表記 (24-hour notation)

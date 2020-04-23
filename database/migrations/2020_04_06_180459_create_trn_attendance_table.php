@@ -14,9 +14,9 @@ class CreateTrnAttendanceTable extends Migration
     public function up()
     {
         Schema::create('trn_attendance', function (Blueprint $table) {
-            $table->integer('operator_cd');
+            $table->integer('operator_cd')->unsigned();
             $table->date('regi_date');
-            $table->integer('post_cd');
+            $table->integer('post_cd')->unsigned();
             $table->string('emp_no', 15);
             $table->string('target_ym', 6);
             $table->string('att_time', 0); // 実際の時間
