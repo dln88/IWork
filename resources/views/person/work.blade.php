@@ -224,8 +224,8 @@
 								@endforeach
 							</tbody>
 							@else
-								<div class="container">
-									<p>{{ config('messages.000003') }}</p>
+								<div class="alert alert-danger">
+									{{ config('messages.000003') }}
 								</div>
 							@endif
 						</table>
