@@ -270,6 +270,19 @@ class WorkDatesController extends Controller
         if (count($timeListArray) < 1) {
             return back()->withInput()->withErrors(config('messages.000016'));
         }
+
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => Common::operatorName((array) session('user')),
+            'screen_id' => 'W000002',
+            'screen_name' => Common::getScreenName('W000002'),
+            'operation' => 'CSV出力',
+            'contents' => 'なし'
+        ];
+        LogActionUtil::logAction($dataLog);
         
         // name file of csv
         $nameCSV = 'attendancelist'. '_' . Carbon::now()->format('YmdHis');
@@ -290,19 +303,6 @@ class WorkDatesController extends Controller
         array_unshift($dataCSV, $header);
 
         Csv::downloadCSV($dataCSV, $nameCSV);
-        
-        // Log action
-        $dataLog = [
-            'operation_timestamp' => Carbon::now()->timestamp,
-            'ip_address' => \Request::ip(),
-            'operator_cd' => session('user')->operator_cd,
-            'operator_name' => Common::operatorName((array) session('user')),
-            'screen_id' => 'W000002',
-            'screen_name' => Common::getScreenName('W000002'),
-            'operation' => 'CSV出力',
-            'contents' => 'なし'
-        ];
-        LogActionUtil::logAction($dataLog);
 
         session()->flash('message', 'ダウンロード成功');
         return back()->withInput();
@@ -322,6 +322,19 @@ class WorkDatesController extends Controller
         if (count($monthlyReportArray) < 1) {
             return back()->withInput()->withErrors(config('messages.000016'));
         }
+
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => Common::operatorName((array) session('user')),
+            'screen_id' => 'W000003',
+            'screen_name' => Common::getScreenName('W000003'),
+            'operation' => 'CSV出力',
+            'contents' => 'なし'
+        ];
+        LogActionUtil::logAction($dataLog);
         
         // name file of csv
         $nameCSV = 'monthlyreportlist'. '_' . $operatorCd . '_' . Carbon::now()->format('YmdHis');
@@ -354,19 +367,6 @@ class WorkDatesController extends Controller
         array_unshift($dataCSV, $header);
 
         Csv::downloadCSV($dataCSV, $nameCSV);
-        
-        // Log action
-        $dataLog = [
-            'operation_timestamp' => Carbon::now()->timestamp,
-            'ip_address' => \Request::ip(),
-            'operator_cd' => session('user')->operator_cd,
-            'operator_name' => Common::operatorName((array) session('user')),
-            'screen_id' => 'W000003',
-            'screen_name' => Common::getScreenName('W000003'),
-            'operation' => 'CSV出力',
-            'contents' => 'なし'
-        ];
-        LogActionUtil::logAction($dataLog);
 
         session()->flash('message', 'ダウンロード成功');
         return back()->withInput();
