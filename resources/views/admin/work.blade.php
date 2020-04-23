@@ -96,7 +96,7 @@
 													<span class="input-group-text search_item_lbl_width" id="name">社員番号</span>
 												</div>
 												<input type="text" class="form-control" id="shainNo" name="emp_num" 
-													aria-describedby="emailHelp" value="{{ request()->get('emp_num') ?? '' }}">
+													aria-describedby="emailHelp" value="{{ old('emp_num') ?? '' }}">
 											</div>
 										</div>
 									</div>
@@ -110,7 +110,7 @@
 													<option></option>
 													@if (isset($comboBoxChoice) && count($comboBoxChoice) > 0)
 														@foreach ($comboBoxChoice as $postCd)
-															<option value="{{ $postCd->post_cd }}" {{ request()->get('department_id') == $postCd->post_cd ? 'selected' : '' }}>{{ $postCd->post_name }}</option>
+															<option value="{{ $postCd->post_cd }}" {{ old('department_id') == $postCd->post_cd ? 'selected' : '' }}>{{ $postCd->post_name }}</option>
 														@endforeach
 													@endif
 												</select>
@@ -123,7 +123,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text search_item_lbl_width" id="name">氏名</span>
 												</div>
-												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placehgeter="" value="{{ request()->get('name') ?? '' }}">
+												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placehgeter="" value="{{ old('name') ?? '' }}">
 											</div>
 										</div>
 									</div>
@@ -140,14 +140,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="targetMM">対象年月</label>
 												<div class="input-group date datepickerMM" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{ request()->get('from_month') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{ old('from_month') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepickerMM" id="datepicker_2" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{ request()->get('to_month') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{ old('to_month') ?? '' }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
@@ -162,11 +162,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="orvertime">残業時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ request()->get('ot_min') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? '' }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ request()->get('ot_max') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? '' }}"/>
 												</div>
 											</div>
 										</div>
@@ -178,11 +178,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="midnight">深夜時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ request()->get('on_min') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? '' }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ request()->get('on_max') ?? '' }}" data-target="#datetimepicker"/>
+													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? '' }}"/>
 												</div>
 											</div>
 										</div>
@@ -228,6 +228,7 @@
 			</div>
 			<div class="card-body">
 				<div class="table-responsive mb-3">
+					@if (isset($timeList) && count($timeList) > 0)
 					<table class="table table-hover table-bordered mb-0">
 						<thead class="thead-dark">
 							<tr>
@@ -246,7 +247,6 @@
 							</tr>
 						</thead>
 						<tbody>
-						@if (isset($timeList) && count($timeList) > 0)
 							@foreach ($timeList as $val)
 							<tr>
 								<td class="text-center" nowrap><a href="{{ route('admin.work_personal', [$val->operator_cd, $val->target_ym]) }}" class="alert-link"><i class="fas fa-external-link-alt"></i></a></td>
@@ -263,13 +263,13 @@
 								<td class="text-center" nowrap>{{ $val->special_leave_cnt }}</td>
 							</tr>
 							@endforeach
-						@else
-							<div class="container">
-								<p>{{ config('messages.000003') }}</p>
-							</div>
-						@endif
 						</tbody>
 					</table>
+					@else
+						<div class="alert alert-danger">
+							{{ config('messages.000003') }}
+						</div>
+					@endif
 				</div>
 			</div>
 			<div class="card-footer">

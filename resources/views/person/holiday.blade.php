@@ -178,8 +178,8 @@
 			</div>
 		</div>
 
-		@if (isset($vacationList) && count($vacationList) > 0)
 		<div class="table-responsive mb-2">
+			@if (isset($vacationList) && count($vacationList) > 0)
 			<table class="table table-bordered mb-0 table-striped">
 				<thead class="thead-light">
 					<tr>
@@ -200,12 +200,12 @@
 					@endforeach
 				</tbody>
 			</table>
+			@else
+				<div class="alert alert-danger">
+					{{ config('messages.000003') }}
+				</div>
+			@endif
 		</div>
-		@else
-			<div class="container">
-				<p>{{ config('messages.000003') }}</p>
-			</div>
-		@endif
 		<!-- 休暇申請 -->
 
 	</div>

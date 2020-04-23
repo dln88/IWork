@@ -81,6 +81,7 @@
 			</div>
 			<div class="card-body">
 				<div class="table-responsive mb-3">
+					@if (isset($monthlyReport) && count($monthlyReport) > 0)
 					<table class="table table-hover table-bordered mb-0">
 						<thead class="thead-dark">
 							<tr>
@@ -101,7 +102,6 @@
 							</tr>
 						</thead>
 						<tbody>
-						@if (isset($monthlyReport) && count($monthlyReport) > 0)
 							@foreach ($monthlyReport as $val)
 							<tr class="table-danger-c">
 								<td class="text-center" nowrap>
@@ -157,13 +157,13 @@
 								<td class="text-center" nowrap>{{ $val->memo }}</td>
 							</tr>	
 							@endforeach
-						@else
-							<div class="container">
-								<p>{{ config('messages.000003') }}</p>
-							</div>
-						@endif
 						</tbody>
 					</table>
+					@else
+						<div class="alert alert-danger">
+							{{ config('messages.000003') }}
+						</div>
+					@endif
 				</div>
 			</div>
 		</div>
