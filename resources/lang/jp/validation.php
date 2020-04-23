@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'date_format' => ':attribute の入力形式が不正です。',
-    'required' => ':attribute 項目を入力してください。',
-    'regex' => ':attribute の入力形式が不正です。',
+    'date_format' => ':attribute' . config('messages.010014'),
+    'required' => config('messages.000001'),
+    'regex' => ':attribute' . config('messages.010014'),
 ];

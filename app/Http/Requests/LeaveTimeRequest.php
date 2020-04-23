@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateWorkDateRequest extends FormRequest
+class LeaveTimeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,13 +24,7 @@ class UpdateWorkDateRequest extends FormRequest
     public function rules()
     {
         return [
-            'date' => 'required|date_format:Y-m-d',
-            'start' => ['required', 'date_format:"H:i"'],
-            'end' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/'],
-            'memo' => 'nullable|string',
-            'paid' => 'nullable|in:on',
-            'exchange' => 'nullable|in:on',
-            'special' => 'nullable|in:on',
+            'end_time' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/']
         ];
     }
 
@@ -42,8 +36,8 @@ class UpdateWorkDateRequest extends FormRequest
     public function messages()
     {
         return [
-            'start.required' => config('messages.010019'),
-            'end.required'  => config('messages.010019')
+            'end_time.required' => config('messages.010019'),
+            'end_time.regex'  => '終了時刻の入力形式が不正です。'
         ];
     }
 }

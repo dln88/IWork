@@ -57,9 +57,6 @@
 <div class="container div-login">
     <form method="post" class="form-signin" id="frmLogin" action="{{ route('login.post') }}">
         @csrf
-        <!-- エラーメッセージ -->
-        <!-- 			<div class="alert alert-danger" role="alert" style="width: 30rem;"> -->
-        
         @if (Session::has('permission_error'))
         <div class="alert alert-danger alert-dismissible fade show" role="alert" style="width: 30rem;">
         管理者権限がありません。
@@ -81,11 +78,11 @@
             <div class="card-body">
                 <!-- ログインID -->
                 <div class="form-group">
-                    <input type="text" autofocus name="user_id"  value="{{old('user_id', Session::get('user_id') ? Session::get('user_id') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
+                    <input type="text" {{ !$errors->has('password') || $errors->has('user_id') ? 'autofocus' : '' }} name="user_id"  value="{{old('user_id', Session::get('user_id') ? Session::get('user_id') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
                 </div>
                 <!-- パスワード -->
                 <div class="form-group">
-                    <input type="password" name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ request()->old('password') ?? null }}"></input>
+                    <input type="password" {{ !$errors->has('user_id') ? 'autofocus' : '' }}  name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ request()->old('password') ?? null }}"></input>
                 </div>
                 <!-- ボタン -->
                 <button class="btn btn-lg btn-info btn-block" type="submit" onclick="login()" >

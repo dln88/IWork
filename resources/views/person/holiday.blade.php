@@ -203,7 +203,7 @@
 		</div>
 		@else
 			<div class="container">
-				<p>該当のデータは存在しません。</p>
+				<p>{{ config('messages.000003') }}</p>
 			</div>
 		@endif
 		<!-- 休暇申請 -->

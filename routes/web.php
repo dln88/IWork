@@ -19,8 +19,8 @@ Route::get('/', function () {
 
 Route::get('/test', 'Common\TestController@test')->name('test');
 Route::get('/login', 'Common\AuthController@showLogin')->name('login');
-Route::post('/doLogin', 'Common\AuthController@doLogin')->name('login.post');
-Route::post('/doLoginAdmin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');
+Route::post('/login/user', 'Common\AuthController@doLogin')->name('login.post');
+Route::post('/login/admin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');
 Route::get('/logout', 'Common\AuthController@logout')->name('logout');
 
 Route::group([ 'middleware' => 'person'], function()

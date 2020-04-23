@@ -74,19 +74,20 @@ class HolidayController extends Controller
      */
     public function store(StoreHolidayRequest $request)
     {
+        dd(request()->old('date'));
         $dateRegister = $request->date;
         if($this->isOverApplicationDatePast($dateRegister)) {
             $holidayAppPast = Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
-            return back()->withInput($request->input())->withErrors("$holidayAppPast ヶ月前の申請はできません。");
+            return back()->withInput($request->input())->withErrors($holidayAppPast . config('messages.010015'));
         };
 
         if($this->isOverApplicationDateFuture($dateRegister)) {
             $holidayAppFuture = Common::getSystemConfig('HOLIDAY_APP_FU_MM');
-            return back()->withInput()->withErrors("$holidayAppFuture ヶ月先の申請はできません。");
+            return back()->withInput()->withErrors($holidayAppFuture . config('messages.010016'));
         };
 
         if($this->doubleCheck($dateRegister)) {
-            return back()->withInput()->withErrors('既に休暇申請されています。');
+            return back()->withInput()->withErrors(config('messages.010005'));
         };
         
         $this->holidayRepository->registHoliday($request->all());
@@ -104,7 +105,7 @@ class HolidayController extends Controller
         ];
         LogActionUtil::logAction($dataLog);
 
-        return back()->withInput()->with('message', '登録しました。');
+        return back()->withInput()->with('message', config('messages.000004'));
     }
 
     private function isOverApplicationDatePast($dateRegister)

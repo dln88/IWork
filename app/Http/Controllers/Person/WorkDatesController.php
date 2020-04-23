@@ -9,8 +9,9 @@ use Illuminate\Support\Str;
 use App\Utils\LogActionUtil;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LeaveTimeRequest;
+use App\Http\Requests\AttendanceTimeRequest;
 use App\Repositories\Interfaces\WorkDatesRepositoryInterface;
-
 class WorkDatesController extends Controller
 {
     protected $workDatesRepository;
@@ -125,14 +126,13 @@ class WorkDatesController extends Controller
         );
     }
 
-    public function registerAttendanceTime(Request $request){
+    public function registerAttendanceTime(AttendanceTimeRequest $request)
+    {
         if (!session('user')) {
             return redirect(route('login'));
         }
         $user = session('user');
-        $validatedData = $request->validate([
-            'start_time' => ['required', 'date_format:H:i'],
-        ]);
+        $validatedData = $request->validated();
         
         // Check attendance time registered
         if($this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
@@ -161,19 +161,17 @@ class WorkDatesController extends Controller
         LogActionUtil::logAction($dataLog);
 
         // Displays a processing completion message.
-        $request->session()->flash('message', '登録しました。');
+        $request->session()->flash('message', config('messages.000004'));
         $request->flash();
         return redirect()->action('Person\WorkDatesController@index');
     }
 
-    public function registerLeaveTime(Request $request){
+    public function registerLeaveTime(LeaveTimeRequest $request){
         if (!session('user')) {
             return redirect(route('login'));
         }
         $user = session('user');
-        $validatedData = $request->validate([
-            'end_time' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/'],
-        ]);
+        $validatedData = $request->validated();
         
         if (intval(Str::substr($validatedData['end_time'], 0, 2)) >= 24) {
             $currentDate = Carbon::yesterday()->toDateString();
@@ -183,7 +181,7 @@ class WorkDatesController extends Controller
 
         // Check leave time registered.
         if(!$this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
-            return back()->withInput()->withErrors('出勤時間が登録されていないため、退勤時間の登録ができません。');
+            return back()->withInput()->withErrors(config('messages.010010'));
         };
 
         // Check work time and leave time
@@ -191,7 +189,7 @@ class WorkDatesController extends Controller
             $user->operator_cd, 
             $validatedData['end_time']
         )) {
-            return back()->withInput()->withErrors('出勤時間より前の時間は登録できません。');
+            return back()->withInput()->withErrors(config('messages.010011'));
         };
         
          // Check leave time registered.
@@ -201,7 +199,7 @@ class WorkDatesController extends Controller
 
         // Checking the maximum time to leave
         if($validatedData['end_time'] > intval(Common::getSystemConfig('MAX_LEAVE_TIME'))) {
-            return back()->withInput()->withErrors('退勤時間最大値を超えています。');
+            return back()->withInput()->withErrors(config('messages.010012'));
         }
 
         if(!$this->workDatesRepository->registLeaveTime(
@@ -229,7 +227,7 @@ class WorkDatesController extends Controller
         LogActionUtil::logAction($dataLog);
 
         // Displays a processing completion message.
-        $request->session()->flash('message', '登録しました。');
+        $request->session()->flash('message', config('messages.000004'));
         $request->flash();
         return redirect()->action('Person\WorkDatesController@index');
     }
