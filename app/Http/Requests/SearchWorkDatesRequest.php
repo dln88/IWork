@@ -44,17 +44,17 @@ class SearchWorkDatesRequest extends FormRequest
     public function messages()
     {
         return [
-            'emp_num.numeric' => '従業員番号は数値タイプでなければなりません。',
-            'emp_num.max' => '従業員コードは15以下でなければなりません',
-            'department_id.integer' => '部門の入力形式が不正です。',
-            'name.string' => '名前は文字列でなければなりません',
-            'name.max' => '名前は30以下である必要があります',
+            'emp_num.numeric' => '社員番号は実数で入力ください。',
+            'emp_num.max' => '社員番号の最大長は15文字です。',
+            'department_id.integer' => '部門は実数で入力ください。',
+            'name.string' => '名前は文字列でなければなりません。',
+            'name.max' => '氏名の最大長は30文字です。',
             'from_month.date_format' => '入力形式が無効です。',
             'to_month.date_format' => '入力形式が無効です。',
-            'ot_min.numeric' => '残業は数値でなければなりません。',
-            'ot_max.numeric' => '残業は数値でなければなりません。',
-            'on_min.numeric' => '一晩は数字でなければなりません。',
-            'on_max.numeric' => '一晩は数字でなければなりません。',
+            'ot_min.numeric' => '残業時間（合計）の開始は実数で入力ください。',
+            'ot_max.numeric' => '残業時間（合計）の終了は実数で入力ください。',
+            'on_min.numeric' => '深夜時間（合計）の開始は実数で入力ください。',
+            'on_max.numeric' => '深夜時間（合計）の終了は実数で入力ください。',
         ];
     }
 }
