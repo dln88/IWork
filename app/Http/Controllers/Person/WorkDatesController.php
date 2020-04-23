@@ -29,7 +29,8 @@ class WorkDatesController extends Controller
         $this->workDatesRepository = $workDatesRepository;
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         if (!session('user')) {
             return redirect(route('login'));
         }
@@ -166,7 +167,8 @@ class WorkDatesController extends Controller
         return redirect()->action('Person\WorkDatesController@index');
     }
 
-    public function registerLeaveTime(LeaveTimeRequest $request){
+    public function registerLeaveTime(LeaveTimeRequest $request)
+    {
         if (!session('user')) {
             return redirect(route('login'));
         }
