@@ -78,11 +78,11 @@
             <div class="card-body">
                 <!-- ログインID -->
                 <div class="form-group">
-                    <input type="text" {{ !$errors->has('password') || $errors->has('user_id') ? 'autofocus' : '' }} name="user_id"  value="{{old('user_id', Session::get('user_id') ? Session::get('user_id') : '')}}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
+                    <input type="text" {{ !$errors->has('password') || $errors->has('user_id') ? 'autofocus' : '' }} name="user_id"  value="{{ old('user_id') ??  Session::get('user_id') }}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
                 </div>
                 <!-- パスワード -->
                 <div class="form-group">
-                    <input type="password" {{ !$errors->has('user_id') ? 'autofocus' : '' }}  name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ request()->old('password') ?? null }}"></input>
+                    <input type="password" {{ !$errors->has('user_id') ? 'autofocus' : '' }}  name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ old('password') ?? request()->get('password') }}"></input>
                 </div>
                 <!-- ボタン -->
                 <button class="btn btn-lg btn-info btn-block" type="submit" onclick="login()" >
