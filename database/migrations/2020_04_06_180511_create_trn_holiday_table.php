@@ -15,11 +15,11 @@ class CreateTrnHolidayTable extends Migration
     {
         Schema::create('trn_holiday', function (Blueprint $table) {
             $table->increments('holiday_cd');
-            $table->integer('operator_cd');
+            $table->integer('operator_cd')->unsigned();
             $table->date('acquisition_ymd');
-            $table->integer('post_cd');
-            $table->integer('holiday_form');
-            $table->integer('holiday_class');
+            $table->integer('post_cd')->unsigned();
+            $table->integer('holiday_form')->unsigned();
+            $table->integer('holiday_class')->unsigned();
             $table->decimal('acquisition_num', 5, 2)->nullable()->default(0.00);
             $table->string('target_ym', 6);
             $table->integer('withdrawal_kbn')->default(0);

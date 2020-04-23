@@ -23,21 +23,21 @@ Route::post('/login/user', 'Common\AuthController@doLogin')->name('login.post');
 Route::post('/login/admin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');
 Route::get('/logout', 'Common\AuthController@logout')->name('logout');
 
-Route::group([ 'middleware' => 'person'], function()
+Route::group([ 'middleware' => 'person', 'namespace' => 'Person'], function()
 {    
-    Route::get('pages/work/', 'Person\WorkDatesController@index')
+    Route::get('pages/work/', 'WorkDatesController@index')
         ->name('person.work.dates');
 
-    Route::post('pages/work/regist-start-time', 'Person\WorkDatesController@registerAttendanceTime')
+    Route::post('pages/work/regist-start-time', 'WorkDatesController@registerAttendanceTime')
         ->name('person.work.register_attendance_time');
 
-    Route::post('pages/work/regist-end-time', 'Person\WorkDatesController@registerLeaveTime')
+    Route::post('pages/work/regist-end-time', 'WorkDatesController@registerLeaveTime')
         ->name('person.work.register_leave_time');
 
-    Route::get('pages/holiday', 'Person\HolidayController@index')
+    Route::get('pages/holiday', 'HolidayController@index')
         ->name('person.holiday');
 
-    Route::post('pages/add_holiday', 'Person\HolidayController@store')
+    Route::post('pages/add_holiday', 'HolidayController@store')
         ->name('person.add_holiday');
 
 });

@@ -14,8 +14,8 @@ class CreateTrnExchangeDayHistoryTable extends Migration
     public function up()
     {
         Schema::create('trn_exchange_day_history', function (Blueprint $table) {
-            $table->integer('operator_cd');
-            $table->integer('history_no');
+            $table->integer('operator_cd')->unsigned();
+            $table->integer('history_no')->unsigned();
             $table->decimal('grant_days', 5, 2)->default(0.00);
             $table->date('target_start');
             $table->date('target_end');

@@ -14,7 +14,7 @@ class CreateMstExchangeDayTable extends Migration
     public function up()
     {
         Schema::create('mst_exchange_day', function (Blueprint $table) {
-            $table->integer('operator_cd')->primary();
+            $table->integer('operator_cd')->unsigned()->primary();
             $table->decimal('grant_days', 5, 2);
             $table->date('target_start');
             $table->date('target_end');
