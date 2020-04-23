@@ -74,7 +74,6 @@ class HolidayController extends Controller
      */
     public function store(StoreHolidayRequest $request)
     {
-        dd(request()->old('date'));
         $dateRegister = $request->date;
         if($this->isOverApplicationDatePast($dateRegister)) {
             $holidayAppPast = Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
