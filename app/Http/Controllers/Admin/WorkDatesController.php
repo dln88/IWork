@@ -156,7 +156,7 @@ class WorkDatesController extends Controller
             'yearMonth' => $date
         ]);
         if (is_null($id) || !$this->checkId($id)) {
-            session()->flash('error', config('messages.010017'));
+            session()->flash('errorOperator', config('messages.010017'));
             $disableCSV = false;
             return view('admin.work_personal', compact('disableCSV'));
         }
