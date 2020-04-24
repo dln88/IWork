@@ -150,12 +150,13 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     */
    public function registerAttendanceTime(int $operatorCd, string $startTime)
    {
+      $targetYm = Formula::calculateTargetYearMonth(Carbon::now()->format('Y-m-d'));
       return DB::table('trn_attendance')->insert([
          'operator_cd' => $operatorCd,
          'regi_date' => Carbon::now()->toDateString(),
          'post_cd' =>  session('user')->post_cd,
          'emp_no' => session('user')->emp_no,
-         'target_ym' => 0,
+         'target_ym' => $targetYm,
          'att_time' => Carbon::now()->toDateTimeString(),
          'start_time' => $startTime,
          'break_time' => 0.00,
@@ -234,12 +235,10 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     */
    public function registLeaveTime(int $operatorCd, string $endTime, string $currentDate)
    {
-      $targetYm = Formula::calculateTargetYearMonth($currentDate);
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,
             'regi_date' => $currentDate,
          ])->update([
-            'target_ym' => $targetYm,
             'leav_time' => Carbon::now()->toDateTimeString(),
             'end_time' => $endTime,
             'break_time' => 0.00,
@@ -303,5 +302,13 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             and att.regi_date = ?";
 
       return DB::select($query, [$operatorCd, $currentDate]);
+   }
+
+   public function isRegistEndTimeYesterday(int $operatorCd, string $date)
+   {
+      return DB::table('trn_attendance')
+         ->where('operator_cd', $operatorCd)
+         ->where('regi_date', $date)
+         ->first('end_time');
    }
 }

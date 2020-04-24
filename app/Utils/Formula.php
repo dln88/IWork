@@ -120,7 +120,7 @@ class Formula
             $dateAttendanceTime
          ]
       );
-      if (count($attendance) == 0 || is_null($attendance[0]->regi_date) || is_null($attendance[0]->end_time)) {
+      if (count($attendance) < 1 || is_null($attendance[0]->regi_date) || is_null($attendance[0]->end_time)) {
          return 0.00;
       }
       $previousDate = $attendance[0]->regi_date;
@@ -215,6 +215,8 @@ class Formula
     */
     public static function calculateTargetYearMonth(string $date)
     {
+        $date = Str::replaceFirst('-', '/', $date);
+        $date = Str::replaceFirst('-', '/', $date);
         $currentTimeTarget = Formula::calculateClosingDate(Carbon::parse($date)->format('Ym'));
         if ($date < Carbon::parse($currentTimeTarget[0])->format('Y/m/d')) {
             return Carbon::parse($date)->subMonth()->format('Ym');

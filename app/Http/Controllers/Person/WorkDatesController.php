@@ -175,41 +175,56 @@ class WorkDatesController extends Controller
         $user = session('user');
         $validatedData = $request->validated();
         
-        if (intval(Str::substr($validatedData['end_time'], 0, 2)) >= 24) {
-            $currentDate = Carbon::yesterday()->toDateString();
-        } else {
-            $currentDate = Carbon::now()->toDateString();
-        }
-
-        // Check leave time registered.
-        if(!$this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
-            return back()->withInput()->withErrors(config('messages.010010'));
-        };
-
-        // Check work time and leave time
-        if(!$this->workDatesRepository->doesEndTimeGreaterStartTime(
-            $user->operator_cd, 
-            $validatedData['end_time']
-        )) {
-            return back()->withInput()->withErrors(config('messages.010011'));
-        };
-        
-         // Check leave time registered.
-        if($this->workDatesRepository->isLeaveTime($user->operator_cd)) {
-            return back()->withInput()->withErrors('休暇時間は既に登録されています。 変更する必要がある場合は、管理者に連絡してください。');
-        };
-
         // Checking the maximum time to leave
         if($validatedData['end_time'] > intval(Common::getSystemConfig('MAX_LEAVE_TIME'))) {
             return back()->withInput()->withErrors(config('messages.010012'));
         }
+        
+        if (intval(Str::substr($validatedData['end_time'], 0, 2)) >= 24) {
+            $currentDate = Carbon::yesterday()->toDateString();
+            $endtimeYesterday = $this->isRegistEndTimeYesterday($user->operator_cd, $currentDate);
+            if (is_null($endtimeYesterday->end_time)) {
+                if(!$this->workDatesRepository->registLeaveTime(
+                    $user->operator_cd, 
+                    $validatedData['end_time'],
+                    $currentDate
+                )) {
+                    return back()->withInput()->withErrors('情報の登録に失敗しました');
+                } else {
+                    $request->session()->flash('message', config('messages.000004'));
+                    return redirect()->action('Person\WorkDatesController@index');
+                }
+            } else {
+                return back()->withInput()->withErrors(config('messages.010010'));
+            }
+        } else {
+            $currentDate = Carbon::now()->toDateString();
 
-        if(!$this->workDatesRepository->registLeaveTime(
-            $user->operator_cd, 
-            $validatedData['end_time'],
-            $currentDate
-        )) {
-            return back()->withInput()->withErrors('情報の登録に失敗しました');
+            // Check leave time registered.
+            if(!$this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
+                return back()->withInput()->withErrors(config('messages.010010'));
+            };
+
+            // Check leave time registered.
+            if($this->workDatesRepository->isLeaveTime($user->operator_cd)) {
+                return back()->withInput()->withErrors('休暇時間は既に登録されています。 変更する必要がある場合は、管理者に連絡してください。');
+            };
+
+            // Check work time and leave time
+            if(!$this->workDatesRepository->doesEndTimeGreaterStartTime(
+                $user->operator_cd, 
+                $validatedData['end_time']
+            )) {
+                return back()->withInput()->withErrors(config('messages.010011'));
+            };
+
+            if(!$this->workDatesRepository->registLeaveTime(
+                $user->operator_cd, 
+                $validatedData['end_time'],
+                $currentDate
+            )) {
+                return back()->withInput()->withErrors('情報の登録に失敗しました');
+            }
         }
         
         // Caculate working time, break time, overtime, late night overtime 
@@ -232,5 +247,10 @@ class WorkDatesController extends Controller
         $request->session()->flash('message', config('messages.000004'));
         $request->flash();
         return redirect()->action('Person\WorkDatesController@index');
+    }
+
+    private function isRegistEndTimeYesterday(int $operatorCd, string $date)
+    {
+        return $this->workDatesRepository->isRegistEndTimeYesterday($operatorCd, $date);
     }
 }
