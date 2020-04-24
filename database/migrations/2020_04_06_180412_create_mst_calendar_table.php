@@ -15,6 +15,7 @@ class CreateMstCalendarTable extends Migration
     {
         Schema::create('mst_calendar', function (Blueprint $table) {
             $table->date('calendar_ymd')->primary();
+            $table->string('target_ym', 6);
             $table->string('era', 20);
             $table->integer('year_jp');
             $table->integer('legalholiday_flg')->default(0);
