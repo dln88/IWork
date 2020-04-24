@@ -293,7 +293,7 @@ class WorkDatesController extends Controller
         LogActionUtil::logAction($dataLog);
         
         // name file of csv
-        $nameCSV = 'attendancelist'. '_' . Carbon::now()->format('YmdHis');
+        $nameCSV = '勤怠一覧'. '_' . Carbon::now()->format('YmdHis');
         
         // Header of csv
         $header = [
@@ -345,7 +345,7 @@ class WorkDatesController extends Controller
         LogActionUtil::logAction($dataLog);
         
         // name file of csv
-        $nameCSV = 'monthlyreportlist'. '_' . $operatorCd . '_' . Carbon::now()->format('YmdHis');
+        $nameCSV = '月報一覧'. '_' . $operatorCd . '_' . Carbon::now()->format('YmdHis');
         
         // Header of csv
         $header = [
