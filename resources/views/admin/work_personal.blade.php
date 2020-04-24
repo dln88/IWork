@@ -56,12 +56,13 @@
 				</button>
 			</div>
 		@endif
-		@if(Session::has('error'))
+		@if(Session::has('errorOperator'))
 			<div class="alert alert-danger alert-dismissible fade show" role="alert" >
-				{{ Session::get('error') }}
+				{{ Session::get('errorOperator') }}
 				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
+				{{ session()->forget('errorOperator') }}
 			</div>
 		@elseif (count($errors) > 0)
 			<div class="alert alert-danger alert-dismissible fade show" role="alert" >

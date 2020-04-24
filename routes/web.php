@@ -51,12 +51,14 @@ Route::group(['middleware' => 'admin', 'namespace' => 'Admin'], function()
         ->name('admin.work_csv');
 
     Route::get('pages/work_admin_personal/{id}/{date}', 'WorkDatesController@personal')
+        ->where(['id' => '[0-9]+', 'date' => '[0-9]+'])
         ->name('admin.work_personal');
 
     Route::get('pages/work_admin_personal/csv', 'WorkDatesController@personalCSV')
         ->name('admin.work_personal_csv');
 
     Route::post('pages/work_admin_personal/{id}', 'WorkDatesController@updateWorkDate')
+        ->where('id', '[0-9]+')
         ->name('admin.work_personal.update');
 });
 
