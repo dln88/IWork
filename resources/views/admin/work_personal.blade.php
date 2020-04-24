@@ -75,9 +75,15 @@
 				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">部門</span>{{ $user->post_name ?? '' }}</h5>
 				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">氏名</span>{{ $user->operator_name ?? '' }}</h5>
 
+				@if (!$errors->any() || !isset($monthlyReport) ||isset($monthlyReport) && count($monthlyReport) == 0)
 				<div class="float-right">
 					<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_personal_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
 				</div>
+				@else
+				<div class="float-right">
+					<button type="button" class="btn btn-outline-primary btn-sm" disabled><i class="fa fa-download"></i> CSV出力</button>
+				</div>
+				@endif
 			</div>
 			<div class="card-body">
 				<div class="table-responsive mb-3">
