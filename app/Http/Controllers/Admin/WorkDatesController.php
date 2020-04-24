@@ -110,7 +110,7 @@ class WorkDatesController extends Controller
             'on_min' => $validatedData['on_min'] ?? null,
             'on_max' => $validatedData['on_max'] ?? null
         ]);
-
+        
         return view('admin.work', compact('timeList', 'page', 'comboBoxChoice'));
     }
 
@@ -156,7 +156,7 @@ class WorkDatesController extends Controller
             'yearMonth' => $date
         ]);
         if (is_null($id) || !$this->checkId($id)) {
-            session()->flash('message', config('messages.010017'));
+            session()->flash('error', config('messages.010017'));
             $disableCSV = false;
             return view('admin.work_personal', compact('disableCSV'));
         }
