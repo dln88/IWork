@@ -216,9 +216,9 @@ class Formula
     public static function calculateTargetYearMonth(string $date)
     {
         $currentTimeTarget = Formula::calculateClosingDate(Carbon::parse($date)->format('Ym'));
-        if ($date < $currentTimeTarget[0]) {
+        if ($date < Carbon::parse($currentTimeTarget[0])->format('Y/m/d')) {
             return Carbon::parse($date)->subMonth()->format('Ym');
-        } else if ($date > $currentTimeTarget[1]) {
+        } else if ($date > Carbon::parse($currentTimeTarget[1])->format('Y/m/d')) {
             return Carbon::parse($date)->addMonth()->format('Ym');
         } else {
             return Carbon::parse($date)->format('Ym');

@@ -52,80 +52,88 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                 post.post_name,
                 ope.operator_cd,
                 ope.operator_last_name || ope.operator_first_name as operator_name,
-                att.target_ym,
-                coalesce (sum (att.working_time), 0.00) as sum_working_time,
-                coalesce (sum (att.over_time), 0.00) as sum_over_time,
-                coalesce (sum (att.late_over_time), 0.00) as late_over_time,
-                coalesce (count (att.working_time), 0) as att_date,
-                coalesce (paid_vacation.cnt, 0.00) as paid_vacation_cnt,
-                coalesce (exchange_day.cnt, 0.00) as exchange_day_cnt,
-                coalesce (special_leave.cnt, 0.00) as special_leave_cnt
-            from
+                cl.target_ym,
+                coalesce( sum(att.working_time), 0.00) as sum_working_time,
+                coalesce( sum(att.over_time), 0.00) as sum_over_time,
+                coalesce( sum(att.late_over_time), 0.00) as late_over_time,
+                coalesce( count(att.working_time), 0) as att_date,
+                coalesce( paid_vacation.cnt, 0.00) as paid_vacation_cnt,
+                coalesce( exchange_day.cnt, 0.00) as exchange_day_cnt,
+                coalesce( special_leave.cnt, 0.00) as special_leave_cnt
+                from
                 mst_calendar cl
+                
                 inner join mst_operator ope
-                    on ope.delete_flg = 0
+                on ope.delete_flg = 0
+                
                 inner join mst_post post
-                    on ope.post_cd = post.post_cd
-                    and post.delete_flg = 0
+                on ope.post_cd = post.post_cd
+                and post.delete_flg =0
+                
                 left outer join trn_attendance att
-                    on cl.calendar_ymd = att.regi_date
-                    and ope.operator_cd = att.operator_cd
-                    and att.delete_flg = 0
+                on cl.calendar_ymd = att.regi_date
+                and ope.operator_cd = att.operator_cd
+                and att.delete_flg = 0
+                
                 left outer join (
-                    select
-                        hl.operator_cd,
-                        hl.target_ym,
-                        sum (hl.acquisition_num) as cnt
-                    from
-                        trn_holiday hl
-                    where
-                        hl.delete_flg = 0
-                        and hl.withdrawal_kbn = 0
-                        and hl.holiday_form = 1
-                    group by
-                        hl.operator_cd,
-                        hl.target_ym
+                select
+                hl.operator_cd,
+                hl.target_ym,
+                sum(hl.acquisition_num) as cnt
+                from
+                trn_holiday hl
+                where
+                hl.delete_flg = 0
+                and hl.withdrawal_kbn = 0
+                and hl.holiday_form = 1
+                group by
+                hl.operator_cd,
+                hl.target_ym
                 ) paid_vacation
-                    on ope.operator_cd = paid_vacation.operator_cd
-                    and att.target_ym = paid_vacation.target_ym					
+                on ope.operator_cd = paid_vacation.operator_cd
+                and cl.target_ym = paid_vacation.target_ym
+                
                 left outer join (
-                    select
-                        hl.operator_cd,
-                        hl.target_ym,
-                        sum (hl.acquisition_num) as cnt
-                    from
-                        trn_holiday hl
-                    where
-                        hl.delete_flg = 0
-                        and hl.withdrawal_kbn = 0
-                        and hl.holiday_form = 2
-                    group by
-                        hl.operator_cd,
-                        hl.target_ym
+                select
+                hl.operator_cd,
+                hl.target_ym,
+                sum(hl.acquisition_num) as cnt
+                from
+                trn_holiday hl
+                where
+                hl.delete_flg = 0
+                and hl.withdrawal_kbn = 0
+                and hl.holiday_form = 2
+                group by
+                hl.operator_cd,
+                hl.target_ym
                 ) exchange_day
-                    on ope.operator_cd = exchange_day.operator_cd
-                    and att.target_ym = exchange_day.target_ym
-                left outer join (
-                    select
-                        hl.operator_cd,
-                        hl.target_ym,
-                        sum (hl.acquisition_num) as cnt
-                    from
-                        trn_holiday hl
-                    where
-                        hl.delete_flg = 0
-                        and hl.withdrawal_kbn = 0
-                        and hl.holiday_form = 3
-                    group by
-                        hl.operator_cd,
-                        hl.target_ym
+                on ope.operator_cd = exchange_day.operator_cd
+                and cl.target_ym = exchange_day.target_ym
+                
+            left outer join (
+                select
+                hl.operator_cd,
+                hl.target_ym,
+                sum(hl.acquisition_num
+            ) as cnt
+                from
+                trn_holiday hl
+                where
+                hl.delete_flg = 0
+                and hl.withdrawal_kbn = 0
+                and hl.holiday_form = 3
+            group by
+                hl.operator_cd,
+                hl.target_ym
                 ) special_leave
-                    on ope.operator_cd = special_leave.operator_cd
-                    and att.target_ym = special_leave.target_ym
+                on ope.operator_cd = special_leave.operator_cd
+                and cl.target_ym = special_leave.target_ym
             where
-                att.delete_flg = 0
-                and att.target_ym >= ? 
-                and att.target_ym <= ? ";
+                cl.delete_flg = 0
+                
+                and cl.target_ym >= ?
+                and cl.target_ym <= ?";
         if(isset($validatedData['emp_num'])) {
             $empNum = $validatedData['emp_num'];
             $query .= " and to_number (ope.emp_no, '999999999999999') = $empNum";
@@ -142,16 +150,16 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         }
 
         $query .= " group by
-                ope.operator_cd,
-                ope.post_cd,
-                ope.emp_no,
-                att.target_ym,
-                ope.operator_last_name,
-                ope.operator_first_name,
-                post.post_name,
-                paid_vacation.cnt,
-                exchange_day.cnt,
-                special_leave.cnt";
+            ope.operator_cd,
+            ope.post_cd,
+            ope.emp_no,
+            cl.target_ym,
+            ope.operator_last_name,
+            ope.operator_first_name,
+            post.post_name,
+            paid_vacation.cnt,
+            exchange_day.cnt,
+            special_leave.cnt";
 
         if(
             isset($validatedData['ot_min']) || isset($validatedData['ot_max']) ||
@@ -190,8 +198,8 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         };
         
         $query .= " order by
-                att.target_ym,
-                ope.emp_no";
+            cl.target_ym,
+            ope.emp_no;";
 
         return DB::select(DB::raw($query), array(
             $validatedData['from_month'],
@@ -263,13 +271,13 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                     and hl_special_leave.withdrawal_kbn = 0
                     and hl_special_leave.delete_flg = 0
             where
-                cl.delete_flg = 0 and att.target_ym = ?
+                cl.delete_flg = 0 and cl.target_ym = ?
             order by cl.calendar_ymd";
 
         return DB::select($query, [$id, $id, $id, $id, $yearMonth]);
     }
 
-    public function getAttendanceByDate($id, $date)
+    public function getAttendanceByDate($id, $yearMonth)
     {
         $query = "
             select
@@ -389,6 +397,6 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
 
     public function existUserID($id)
     {
-        return DB::table('trn_attendance')->where('operator_cd', $id)->exists();
+        return DB::table('mst_operator')->where('operator_cd', $id)->exists();
     }
 }

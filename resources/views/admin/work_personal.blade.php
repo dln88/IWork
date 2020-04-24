@@ -117,14 +117,14 @@
 						</thead>
 						<tbody>
 							@foreach ($monthlyReport as $val)
-							<tr class="table-danger-c">
+							<tr>
 								<td class="text-center" nowrap>
 									<button type="button"
 										class="btn btn-info btn-sm"
 										data-date="{{ $val->calendar_ymd }}"
-										data-starttime="{{ $val->start_time }}"
-										data-endtime="{{ $val->end_time }}"
-										data-memo="{{ $val->memo }}"
+										data-starttime="{{ $val->start_time ?? '00:00' }}"
+										data-endtime="{{ $val->end_time ?? '00:00' }}"
+										data-memo="{{ $val->memo ?? '' }}"
 										data-paid="{{ $val->paid_vacation_cnt > 0 ? 'on' : 'off' }}"
 										data-exchange="{{ $val->exchange_day_cnt > 0 ? 'on' : 'off' }}"
 										data-special="{{ $val->special_leave_cnt > 0 ? 'on' : 'off' }}"
@@ -158,17 +158,17 @@
 											日
 									@endswitch
 								</td>
-								<td class="text-center" nowrap>{{ $val->start_time }}</td>
-								<td class="text-center" nowrap>{{ $val->end_time }}</td>
-								<td class="text-center" nowrap>{{ $val->break_time }}</td>
-								<td class="text-center" nowrap>{{ $val->working_time }}</td>
-								<td class="text-center" nowrap>{{ $val->over_time }}</td>
-								<td class="text-center" nowrap>{{ $val->late_over_time }}</td>
-								<td class="text-center" nowrap>{{ $val->interval_time }}</td>
-								<td class="text-center" nowrap>{{ $val->paid_vacation_cnt }}</td>
-								<td class="text-center" nowrap>{{ $val->exchange_day_cnt }}</td>
-								<td class="text-center" nowrap>{{ $val->special_leave_cnt }}</td>
-								<td class="text-center" nowrap>{{ $val->memo }}</td>
+								<td class="text-center" nowrap>{{ $val->start_time ?? '00:00' }}</td>
+								<td class="text-center" nowrap>{{ $val->end_time ?? '00:00' }}</td>
+								<td class="text-center" nowrap>{{ $val->break_time ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->working_time ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->over_time ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->late_over_time ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->interval_time ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->paid_vacation_cnt ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->exchange_day_cnt ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->special_leave_cnt ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->memo ?? ''}}</td>
 							</tr>	
 							@endforeach
 						</tbody>
