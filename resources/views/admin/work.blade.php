@@ -96,7 +96,7 @@
 													<span class="input-group-text search_item_lbl_width" id="name">社員番号</span>
 												</div>
 												<input type="text" class="form-control" id="shainNo" name="emp_num" 
-													aria-describedby="emailHelp" value="{{ old('emp_num') ?? '' }}">
+													aria-describedby="emailHelp" value="{{ old('emp_num') ?? request()->get('emp_num') }}">
 											</div>
 										</div>
 									</div>
@@ -123,7 +123,7 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text search_item_lbl_width" id="name">氏名</span>
 												</div>
-												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placehgeter="" value="{{ old('name') ?? '' }}">
+												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placehgeter="" value="{{ old('name') ?? request()->get('name') }}">
 											</div>
 										</div>
 									</div>
