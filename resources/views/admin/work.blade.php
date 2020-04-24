@@ -222,14 +222,14 @@
 		<div class="card">
 			<div class="card-header">
 				<i class="fas fa-list" style="margin-right:1rem;"></i>勤怠一覧
-				@if (!$errors->any() || !isset($timeList) ||isset($timeList) && count($timeList) == 0)
-				<div class="float-right">
-					<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
-				</div>
+				@if (!isset($timeList) || (isset($timeList) && count($timeList) < 1) || $errors->any())
+					<div class="float-right">
+						<button type="button" class="btn btn-outline-primary btn-sm" disabled><i class="fa fa-download"></i> CSV出力</button>
+					</div>
 				@else
-				<div class="float-right">
-					<button type="button" class="btn btn-outline-primary btn-sm" disabled><i class="fa fa-download"></i> CSV出力</button>
-				</div>
+					<div class="float-right">
+						<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
+					</div>
 				@endif
 			</div>
 			<div class="card-body">
