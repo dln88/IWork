@@ -274,6 +274,7 @@ class WorkDatesController extends Controller
         $data['ot_max'] = session('ot_max');
         $data['on_min'] = session('on_min');
         $data['on_max'] = session('on_max');
+        
         $timeListArray = $this->adminWorkRepository->getTimeListByCondition($data);
         if (count($timeListArray) < 1) {
             return back()->withInput()->withErrors(config('messages.000016'));
@@ -363,7 +364,7 @@ class WorkDatesController extends Controller
                 'post_name' => session('user')->post_name,
                 'operator_name' => Common::operatorName((array) session('user')),
                 'date' => $monthlyReport->regi_date,
-                'day_of_week' => Common::convertToDayOfWeek($monthlyReport->regi_date),
+                'day_of_week' => $monthlyReport->regi_date ? Common::convertToDayOfWeek($monthlyReport->regi_date) : '',
             ) + (array) $monthlyReport;
             
             unset($monthlyReport['regi_date']);
