@@ -53,98 +53,97 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                 ope.operator_cd,
                 ope.operator_last_name || ope.operator_first_name as operator_name,
                 cl.target_ym,
-                coalesce( sum(att.working_time), 0.00) as sum_working_time,
-                coalesce( sum(att.over_time), 0.00) as sum_over_time,
-                coalesce( sum(att.late_over_time), 0.00) as late_over_time,
-                coalesce( count(att.working_time), 0) as att_date,
-                coalesce( paid_vacation.cnt, 0.00) as paid_vacation_cnt,
-                coalesce( exchange_day.cnt, 0.00) as exchange_day_cnt,
-                coalesce( special_leave.cnt, 0.00) as special_leave_cnt
-                from
+                coalesce (sum(att.working_time), 0.00) as sum_working_time,
+                coalesce (sum(att.over_time), 0.00) as sum_over_time,
+                coalesce (sum(att.late_over_time), 0.00) as late_over_time,
+                coalesce (count(att.working_time), 0) as att_date,
+                coalesce (paid_vacation.cnt, 0.00) as paid_vacation_cnt,
+                coalesce (exchange_day.cnt, 0.00) as exchange_day_cnt,
+                coalesce (special_leave.cnt, 0.00) as special_leave_cnt
+            from
                 mst_calendar cl
                 
                 inner join mst_operator ope
-                on ope.delete_flg = 0
+                    on ope.delete_flg = 0
                 
                 inner join mst_post post
-                on ope.post_cd = post.post_cd
-                and post.delete_flg =0
+                    on ope.post_cd = post.post_cd
+                    and post.delete_flg =0
                 
                 left outer join trn_attendance att
-                on cl.calendar_ymd = att.regi_date
-                and ope.operator_cd = att.operator_cd
-                and att.delete_flg = 0
+                    on cl.calendar_ymd = att.regi_date
+                    and ope.operator_cd = att.operator_cd
+                    and att.delete_flg = 0
                 
                 left outer join (
-                select
-                hl.operator_cd,
-                hl.target_ym,
-                sum(hl.acquisition_num) as cnt
-                from
-                trn_holiday hl
-                where
-                hl.delete_flg = 0
-                and hl.withdrawal_kbn = 0
-                and hl.holiday_form = 1
-                group by
-                hl.operator_cd,
-                hl.target_ym
+                    select
+                        hl.operator_cd,
+                        hl.target_ym,
+                        sum(hl.acquisition_num) as cnt
+                    from
+                        trn_holiday hl
+                    where
+                        hl.delete_flg = 0
+                        and hl.withdrawal_kbn = 0
+                        and hl.holiday_form = 1
+                    group by
+                        hl.operator_cd,
+                        hl.target_ym
                 ) paid_vacation
-                on ope.operator_cd = paid_vacation.operator_cd
-                and cl.target_ym = paid_vacation.target_ym
+                    on ope.operator_cd = paid_vacation.operator_cd
+                    and cl.target_ym = paid_vacation.target_ym
                 
                 left outer join (
-                select
-                hl.operator_cd,
-                hl.target_ym,
-                sum(hl.acquisition_num) as cnt
-                from
-                trn_holiday hl
-                where
-                hl.delete_flg = 0
-                and hl.withdrawal_kbn = 0
-                and hl.holiday_form = 2
-                group by
-                hl.operator_cd,
-                hl.target_ym
+                    select
+                        hl.operator_cd,
+                        hl.target_ym,
+                        sum(hl.acquisition_num) as cnt
+                    from
+                        trn_holiday hl
+                    where
+                        hl.delete_flg = 0
+                        and hl.withdrawal_kbn = 0
+                        and hl.holiday_form = 2
+                    group by
+                        hl.operator_cd,
+                        hl.target_ym
                 ) exchange_day
-                on ope.operator_cd = exchange_day.operator_cd
-                and cl.target_ym = exchange_day.target_ym
+                    on ope.operator_cd = exchange_day.operator_cd
+                    and cl.target_ym = exchange_day.target_ym
                 
-            left outer join (
-                select
-                hl.operator_cd,
-                hl.target_ym,
-                sum(hl.acquisition_num
-            ) as cnt
-                from
-                trn_holiday hl
-                where
-                hl.delete_flg = 0
-                and hl.withdrawal_kbn = 0
-                and hl.holiday_form = 3
-            group by
-                hl.operator_cd,
-                hl.target_ym
+                left outer join (
+                    select
+                        hl.operator_cd,
+                        hl.target_ym,
+                        sum(hl.acquisition_num) as cnt
+                    from
+                        trn_holiday hl
+                    where
+                        hl.delete_flg = 0
+                        and hl.withdrawal_kbn = 0
+                        and hl.holiday_form = 3
+                    group by
+                        hl.operator_cd,
+                        hl.target_ym
                 ) special_leave
-                on ope.operator_cd = special_leave.operator_cd
-                and cl.target_ym = special_leave.target_ym
+                    on ope.operator_cd = special_leave.operator_cd
+                    and cl.target_ym = special_leave.target_ym
             where
                 cl.delete_flg = 0
-                
                 and cl.target_ym >= ?
                 and cl.target_ym <= ?";
-        if(isset($validatedData['emp_num'])) {
+
+        if (isset($validatedData['emp_num'])) {
             $empNum = $validatedData['emp_num'];
             $query .= " and to_number (ope.emp_no, '999999999999999') = $empNum";
         };
 
-        if(isset($validatedData['department_id'])) {
+        if (isset($validatedData['department_id'])) {
             $departmentId = $validatedData['department_id'];
             $query .= " and ope.post_cd =  $departmentId";
         };
 
-        if(isset($validatedData['name'])) {
+        if (isset($validatedData['name'])) {
             $fullname = $validatedData['name'];
             $query .= " and ope.operator_last_name || ope.operator_first_name like '%$fullname%'";
         }
@@ -161,14 +160,14 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             exchange_day.cnt,
             special_leave.cnt";
 
-        if(
+        if (
             isset($validatedData['ot_min']) || isset($validatedData['ot_max']) ||
             isset($validatedData['on_min']) || isset($validatedData['on_max'])
         ) {
             $query .= " having ";
         };
 
-        if(isset($validatedData['ot_min'])) {
+        if (isset($validatedData['ot_min'])) {
             $otMin = $validatedData['ot_min'];
             $query .= " COALESCE(SUM(ATT.OVER_TIME), '0.00') >= $otMin";
             if (isset($validatedData['ot_max']) || isset($validatedData['on_min']) || isset($validatedData['on_max'])) {
@@ -176,7 +175,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             }
         };
 
-        if(isset($validatedData['ot_max'])) {
+        if (isset($validatedData['ot_max'])) {
             $otMax = $validatedData['ot_max'];
             $query .= " SUM (ATT.OVER_TIME) <= $otMax";
             if (isset($validatedData['on_min']) || isset($validatedData['on_max'])) {
@@ -184,7 +183,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             }
         };
 
-        if(isset($validatedData['on_min'])) {
+        if (isset($validatedData['on_min'])) {
             $onMin = $validatedData['on_min'];
             $query .= " COALESCE(SUM(ATT.LATE_OVER_TIME), '0.00') >= $onMin";
             if (isset($validatedData['on_max'])) {
@@ -192,7 +191,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             }
         };
 
-        if(isset($validatedData['on_max'])) {
+        if (isset($validatedData['on_max'])) {
             $onMax = $validatedData['on_max'];
             $query .= " SUM (ATT.LATE_OVER_TIME) <= $onMax";
         };
@@ -277,7 +276,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         return DB::select($query, [$id, $id, $id, $id, $yearMonth]);
     }
 
-    public function getAttendanceByDate($id, $yearMonth)
+    public function getAttendanceByDate($id, $date)
     {
         $query = "
             select
