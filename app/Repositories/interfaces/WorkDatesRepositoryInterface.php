@@ -93,4 +93,6 @@ interface WorkDatesRepositoryInterface
      * @return boolean
      */
     public function caculateAndRegistTime(int $operatorCd, string $currentDate);
+
+    public function isRegistEndTimeYesterday(int $operatorCd, string $date);
 }
