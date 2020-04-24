@@ -155,14 +155,15 @@ class WorkDatesController extends Controller
             'operatorId' => $id,
             'yearMonth' => $date
         ]);
-
-        if (is_null($id)) {
-            session()->flash('message', config('messages.010017')); 
+        if (is_null($id) || !$this->checkId($id)) {
+            session()->flash('message', config('messages.010017'));
+            $disableCSV = false;
+            return view('admin.work_personal', compact('disableCSV'));
         }
         $user = $this->adminWorkRepository->getUserByKey($id);
         $user = $user[0];
         $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id, $date);
-        
+
         // Log action
         $dataLog = [
             'operation_timestamp' => Carbon::now()->timestamp,
@@ -177,6 +178,11 @@ class WorkDatesController extends Controller
         LogActionUtil::logAction($dataLog);
 
         return view('admin.work_personal', compact('user', 'monthlyReport'));
+    }
+
+    private function checkId($id)
+    {
+        return $this->adminWorkRepository->existUserID($id);
     }
 
     /**
@@ -207,7 +213,9 @@ class WorkDatesController extends Controller
             $this->adminWorkRepository->insertWorkDate($id, $data);
         }
 
-        $this->adminWorkRepository->updateVacation($id, $data);
+        if (!is_null($data['paid']) || !is_null($data['exchange']) || !is_null($data['special'])) {
+            $this->adminWorkRepository->updateVacation($id, $data);
+        }
         
         // Log action
         $dataLog = [

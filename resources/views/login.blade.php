@@ -78,17 +78,17 @@
             <div class="card-body">
                 <!-- ログインID -->
                 <div class="form-group">
-                    <input type="text" {{ !$errors->has('password') || $errors->has('user_id') ? 'autofocus' : '' }} name="user_id"  value="{{ old('user_id') ??  Session::get('user_id') }}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
+                    <input type="text" tabindex="1" {{ !$errors->has('password') || $errors->has('user_id') ? 'autofocus' : '' }} name="user_id"  value="{{ old('user_id') ??  Session::get('user_id') }}" class="form-control input-lg" label="ログインID" placeholder="ログインID" maxlength="200"></input>
                 </div>
                 <!-- パスワード -->
                 <div class="form-group">
-                    <input type="password" {{ !$errors->has('user_id') ? 'autofocus' : '' }}  name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ old('password') ?? request()->get('password') }}"></input>
+                    <input type="password" tabindex="2" {{ !$errors->has('user_id') ? 'autofocus' : '' }}  name="password" class="form-control input-lg" label="パスワード" placeholder="パスワード" maxlength="30" value="{{ old('password') ?? request()->get('password') }}"></input>
                 </div>
                 <!-- ボタン -->
-                <button class="btn btn-lg btn-info btn-block" type="submit" onclick="login()" >
+                <button class="btn btn-lg btn-info btn-block" tabindex="3" type="submit" onclick="login()" >
                     ログイン
                 </button>
-                <button class="btn btn-lg btn-outline-info btn-block" type="button" onclick="loginAdmin();" >
+                <button class="btn btn-lg btn-outline-info btn-block" tabindex="4" type="button" onclick="loginAdmin();" >
                     管理者としてログイン
                 </button>
             </div>
@@ -104,7 +104,6 @@
             $('#frmLogin').attr('action', "{{route('admin.login.post')}}");
             $('#frmLogin').submit();
         }
-
     </script>
 </div>
 

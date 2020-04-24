@@ -71,9 +71,9 @@
 		<div class="card">
 			<div class="card-header">
 				<i class="fas fa-list" style="margin-right:1rem;"></i>
-				<h5 class="d-inline"><span class="badge badge-secondary" style="margin-right:1rem;">社員番号</span>{{ $user->emp_no }}</h5>
-				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">部門</span>{{ $user->post_name }}</h5>
-				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">氏名</span>{{ $user->operator_name }}</h5>
+				<h5 class="d-inline"><span class="badge badge-secondary" style="margin-right:1rem;">社員番号</span>{{ $user->emp_no ?? '' }}</h5>
+				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">部門</span>{{ $user->post_name ?? '' }}</h5>
+				<h5 class="d-inline" style="margin-left:1rem;"><span class="badge badge-secondary" style="margin-right:1rem;">氏名</span>{{ $user->operator_name ?? '' }}</h5>
 
 				<div class="float-right">
 					<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_personal_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
@@ -201,15 +201,15 @@
 						<input type="text" class="form-control" id="memo" name='memo'>
 					</div>
 					<div class="form-group">
-						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
+						<div class="custom-control custom-switch" id="customSwitchPaid"  style="margin-bottom:0.5rem;">
 							<input type="checkbox" class="custom-control-input"  id="customSwitch1" name='paid'>
 							<label class="custom-control-label" for="customSwitch1">休暇取消を実施する <span class="badge badge-warning">有休</span></label>
 						</div>
-						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
+						<div class="custom-control custom-switch" id="customSwitchExchange" style="margin-bottom:0.5rem;">
 							<input type="checkbox" class="custom-control-input" id="customSwitch2" name='exchange'>
 							<label class="custom-control-label" for="customSwitch2">休暇取消を実施する <span class="badge badge-info">振休</span></label>
 						</div>
-						<div class="custom-control custom-switch" style="margin-bottom:0.5rem;">
+						<div class="custom-control custom-switch" id="customSwitchHoliday" style="margin-bottom:0.5rem;">
 							<input type="checkbox" class="custom-control-input" id="customSwitch3" name='special'>
 							<label class="custom-control-label" for="customSwitch3">休暇取消を実施する <span class="badge badge-dark">特休</span></label>
 						</div>
@@ -260,12 +260,18 @@
 
 		if (paid === 'on') {
 			$('#customSwitch1').attr('checked', true)
+		} else {
+			$('#customSwitchPaid').attr('style', 'display: none;')
 		}
 		if (exchange === 'on') {
 			$('#customSwitch2').attr('checked', true)
+		} else {
+			$('#customSwitchExchange').attr('style', 'display: none;')
 		}
 		if (special === 'on') {
 			$('#customSwitch3').attr('checked', true)
+		} else {
+			$('#customSwitchHoliday').attr('style', 'display: none;')
 		}
 	});
 	function save() {

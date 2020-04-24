@@ -14,4 +14,5 @@ interface AdminWorkRepositoryInterface
     public function updateWorkDate($id, $data);
     public function insertWorkDate($id, $data);
     public function updateVacation($id, $data);
+    public function existUserID($id);
 }

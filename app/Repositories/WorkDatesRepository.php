@@ -270,7 +270,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
       $actualWorkingTime = $totalWorkingTime - $breakTime;
       $overTime = Formula::calculateOverTime($actualWorkingTime);
       $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
-      $intervalTime = Formula::calculateIntervalTime($startTime);
+      $intervalTime = Formula::calculateIntervalTime($startTime, $currentDate, $operatorCd);
       
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,

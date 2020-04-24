@@ -322,8 +322,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $actualWorkingTime = $totalWorkingTime - $breakTime;
         $overTime = Formula::calculateOverTime($actualWorkingTime);
         $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
-        $intervalTime = Formula::calculateIntervalTime($startTime);
-
+        $intervalTime = Formula::calculateIntervalTime($startTime, $data['date'], $id);
         return DB::table('trn_attendance')->where([
             'operator_cd' => $id,
             'regi_date' => $data['date'],
@@ -350,7 +349,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $actualWorkingTime = $totalWorkingTime - $breakTime;
         $overTime = Formula::calculateOverTime($actualWorkingTime);
         $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
-        $intervalTime = Formula::calculateIntervalTime($startTime);
+        $intervalTime = Formula::calculateIntervalTime($startTime, $data['date'], $id);
         $targetYm = Formula::calculateTargetYearMonth($data['date']);
         return DB::table('trn_attendance')->insert([
             'operator_cd' => $id,
@@ -378,23 +377,18 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
 
     public function updateVacation($id, $data)
     {
-        if(!is_null($data['paid'])) {
-            $holidayForm = 1;
-        } elseif (!is_null($data['exchange'])) {
-            $holidayForm = 2;
-        } elseif (!is_null($data['special'])) {
-            $holidayForm = 3;
-        } else {
-            $holidayForm = 0;
-        }
-
         return DB::table('trn_holiday')->where([
             'operator_cd' => $id,
             'acquisition_ymd' => $data['date'],
             'delete_flg' => 0
         ])->update([
-            'holiday_form' => $holidayForm,
             'update_date' => Carbon::now()->toDateTimeString(),
+            'delete_flg' => 1
         ]);
+    }
+
+    public function existUserID($id)
+    {
+        return DB::table('trn_attendance')->where('operator_cd', $id)->exists();
     }
 }
