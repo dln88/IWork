@@ -98,11 +98,14 @@ class Formula
    /**
     * Calculation of interval time
     *
-    * @return void
+    * @param string $attTime
+    * @param string $dateAttendanceTime
+    * @param int $operatorCd
+    * @return integer
     */
-   public static function calculateIntervalTime($attTime)
+   public static function calculateIntervalTime($attTime, $dateAttendanceTime, $operatorCd)
    {
-      $attTime =  Carbon::parse($attTime);
+      $dateAttendanceTime = Carbon::parse($dateAttendanceTime)->format('Y-m-d');
       $query = "select att.regi_date, att.end_time
          from trn_attendance att
          where
@@ -113,8 +116,8 @@ class Formula
          limit 1";
       $attendance = DB::select($query,
          [
-            session('user')->operator_cd,
-            Carbon::parse($attTime)->format('Y-m-d')
+            $operatorCd,
+            $dateAttendanceTime
          ]
       );
       if (count($attendance) == 0 || is_null($attendance[0]->regi_date) || is_null($attendance[0]->end_time)) {
@@ -128,7 +131,14 @@ class Formula
       $hour = Str::substr($previousEndTime, 0, 2);
       $minute = Str::substr($previousEndTime, 3, 2);
       $endTime = Carbon::create($year, $month, $day, $hour, $minute);
-      $interval = $attTime->diffInHours($endTime);
+      $attDate = Carbon::create(
+         Str::substr($dateAttendanceTime, 0, 4),
+         Str::substr($dateAttendanceTime, 5, 2),
+         Str::substr($dateAttendanceTime, 8, 2),
+         Str::substr($attTime, 0, 2),
+         Str::substr($attTime, 3, 2)
+      );
+      $interval = $attDate->diffInHours($endTime);
       if ($interval > 99.99) {
          return 99.99;
       }

@@ -10,7 +10,9 @@
 <hr>
 <p>
     <center>
-        Perhaps you would like to go to <a href="{{{ URL::to('/') }}}">home page</a>?
+        Perhaps you would like to go to
+         <a href="{{ url()->previous() }}">previous page</a> or
+         <a href="{{{ URL::to('/') }}}">home page</a>?
     </center>
 </p>
 </body>
