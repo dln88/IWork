@@ -200,9 +200,6 @@ class WorkDatesController extends Controller
                             $currentDate
                         )) {
                             return back()->withInput()->withErrors('情報の登録に失敗しました');
-                        } else {
-                            $request->session()->flash('message', config('messages.000004'));
-                            return redirect()->action('Person\WorkDatesController@index');
                         }
                     } else {
                         return back()->withInput()->withErrors(config('messages.010010'));
