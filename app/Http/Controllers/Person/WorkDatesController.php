@@ -182,20 +182,24 @@ class WorkDatesController extends Controller
         
         if (intval(Str::substr($validatedData['end_time'], 0, 2)) >= 24) {
             $currentDate = Carbon::yesterday()->toDateString();
-            $endtimeYesterday = $this->isRegistEndTimeYesterday($user->operator_cd, $currentDate);
-            if (is_null($endtimeYesterday->end_time)) {
-                if(!$this->workDatesRepository->registLeaveTime(
-                    $user->operator_cd, 
-                    $validatedData['end_time'],
-                    $currentDate
-                )) {
-                    return back()->withInput()->withErrors('情報の登録に失敗しました');
+            $timeYesterday = $this->isRegistEndTimeYesterday($user->operator_cd, $currentDate);
+            if(isset($timeYesterday)) {
+                if (is_null($timeYesterday->end_time)) {
+                    if(!$this->workDatesRepository->registLeaveTime(
+                        $user->operator_cd, 
+                        $validatedData['end_time'],
+                        $currentDate
+                    )) {
+                        return back()->withInput()->withErrors('情報の登録に失敗しました');
+                    } else {
+                        $request->session()->flash('message', config('messages.000004'));
+                        return redirect()->action('Person\WorkDatesController@index');
+                    }
                 } else {
-                    $request->session()->flash('message', config('messages.000004'));
-                    return redirect()->action('Person\WorkDatesController@index');
+                    return back()->withInput()->withErrors(config('messages.010010'));
                 }
             } else {
-                return back()->withInput()->withErrors(config('messages.010010'));
+                return back()->withInput()->withErrors(config('messages.000009'));
             }
         } else {
             $currentDate = Carbon::now()->toDateString();
