@@ -221,8 +221,7 @@ class WorkDatesController extends Controller
             } else {
                 $this->adminWorkRepository->insertWorkDate($id, $data);
             }
-
-            if (!is_null($data['paid']) || !is_null($data['exchange']) || !is_null($data['special'])) {
+            if (is_null($data['paid']) || is_null($data['exchange']) || is_null($data['special'])) {
                 $this->adminWorkRepository->updateVacation($id, $data);
             }
             
@@ -259,10 +258,10 @@ class WorkDatesController extends Controller
     private function isEndTimeGreaterThanStartTime(string $startTime, string $endTime)
     {
         if (
-            (intval(Str::substr($endTime, 0, 2)) > intval(Str::substr($startTime, 0, 2)) ) or 
+            (intval(Str::substr($endTime, 0, 2)) >= intval(Str::substr($startTime, 0, 2)) ) or 
             (
                 intval(Str::substr($endTime, 0, 2)) === intval(Str::substr($startTime, 0, 2)) and
-                intval(Str::substr($endTime, 2, 2)) > intval(Str::substr($startTime, 2, 2))
+                intval(Str::substr($endTime, 2, 2)) >= intval(Str::substr($startTime, 2, 2))
             )
         ) {
             return true;
