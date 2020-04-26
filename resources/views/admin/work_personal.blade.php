@@ -160,16 +160,16 @@
 								</td>
 								<td class="text-center" nowrap>{{ $val->start_time ?? '00:00' }}</td>
 								<td class="text-center" nowrap>{{ $val->end_time ?? '00:00' }}</td>
-								<td class="text-center" nowrap>{{ $val->break_time ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->working_time ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->over_time ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->late_over_time ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->interval_time ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->paid_vacation_cnt ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->exchange_day_cnt ?? 00.00 }}</td>
-								<td class="text-center" nowrap>{{ $val->special_leave_cnt ?? 00.00 }}</td>
+								<td class="text-center" nowrap>{{ $val->break_time ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->working_time ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->over_time ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->late_over_time ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->interval_time ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->paid_vacation_cnt ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->exchange_day_cnt ?? number_format(0, 2) }}</td>
+								<td class="text-center" nowrap>{{ $val->special_leave_cnt ?? number_format(0, 2) }}</td>
 								<td class="text-center" nowrap>{{ $val->memo ?? ''}}</td>
-							</tr>	
+							</tr>
 							@endforeach
 						</tbody>
 					</table>

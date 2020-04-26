@@ -150,6 +150,11 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
     */
    public function registerAttendanceTime(int $operatorCd, string $startTime)
    {
+      $intervalTime = Formula::calculateIntervalTime(
+         $startTime,
+         Carbon::now()->format('Y-m-d'),
+         $operatorCd
+      );
       $targetYm = Formula::calculateTargetYearMonth(Carbon::now()->format('Y-m-d'));
       return DB::table('trn_attendance')->insert([
          'operator_cd' => $operatorCd,
@@ -164,7 +169,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
          'over_time' => 0.00,
          'late_over_time' => 0.00,
          'ex_statutory_wk_time' => 0.00,
-         'interval_time' => 0,
+         'interval_time' => $intervalTime,
          'creater_cd' => $operatorCd,
          'create_date' => Carbon::now()->toDateTimeString(),
          'updater_cd' => $operatorCd,
@@ -269,7 +274,6 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
       $actualWorkingTime = $totalWorkingTime - $breakTime;
       $overTime = Formula::calculateOverTime($actualWorkingTime);
       $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
-      $intervalTime = Formula::calculateIntervalTime($startTime, $currentDate, $operatorCd);
       
       return DB::table('trn_attendance')->where([
             'operator_cd' => $operatorCd,
@@ -279,7 +283,6 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
             'working_time' => $actualWorkingTime,
             'over_time' => $overTime,
             'late_over_time' => $lateNightOverTime,
-            'interval_time' => $intervalTime,
             'updater_cd' => $operatorCd,
             'update_date' => Carbon::now()->toDateTimeString(),
          ]);

@@ -35,35 +35,39 @@ class HolidayController extends Controller
      */
     public function index(Request $request)
     {
-        $paidVacationDays = $this->holidayRepository->getPaidVacationDays();
-        $daysOff = $this->holidayRepository->getDaysOff(
-            $paidVacationDays[0]->target_start,
-            $paidVacationDays[0]->target_end
-        );
-        $paidLeave = $paidVacationDays[0]->grant_days - $daysOff[0]->cnt;
+        try {
+            $paidVacationDays = $this->holidayRepository->getPaidVacationDays();
+            $daysOff = $this->holidayRepository->getDaysOff(
+                $paidVacationDays[0]->target_start,
+                $paidVacationDays[0]->target_end
+            );
+            $paidLeave = $paidVacationDays[0]->grant_days - $daysOff[0]->cnt;
 
-        $holidayLeave = $this->holidayRepository->getHolidayLeaveDays();
-        $numberDaysOff = $this->holidayRepository->getNumberOfDaysOff(
-            $holidayLeave[0]->target_start,
-            $holidayLeave[0]->target_end
-        );
-        $balanceLeft = $holidayLeave[0]->grant_days - $numberDaysOff[0]->cnt;
-        $vacationList = $this->holidayRepository->getVacationList();
-        
-        // Log action
-        $dataLog = [
-            'operation_timestamp' => Carbon::now()->timestamp,
-            'ip_address' => \Request::ip(),
-            'operator_cd' => session('user')->operator_cd,
-            'operator_name' => Common::operatorName((array) session('user')),
-            'screen_id' => 'H000001',
-            'screen_name' => Common::getScreenName('H000001'),
-            'operation' => '初期処理',
-            'contents' => 'なし',
-        ];
-        $currentDate = Carbon::now()->format('Y/m/d');
-        LogActionUtil::logAction($dataLog);
-        return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidLeave', 'currentDate'));
+            $holidayLeave = $this->holidayRepository->getHolidayLeaveDays();
+            $numberDaysOff = $this->holidayRepository->getNumberOfDaysOff(
+                $holidayLeave[0]->target_start,
+                $holidayLeave[0]->target_end
+            );
+            $balanceLeft = $holidayLeave[0]->grant_days - $numberDaysOff[0]->cnt;
+            $vacationList = $this->holidayRepository->getVacationList();
+            
+            // Log action
+            $dataLog = [
+                'operation_timestamp' => Carbon::now()->timestamp,
+                'ip_address' => \Request::ip(),
+                'operator_cd' => session('user')->operator_cd,
+                'operator_name' => Common::operatorName((array) session('user')),
+                'screen_id' => 'H000001',
+                'screen_name' => Common::getScreenName('H000001'),
+                'operation' => '初期処理',
+                'contents' => 'なし',
+            ];
+            $currentDate = Carbon::now()->format('Y/m/d');
+            LogActionUtil::logAction($dataLog);
+            return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidLeave', 'currentDate'));
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 
     /**
@@ -74,37 +78,41 @@ class HolidayController extends Controller
      */
     public function store(StoreHolidayRequest $request)
     {
-        $dateRegister = $request->date;
-        if($this->isOverApplicationDatePast($dateRegister)) {
-            $holidayAppPast = Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
-            return back()->withInput($request->input())->withErrors($holidayAppPast . config('messages.010015'));
-        };
+        try {
+            $dateRegister = $request->date;
+            if($this->isOverApplicationDatePast($dateRegister)) {
+                $holidayAppPast = Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
+                return back()->withInput($request->input())->withErrors($holidayAppPast . config('messages.010015'));
+            };
 
-        if($this->isOverApplicationDateFuture($dateRegister)) {
-            $holidayAppFuture = Common::getSystemConfig('HOLIDAY_APP_FU_MM');
-            return back()->withInput()->withErrors($holidayAppFuture . config('messages.010016'));
-        };
+            if($this->isOverApplicationDateFuture($dateRegister)) {
+                $holidayAppFuture = Common::getSystemConfig('HOLIDAY_APP_FU_MM');
+                return back()->withInput()->withErrors($holidayAppFuture . config('messages.010016'));
+            };
 
-        if($this->doubleCheck($dateRegister)) {
-            return back()->withInput()->withErrors(config('messages.010005'));
-        };
-        
-        $this->holidayRepository->registHoliday($request->all());
+            if($this->doubleCheck($dateRegister)) {
+                return back()->withInput()->withErrors(config('messages.010005'));
+            };
+            
+            $this->holidayRepository->registHoliday($request->all());
 
-        // Log action
-        $dataLog = [
-            'operation_timestamp' => Carbon::now()->timestamp,
-            'ip_address' => \Request::ip(),
-            'operator_cd' => session('user')->operator_cd,
-            'operator_name' => Common::operatorName((array) session('user')),
-            'screen_id' => 'H000001',
-            'screen_name' => Common::getScreenName('H000001'),
-            'operation' => '休暇申請',
-            'contents' => "休暇形態：$request->type, 休暇種別: $request->type_day, 休暇申請日: $dateRegister",
-        ];
-        LogActionUtil::logAction($dataLog);
+            // Log action
+            $dataLog = [
+                'operation_timestamp' => Carbon::now()->timestamp,
+                'ip_address' => \Request::ip(),
+                'operator_cd' => session('user')->operator_cd,
+                'operator_name' => Common::operatorName((array) session('user')),
+                'screen_id' => 'H000001',
+                'screen_name' => Common::getScreenName('H000001'),
+                'operation' => '休暇申請',
+                'contents' => "休暇形態：$request->type, 休暇種別: $request->type_day, 休暇申請日: $dateRegister",
+            ];
+            LogActionUtil::logAction($dataLog);
 
-        return back()->withInput()->with('message', config('messages.000004'));
+            return back()->withInput()->with('message', config('messages.000004'));
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 
     private function isOverApplicationDatePast($dateRegister)

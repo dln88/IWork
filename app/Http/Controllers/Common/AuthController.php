@@ -34,7 +34,11 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        return view('login');
+        try {
+            return view('login');
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 
     /**
@@ -45,13 +49,17 @@ class AuthController extends Controller
      */
     public function doLogin(LoginRequest $request)
     {
-        $credentials  = $request->only(['user_id', 'password']);
-        if ($this->login($credentials['user_id'], $credentials['password'])) {
-            // Log login when the user login successfully.
-            LogLoginUtil::logLoginSuccess();
-            return redirect(route('person.work.dates'));
+        try {
+            $credentials  = $request->only(['user_id', 'password']);
+            if ($this->login($credentials['user_id'], $credentials['password'])) {
+                // Log login when the user login successfully.
+                LogLoginUtil::logLoginSuccess();
+                return redirect(route('person.work.dates'));
+            }
+            return back()->withErrors(config('messages.010001'))->withInput();
+        } catch (\Exception $e) {
+            abort(404);
         }
-        return back()->withErrors(config('messages.010001'))->withInput();
     }
 
     /**
@@ -62,14 +70,18 @@ class AuthController extends Controller
      */
     public function doLoginAdmin(LoginRequest $request)
     {
-        $credentials = $request->only(['user_id', 'password']);
-        if ($this->login($credentials['user_id'], $credentials['password'], 1)){
-            // Log login when the user login successfully.
-            LogLoginUtil::logLoginSuccess();
-            return redirect(route('admin.work_dates'));
-        }
+        try {
+            $credentials = $request->only(['user_id', 'password']);
+            if ($this->login($credentials['user_id'], $credentials['password'], 1)){
+                // Log login when the user login successfully.
+                LogLoginUtil::logLoginSuccess();
+                return redirect(route('admin.work_dates'));
+            }
 
-        return back()->withErrors(config('messages.010001'))->withInput();
+            return back()->withErrors(config('messages.010001'))->withInput();
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 
     /**
@@ -118,7 +130,7 @@ class AuthController extends Controller
      * @param int $operatorCD
      * @return boolean
      */
-    public function isRole(int $operatorCD)
+    private function isRole(int $operatorCD)
     {
         if (empty($this->authRepository->checkRole($operatorCD))) {
             return false;
@@ -131,7 +143,11 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        session()->forget('user');
-        return redirect(route('login'));
+        try {
+            session()->forget('user');
+            return redirect(route('login'));
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 }
