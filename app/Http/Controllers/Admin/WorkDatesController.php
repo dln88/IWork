@@ -39,7 +39,7 @@ class WorkDatesController extends Controller
      */
     public function index(SearchWorkDatesRequest $request)
     {
-        try {
+        // try {
             $dataLog = [
                 'operation_timestamp' => Carbon::now()->timestamp,
                 'ip_address' => \Request::ip(),
@@ -113,9 +113,9 @@ class WorkDatesController extends Controller
             ]);
             
             return view('admin.work', compact('timeList', 'page', 'comboBoxChoice'));
-        } catch (\Exception $e) {
-            abort(404);
-        }
+        // } catch (\Exception $e) {
+        //     abort(404);
+        // }
     }
 
     /**

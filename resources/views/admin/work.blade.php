@@ -110,7 +110,7 @@
 													<option></option>
 													@if (isset($comboBoxChoice) && count($comboBoxChoice) > 0)
 														@foreach ($comboBoxChoice as $postCd)
-															<option value="{{ $postCd->post_cd }}" {{ old('department_id') == $postCd->post_cd ? 'selected' : '' }}>{{ $postCd->post_name }}</option>
+															<option value="{{ $postCd->post_cd }}" {{ request()->get('department_id') == $postCd->post_cd || old('department_id') == $postCd->post_cd ? 'selected' : '' }}>{{ $postCd->post_name }}</option>
 														@endforeach
 													@endif
 												</select>
@@ -162,11 +162,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="orvertime">残業時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? '' }}"/>
+													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? request()->get('ot_min') }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? '' }}"/>
+													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? request()->get('ot_max') }}"/>
 												</div>
 											</div>
 										</div>
@@ -178,11 +178,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="midnight">深夜時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? '' }}"/>
+													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? request()->get('on_min') }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? '' }}"/>
+													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? request()->get('on_max') }}"/>
 												</div>
 											</div>
 										</div>

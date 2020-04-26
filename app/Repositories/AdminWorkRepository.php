@@ -25,6 +25,25 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $currentYearMonth = Carbon::now()->format('Ym');
         $currentTimeTarget = Formula::calculateClosingDate($currentYearMonth);
         $targetYm = Carbon::parse($currentTimeTarget[0])->format('Ym');
+
+        if (isset($validatedData['from_month']) && !is_null($validatedData['from_month'])) {
+            $fromMonth = Carbon::create(
+                Str::substr($validatedData['from_month'], 0, 4),
+                Str::substr($validatedData['from_month'], 5, 2)
+                )->format('Ym');
+        } else {
+            $fromMonth = $currentYearMonth;
+        }
+
+        if (isset($validatedData['to_month']) && !is_null($validatedData['to_month'])) {
+            $toMonth = Carbon::create(
+                Str::substr($validatedData['to_month'], 0, 4),
+                Str::substr($validatedData['to_month'], 5, 2)
+                )->format('Ym');
+        } else {
+            $toMonth = $currentYearMonth;
+        }
+
         $query = "
             select
                 ope.emp_no,
@@ -110,7 +129,9 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
                     and cl.target_ym = special_leave.target_ym
             where
                 cl.delete_flg = 0
-                and cl.target_ym = ?";
+                and cl.target_ym = ?
+                and cl.target_ym >= ?
+                and cl.target_ym <= ?";
 
         if (isset($validatedData['emp_num'])) {
             $empNum = $validatedData['emp_num'];
@@ -127,22 +148,6 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             $query .= " and ope.operator_last_name || ope.operator_first_name like '%$fullname%'";
         }
 
-        if (isset($validatedData['from_month'])) {
-            $fromMonth = Carbon::create(
-                Str::substr($validatedData['from_month'], 0, 4),
-                Str::substr($validatedData['from_month'], 5, 2)
-                )->format('Ym');
-            $query .= " and cl.target_ym >= $fromMonth";
-        };
-
-        if (isset($validatedData['to_month'])) {
-            $toMonth = Carbon::create(
-                Str::substr($validatedData['to_month'], 0, 4),
-                Str::substr($validatedData['to_month'], 5, 2)
-                )->format('Ym');
-            $query .= " and cl.target_ym <= $toMonth";
-        };
-
         $query .= " group by
             ope.operator_cd,
             ope.post_cd,
@@ -154,7 +159,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
             paid_vacation.cnt,
             exchange_day.cnt,
             special_leave.cnt";
-
+        
         if (
             isset($validatedData['ot_min']) || isset($validatedData['ot_max']) ||
             isset($validatedData['on_min']) || isset($validatedData['on_max'])
@@ -194,7 +199,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $query .= " order by
             cl.target_ym,
             ope.emp_no;";
-        return DB::select($query, [$targetYm]);
+        return DB::select($query, [$targetYm, $fromMonth, $toMonth]);
     }
     
     public function getUserByKey($id)
