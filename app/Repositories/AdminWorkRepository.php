@@ -24,8 +24,7 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
     {
         $currentYearMonth = Carbon::now()->format('Ym');
         $currentTimeTarget = Formula::calculateClosingDate($currentYearMonth);
-        $targetYm = Carbon::parse($currentTimeTarget[1])->format('Ym');
-        
+        $targetYm = Carbon::parse($currentTimeTarget[0])->format('Ym');
         $query = "
             select
                 ope.emp_no,
