@@ -354,27 +354,32 @@ class AdminWorkRepository implements AdminWorkRepositoryInterface
         $lateNightOverTime = Formula::calculateLateNightOverTime($actualWorkingTime, $endTime);
         $intervalTime = Formula::calculateIntervalTime($startTime, $data['date'], $id);
         $targetYm = Formula::calculateTargetYearMonth($data['date']);
-        return DB::table('trn_attendance')->insert([
-            'operator_cd' => $id,
-            'regi_date' => $data['date'],
-            'post_cd' =>  session('user')->post_cd,
-            'emp_no' => session('user')->emp_no,
-            'target_ym' => $targetYm,
-            'att_time' => Carbon::now()->toDateTimeString(),
-            'start_time' => $startTime,
-            'leav_time' => Carbon::now()->toDateTimeString(),
-            'end_time' => $endTime,
-            'break_time' => $breakTime,
-            'working_time' => $actualWorkingTime,
-            'over_time' => $overTime,
-            'late_over_time' => $lateNightOverTime,
-            'interval_time' => $intervalTime,
-            'memo' => $data['memo'],
-            'creater_cd' => $id,
-            'create_date' => Carbon::now()->toDateTimeString(),
-            'updater_cd' => $id,
-            'update_date' => Carbon::now()->toDateTimeString(),
-            'update_app' => '',
+        return DB::table('trn_attendance')
+            ->where([
+                'operator_cd' => $id,
+                'regi_date' => $data['date']
+            ])
+            ->insert([
+                'operator_cd' => $id,
+                'regi_date' => $data['date'],
+                'post_cd' =>  session('user')->post_cd,
+                'emp_no' => session('user')->emp_no,
+                'target_ym' => $targetYm,
+                'att_time' => Carbon::now()->toDateTimeString(),
+                'start_time' => $startTime,
+                'leav_time' => Carbon::now()->toDateTimeString(),
+                'end_time' => $endTime,
+                'break_time' => $breakTime,
+                'working_time' => $actualWorkingTime,
+                'over_time' => $overTime,
+                'late_over_time' => $lateNightOverTime,
+                'interval_time' => $intervalTime,
+                'memo' => $data['memo'],
+                'creater_cd' => $id,
+                'create_date' => Carbon::now()->toDateTimeString(),
+                'updater_cd' => $id,
+                'update_date' => Carbon::now()->toDateTimeString(),
+                'update_app' => '',
         ]);
     }
 

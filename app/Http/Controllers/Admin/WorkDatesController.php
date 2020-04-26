@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Carbon\Carbon;
 use App\Utils\Csv;
 use App\Utils\Common;
+use App\Utils\Formula;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Utils\LogActionUtil;
@@ -240,7 +241,7 @@ class WorkDatesController extends Controller
                     '備考: ' .  $data['memo']
             ];
             LogActionUtil::logAction($dataLog);
-            $yearMonth = Carbon::parse($request->date)->format('Ym');
+            $yearMonth = Formula::calculateTargetYearMonth($data['date']);
             $request->session()->flash('message', config('messages.000012'));
             return redirect()->route('admin.work_personal', [$id, $yearMonth]);
         } catch (\Exception $e) {
