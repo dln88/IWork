@@ -150,7 +150,7 @@ class WorkDatesController extends Controller
                 $user->operator_cd, 
                 $validatedData['start_time']
             )) {
-                return back()->withInput()->withErrors('情報の登録に失敗しました');
+                return back()->withInput()->withErrors(config('messages.000009'));
             }
 
             // Log action
@@ -199,7 +199,7 @@ class WorkDatesController extends Controller
                             $validatedData['end_time'],
                             $currentDate
                         )) {
-                            return back()->withInput()->withErrors('情報の登録に失敗しました');
+                            return back()->withInput()->withErrors(config('messages.000009'));
                         }
                     } else {
                         return back()->withInput()->withErrors(config('messages.010010'));
@@ -233,7 +233,7 @@ class WorkDatesController extends Controller
                     $validatedData['end_time'],
                     $currentDate
                 )) {
-                    return back()->withInput()->withErrors('情報の登録に失敗しました');
+                    return back()->withInput()->withErrors(config('messages.000009'));
                 }
             }
             

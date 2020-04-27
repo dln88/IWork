@@ -37,20 +37,28 @@ class HolidayController extends Controller
     {
         try {
             $paidVacationDays = $this->holidayRepository->getPaidVacationDays();
-            $daysOff = $this->holidayRepository->getDaysOff(
-                $paidVacationDays[0]->target_start,
-                $paidVacationDays[0]->target_end
-            );
-            $paidLeave = $paidVacationDays[0]->grant_days - $daysOff[0]->cnt;
-
-            $holidayLeave = $this->holidayRepository->getHolidayLeaveDays();
-            $numberDaysOff = $this->holidayRepository->getNumberOfDaysOff(
-                $holidayLeave[0]->target_start,
-                $holidayLeave[0]->target_end
-            );
-            $balanceLeft = $holidayLeave[0]->grant_days - $numberDaysOff[0]->cnt;
-            $vacationList = $this->holidayRepository->getVacationList();
+            $paidLeave = 0;
+            $balanceLeft = 0;
+            if (count($paidVacationDays) > 0) {
+                $daysOff = $this->holidayRepository->getDaysOff(
+                    $paidVacationDays[0]->target_start,
+                    $paidVacationDays[0]->target_end
+                );
+                $paidLeave = $paidVacationDays[0]->grant_days - $daysOff[0]->cnt;
+            }
             
+            $holidayLeave = $this->holidayRepository->getHolidayLeaveDays();
+            
+            if (count($holidayLeave)) {
+                $numberDaysOff = $this->holidayRepository->getNumberOfDaysOff(
+                    $holidayLeave[0]->target_start,
+                    $holidayLeave[0]->target_end
+                );
+                $balanceLeft = $holidayLeave[0]->grant_days - $numberDaysOff[0]->cnt;
+            }
+           
+            $vacationList = $this->holidayRepository->getVacationList();
+
             // Log action
             $dataLog = [
                 'operation_timestamp' => Carbon::now()->timestamp,
@@ -62,8 +70,9 @@ class HolidayController extends Controller
                 'operation' => '初期処理',
                 'contents' => 'なし',
             ];
-            $currentDate = Carbon::now()->format('Y/m/d');
             LogActionUtil::logAction($dataLog);
+
+            $currentDate = Carbon::now()->format('Y/m/d');
             return view('person.holiday', compact('balanceLeft', 'vacationList', 'paidLeave', 'currentDate'));
         } catch (\Exception $e) {
             abort(404);
@@ -94,7 +103,9 @@ class HolidayController extends Controller
                 return back()->withInput()->withErrors(config('messages.010005'));
             };
             
-            $this->holidayRepository->registHoliday($request->all());
+            if (!$this->holidayRepository->registHoliday($request->all())) {
+                return back()->withInput()->withErrors(config('messages.000009'));
+            };
 
             // Log action
             $dataLog = [
