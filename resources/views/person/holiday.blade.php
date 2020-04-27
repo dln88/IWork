@@ -84,7 +84,7 @@
 			<div class="form-group mx-sm-1 mb-2">
 				<div class="custom-control custom-radio custom-control-inline">
 					<input type="radio" id="customRadioInline1" name="type" value="1" 
-						class="custom-control-input" checked>
+						class="custom-control-input" {{ $paidLeave > 0 ? 'checked' : 'disabled' }} >
 					<label class="custom-control-label" for="customRadioInline1">有休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
@@ -93,7 +93,7 @@
 					<label class="custom-control-label" for="customRadioInline2">振休</label>
 				</div>
 				<div class="custom-control custom-radio custom-control-inline">
-					<input type="radio" id="customRadioInline3" name="type" value="3" 
+					<input type="radio" id="customRadioInline3" name="type" value="3" {{ $balanceLeft === 0 ? 'disabled' : '' }}
 						class="custom-control-input" {{ request()->old('type') == 3 ? 'checked' : 'null' }}>
 					<label class="custom-control-label" for="customRadioInline3">特休</label>
 				</div>
