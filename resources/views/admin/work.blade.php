@@ -35,7 +35,7 @@
 				<img src="{{asset('img/logo.png')}}" width="33" height="30" alt="">
 			</a>
 			<li class="nav-item active">
-				<a class="nav-link" href="#">設計部門　山田太郎<span class="sr-only">(current)</span></a>
+				<a class="nav-link" href="#">{{ $departmentName ?? ''}}　{{ $operatorName ?? '' }}<span class="sr-only">(current)</span></a>
 			</li>
 		</ul>
 		<ul class="navbar-nav navbar-light">

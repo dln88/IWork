@@ -41,11 +41,14 @@ class WorkDatesController extends Controller
     public function index(SearchWorkDatesRequest $request)
     {
         try {
+            $operatorName = Common::operatorName((array) session('user'));
+            $departmentName = session('user')->post_name;
+
             $dataLog = [
                 'operation_timestamp' => Carbon::now()->timestamp,
                 'ip_address' => \Request::ip(),
                 'operator_cd' => session('user')->operator_cd,
-                'operator_name' => Common::operatorName((array) session('user')),
+                'operator_name' => $operatorName,
                 'screen_id' => 'W000002',
                 'screen_name' => Common::getScreenName('W000002'),
                 'operation' => '初期処理',
@@ -113,7 +116,7 @@ class WorkDatesController extends Controller
                 'on_max' => $validatedData['on_max'] ?? null
             ]);
             
-            return view('admin.work', compact('timeList', 'page', 'comboBoxChoice'));
+            return view('admin.work', compact('timeList', 'page', 'comboBoxChoice', 'operatorName', 'departmentName'));
         } catch (\Exception $e) {
             abort(404);
         }
@@ -170,12 +173,15 @@ class WorkDatesController extends Controller
             $user = $user[0];
             $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id, $date);
 
+            $operatorName = Common::operatorName((array) session('user'));
+            $departmentName = session('user')->post_name;
+
             // Log action
             $dataLog = [
                 'operation_timestamp' => Carbon::now()->timestamp,
                 'ip_address' => \Request::ip(),
                 'operator_cd' => session('user')->operator_cd,
-                'operator_name' => Common::operatorName((array) session('user')),
+                'operator_name' => $operatorName,
                 'screen_id' => 'W000003',
                 'screen_name' => Common::getScreenName('W000003'),
                 'operation' => '初期処理',
@@ -183,7 +189,7 @@ class WorkDatesController extends Controller
             ];
             LogActionUtil::logAction($dataLog);
 
-            return view('admin.work_personal', compact('user', 'monthlyReport'));
+            return view('admin.work_personal', compact('user', 'monthlyReport', 'operatorName', 'departmentName'));
         } catch (\Exception $e) {
             abort(404);
         }

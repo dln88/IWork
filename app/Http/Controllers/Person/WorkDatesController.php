@@ -35,20 +35,23 @@ class WorkDatesController extends Controller
             if (!session('user')) {
                 return redirect(route('login'));
             }
-            
+
+            $operatorName = Common::operatorName((array) session('user'));
+            $departmentName = session('user')->post_name;
+
             // Log action
             $dataLog = [
                 'operation_timestamp' => Carbon::now()->timestamp,
                 'ip_address' => \Request::ip(),
                 'operator_cd' => session('user')->operator_cd,
-                'operator_name' => Common::operatorName((array) session('user')),
+                'operator_name' => $operatorName,
                 'screen_id' => 'W000001',
                 'screen_name' => Common::getScreenName('W000001'),
                 'operation' => '初期処理',
                 'contents' => 'なし',
             ];
             LogActionUtil::logAction($dataLog);
-
+            
             $intialTime = $this->getTimePost();
             $yearMonth = $this->getYearMonth($request);
             $workDates = $this->getWorkDates($yearMonth);
@@ -63,7 +66,8 @@ class WorkDatesController extends Controller
                     $intialTime['end_time'] =  $attendance[0]->end_time;
                 }
             }
-            return view('person.work', compact('intialTime', 'workDates', 'yearMonth', 'overTime'));
+            return view('person.work', compact('intialTime', 'workDates', 'yearMonth', 'overTime', 
+                'operatorName', 'departmentName'));
         } catch (\Exception $e) {
             abort(404);
         }
