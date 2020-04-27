@@ -201,7 +201,7 @@
 				<div class="modal-body">
 					<!-- エラーメッセージ -->
 					<input type="hidden" name="date" id='target-date'/>
-					<p class="text-danger">開始時間は時刻形式（hh:mm）で入力してください。</p>
+					<p class="text-danger" id="text-message">開始時間は時刻形式（hh:mm）で入力してください。</p>
 					<div class="form-group" id="start-time-div">
 						<label for="startTime">開始</label>
 						<input type="text" class="form-control" id="startTime" name='start'>
@@ -294,6 +294,7 @@
 	function checkDate(targetDate) {
 		var today = new Date().toISOString().slice(0, 10);
 		if (targetDate > today) {
+			$( "#text-message").text('未来日付の編集はできません。')
 			$('#start-time-div').attr('style', 'visibility: hidden;')
 			$('#end-time-div').attr('style', 'visibility: hidden;')
 			$('#memo-div').attr('style', 'visibility: hidden;')
@@ -302,6 +303,7 @@
 			$('#customSwitchHoliday').attr('style', 'visibility: hidden;')
 			$('#close-button').hide();
 		} else {
+			$( "#text-message").text('開始時間は時刻形式（hh:mm）で入力してください。')
 			$('#start-time-div').attr('style', 'visibility: visible;')
 			$('#end-time-div').attr('style', 'visibility: visible;')
 			$('#memo-div').attr('style', 'visibility: visible;')
