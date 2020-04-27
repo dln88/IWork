@@ -202,15 +202,15 @@
 					<!-- エラーメッセージ -->
 					<input type="hidden" name="date" id='target-date'/>
 					<p class="text-danger">開始時間は時刻形式（hh:mm）で入力してください。</p>
-					<div class="form-group">
+					<div class="form-group" id="start-time-div">
 						<label for="startTime">開始</label>
 						<input type="text" class="form-control" id="startTime" name='start'>
 					</div>
-					<div class="form-group">
+					<div class="form-group" id="end-time-div">
 						<label for="endTime">終了</label>
 						<input type="text" class="form-control" id="endTime" name='end'>
 					</div>
-					<div class="form-group">
+					<div class="form-group" id="memo-div">
 						<label for="endTime">備考</label>
 						<input type="text" class="form-control" id="memo" name='memo'>
 					</div>
@@ -231,7 +231,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-warning" onclick="save()">Save</button>
+					<button type="button" id="save-button" class="btn btn-warning" onclick="save()">Save</button>
 				</div>
 			</form>
 		</div>
@@ -258,6 +258,7 @@
 	$('#modal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget)
 		var date = button.data('date')
+		var today = new Date().toISOString().slice(0, 10)
 		var start = button.data('starttime')
 		var end = button.data('endtime')
 		var memo = button.data('memo')
@@ -272,6 +273,15 @@
 		modal.find('.modal-body #memo').val(memo)
 		modal.find('.modal-body #target-date').val(date)
 
+		if (date > today) {
+			$('#start-time-div').attr('style', 'display: none;')
+			$('#end-time-div').attr('style', 'display: none;')
+			$('#memo-div').attr('style', 'display: none;')
+			$('#customSwitchPaid').attr('style', 'display: none;')
+			$('#customSwitchExchange').attr('style', 'display: none;')
+			$('#customSwitchHoliday').attr('style', 'display: none;')
+			document.getElementById("save-button").disabled = true;
+		}
 		if (paid === 'on') {
 			$('#customSwitch1').attr('checked', true)
 		} else {
