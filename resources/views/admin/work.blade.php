@@ -296,7 +296,7 @@
 <!-- </main> -->
 
 <footer>
-  <p class="small text-center">&copy; 2020 by <a href="#">xxxxxxxxxxxxxxx</a> v1.0.0</p>
+  <p class="small text-center"></p>
 </footer>
 
 

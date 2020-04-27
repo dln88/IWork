@@ -145,7 +145,13 @@ class Formula
       return $interval;
    }
 
-   public static function calculateClosingDate($yearMonth)
+   /**
+    * Calculate closing date.
+    *
+    * @param string $yearMonth
+    * @return array
+    */
+   public static function calculateClosingDate(string $yearMonth)
    {
       $closingdate = Common::getSystemConfig('CLOSING_DATE');
       $currentYear = Str::substr($yearMonth, 0, 4);

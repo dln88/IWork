@@ -109,7 +109,7 @@
 
 <footer>
     <div class="container">
-        <p class="small text-center text-secondary">&copy; 2020 by <a href="#">xxxxxxxxxxxxxxx</a> v1.0.0</p>
+        <p class="small text-center text-secondary"></p>
     </div>
 </footer>
 <!-- ----------------------------------------------------------------------------------------------------------------------- -->

@@ -126,19 +126,37 @@ class HolidayController extends Controller
         }
     }
 
-    private function isOverApplicationDatePast($dateRegister)
+    /**
+     * Check if the registration date has passed the allowed past date
+     *
+     * @param string $dateRegister
+     * @return boolean
+     */
+    private function isOverApplicationDatePast(string $dateRegister)
     {
         $dateRegister = Carbon::parse($dateRegister)->format('Y-m-d');
         return $dateRegister < Carbon::now()->subMonth(Common::getSystemConfig('HOLIDAY_APP_PAST_MM'))->format('Y-m-d');
     }
 
-    private function isOverApplicationDateFuture($dateRegister)
+    /**
+     * Check if the registration date has passed the allowed future date
+     *
+     * @param string $dateRegister
+     * @return boolean
+     */
+    private function isOverApplicationDateFuture(string $dateRegister)
     {
         $dateRegister = Carbon::parse($dateRegister)->format('Y-m-d');
         return $dateRegister > Carbon::now()->addMonth(Common::getSystemConfig('HOLIDAY_APP_FU_MM'))->format('Y-m-d');
     }
 
-    private function doubleCheck($dateRegister)
+    /**
+     * Check if registration date already exists 
+     *
+     * @param string $dateRegister
+     * @return boolean
+     */
+    private function doubleCheck(string $dateRegister)
     {
         return $this->holidayRepository->checkExistRegisterDate($dateRegister);
     }
