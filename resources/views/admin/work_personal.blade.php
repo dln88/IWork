@@ -119,7 +119,7 @@
 							@foreach ($monthlyReport as $val)
 							<tr>
 								<td class="text-center" nowrap>
-									<button type="button"
+									<button type="button" onclick="checkDate('{{ $val->calendar_ymd }}')"
 										class="btn btn-info btn-sm"
 										data-date="{{ $val->calendar_ymd }}"
 										data-starttime="{{ $val->start_time ?? '00:00' }}"
@@ -189,7 +189,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<div class="modal-title" id="exampleModalLabel">
-					<p>設計部　山田太郎</p>　
+					<p>{{ $departmentName ?? ''}}　{{ $operatorName ?? '' }}</p>　
 					<h5><strong id="date" name='date'></strong></h5>
 				</div>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -231,7 +231,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-					<button type="button" id="save-button" class="btn btn-warning" onclick="save()">Save</button>
+					<button type="button" id="close-button" class="btn btn-warning" onclick="save()">Save</button>
 				</div>
 			</form>
 		</div>
@@ -258,7 +258,6 @@
 	$('#modal').on('show.bs.modal', function (event) {
 		var button = $(event.relatedTarget)
 		var date = button.data('date')
-		var today = new Date().toISOString().slice(0, 10)
 		var start = button.data('starttime')
 		var end = button.data('endtime')
 		var memo = button.data('memo')
@@ -273,15 +272,6 @@
 		modal.find('.modal-body #memo').val(memo)
 		modal.find('.modal-body #target-date').val(date)
 
-		if (date > today) {
-			$('#start-time-div').attr('style', 'display: none;')
-			$('#end-time-div').attr('style', 'display: none;')
-			$('#memo-div').attr('style', 'display: none;')
-			$('#customSwitchPaid').attr('style', 'display: none;')
-			$('#customSwitchExchange').attr('style', 'display: none;')
-			$('#customSwitchHoliday').attr('style', 'display: none;')
-			document.getElementById("save-button").disabled = true;
-		}
 		if (paid === 'on') {
 			$('#customSwitch1').attr('checked', true)
 		} else {
@@ -300,6 +290,18 @@
 	});
 	function save() {
 		$('#update').submit();
+	}
+	function checkDate(targetDate) {
+		var today = new Date().toISOString().slice(0, 10)
+		if (targetDate > today) {
+			$('#start-time-div').attr('style', 'display: none;')
+			$('#end-time-div').attr('style', 'display: none;')
+			$('#memo-div').attr('style', 'display: none;')
+			$('#customSwitchPaid').attr('style', 'display: none;')
+			$('#customSwitchExchange').attr('style', 'display: none;')
+			$('#customSwitchHoliday').attr('style', 'display: none;')
+			$('#close-button').remove();
+		}
 	}
 </script>
 
