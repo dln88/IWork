@@ -59,7 +59,7 @@ class SystemConfigSeeder extends Seeder
 
         DB::table('mst_systemconfig')->insert([
             'systemconf_name' => 'HOLIDAY_PAST_MM',
-            'systemconf_value' => 34,
+            'systemconf_value' => 6,
             'memo' => '退勤時間登録最大値　※翌日9時を最大値とする。（飯田商事様要望）',
             'create_date' => '2020-04-01',
             'update_date' => '2020-04-01',
