@@ -17,7 +17,6 @@ Route::get('/', function () {
     return redirect(route('login'));
 });
 
-Route::get('/test', 'Common\TestController@test')->name('test');
 Route::get('/login', 'Common\AuthController@showLogin')->name('login');
 Route::post('/login/user', 'Common\AuthController@doLogin')->name('login.post');
 Route::post('/login/admin', 'Common\AuthController@doLoginAdmin')->name('admin.login.post');

@@ -29,6 +29,12 @@ class WorkDatesController extends Controller
         $this->workDatesRepository = $workDatesRepository;
     }
 
+    /**
+     * Work List Page
+     *
+     * @param Request $request
+     * @return View
+     */
     public function index(Request $request)
     {
         try {
@@ -135,6 +141,12 @@ class WorkDatesController extends Controller
         );
     }
 
+    /**
+     * Regist start time.
+     *
+     * @param AttendanceTimeRequest $request
+     * @return view
+     */
     public function registerAttendanceTime(AttendanceTimeRequest $request)
     {
         try {
@@ -179,6 +191,12 @@ class WorkDatesController extends Controller
         }
     }
 
+    /**
+     * Regist end time.
+     *
+     * @param LeaveTimeRequest $request
+     * @return view
+     */
     public function registerLeaveTime(LeaveTimeRequest $request)
     {
         try {
@@ -266,6 +284,13 @@ class WorkDatesController extends Controller
         }
     }
 
+    /**
+     * Check whether or not yesterday has registered for end time
+     *
+     * @param integer $operatorCd
+     * @param string $date
+     * @return boolean
+     */
     private function isRegistEndTimeYesterday(int $operatorCd, string $date)
     {
         return $this->workDatesRepository->isRegistEndTimeYesterday($operatorCd, $date);
