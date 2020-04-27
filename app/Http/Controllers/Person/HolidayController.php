@@ -117,17 +117,14 @@ class HolidayController extends Controller
 
     private function isOverApplicationDatePast($dateRegister)
     {
-        $currentTime = Carbon::now()->format('Ym');
-        $dateRegister = Carbon::parse($dateRegister)->format('Ym');
-        return $dateRegister < $currentTime - Common::getSystemConfig('HOLIDAY_APP_PAST_MM');
+        $dateRegister = Carbon::parse($dateRegister)->format('Y-m-d');
+        return $dateRegister < Carbon::now()->subMonth(Common::getSystemConfig('HOLIDAY_APP_PAST_MM'))->format('Y-m-d');
     }
 
     private function isOverApplicationDateFuture($dateRegister)
     {
-        $currentTime = Carbon::now()->format('Ym');
-        $dateRegister = Carbon::parse($dateRegister)->format('Ym');
-
-        return $dateRegister > $currentTime + Common::getSystemConfig('HOLIDAY_APP_FU_MM');
+        $dateRegister = Carbon::parse($dateRegister)->format('Y-m-d');
+        return $dateRegister > Carbon::now()->addMonth(Common::getSystemConfig('HOLIDAY_APP_FU_MM'))->format('Y-m-d');
     }
 
     private function doubleCheck($dateRegister)
