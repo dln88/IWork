@@ -229,7 +229,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="modal-footer">
+				<div class="modal-footer footer-div">
 					<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
 					<button type="button" id="close-button" class="btn btn-warning" onclick="save()">Save</button>
 				</div>
@@ -292,15 +292,23 @@
 		$('#update').submit();
 	}
 	function checkDate(targetDate) {
-		var today = new Date().toISOString().slice(0, 10)
+		var today = new Date().toISOString().slice(0, 10);
 		if (targetDate > today) {
-			$('#start-time-div').attr('style', 'display: none;')
-			$('#end-time-div').attr('style', 'display: none;')
-			$('#memo-div').attr('style', 'display: none;')
-			$('#customSwitchPaid').attr('style', 'display: none;')
-			$('#customSwitchExchange').attr('style', 'display: none;')
-			$('#customSwitchHoliday').attr('style', 'display: none;')
-			$('#close-button').remove();
+			$('#start-time-div').attr('style', 'visibility: hidden;')
+			$('#end-time-div').attr('style', 'visibility: hidden;')
+			$('#memo-div').attr('style', 'visibility: hidden;')
+			$('#customSwitchPaid').attr('style', 'visibility: hidden;')
+			$('#customSwitchExchange').attr('style', 'visibility: hidden;')
+			$('#customSwitchHoliday').attr('style', 'visibility: hidden;')
+			$('#close-button').hide();
+		} else {
+			$('#start-time-div').attr('style', 'visibility: visible;')
+			$('#end-time-div').attr('style', 'visibility: visible;')
+			$('#memo-div').attr('style', 'visibility: visible;')
+			$('#customSwitchPaid').attr('style', 'visibility: visible;')
+			$('#customSwitchExchange').attr('style', 'visibility: visible;')
+			$('#customSwitchHoliday').attr('style', 'visibility: visible;')
+			$('#close-button').show();
 		}
 	}
 </script>
