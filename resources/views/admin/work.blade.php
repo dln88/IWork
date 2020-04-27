@@ -19,6 +19,9 @@
 	<!-- style CSS -->
 	<link rel="stylesheet" href="{{asset('css/style.css')}}">
 
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.css" id="theme-styles">
+
 	<link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
 	<!--========== CSS ==========-->
 
@@ -205,12 +208,26 @@
 		<div class="row">
 			<div class="col-sm-12 text-right">
 				<button type="button" class="btn btn-info" onclick="search()">検索</button>
-				<a href="{{ route('admin.work_dates') }}">
-					<button type="button" class="btn btn-light" onclick="return confirm('検索条件をクリアします。よろしいですか？')">クリア</button>
-				</a>
+				
+					<button type="button" class="btn btn-light" onclick="resetForm()">クリア</button>
+				
 				<script type="text/javascript">
 					function  search() {
 						$('#frmSearch').submit();
+					}
+
+					function resetForm(){
+						Swal.fire({
+							text: "検索条件をクリアします。よろしいですか？",
+							icon: 'question',
+							showCancelButton: true,
+							confirmButtonText: 'はい',
+							cancelButtonText: 'いいえ'
+						}).then((result) => {
+							if (result.value) {
+								location.href = '{{ route('admin.work_dates') }}';
+							}
+						})
 					}
 				</script>
 			</div>
@@ -228,8 +245,24 @@
 					</div>
 				@else
 					<div class="float-right">
-						<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
+						<button type="button" class="btn btn-outline-primary btn-sm" onclick="downloadCsv()"><i class="fa fa-download"></i> CSV出力</button>
+						<!-- <a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a> -->
 					</div>
+					<script type="text/javascript">
+						function downloadCsv(){
+							Swal.fire({
+								text: "現在表示されている勤怠一覧を出力します。よろしいですか？",
+								icon: 'question',
+								showCancelButton: true,
+								confirmButtonText: 'はい',
+								cancelButtonText: 'いいえ'
+							}).then((result) => {
+								if (result.value) {
+									location.href = '{{ route('admin.work_csv', request()->all()) }}';
+								}
+							})
+						}
+					</script>
 				@endif
 			</div>
 			<div class="card-body">

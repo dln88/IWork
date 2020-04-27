@@ -22,6 +22,8 @@
 	<link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
 	<!--========== CSS ==========-->
 
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.css" id="theme-styles">
 
     <title>i-work</title>
 </head>
@@ -115,10 +117,23 @@
 					</div>
 				</div>
 			</div>
-			<button type="submit" class="btn btn-warning mb-2" onclick="return confirm('登録休暇を実行します。よろしいですか？')">申請</button>
+			<button type="button" class="btn btn-warning mb-2" onclick="addHoliday()">申請</button>
 		</form>
 
 		<script type="text/javascript">
+			function addHoliday(){
+				Swal.fire({
+					text: "登録休暇を実行します。よろしいですか？",
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonText: 'はい',
+					cancelButtonText: 'いいえ'
+				}).then((result) => {
+					if (result.value) {
+						$('#form').submit();
+					}
+				})
+			}
 			function add() {
 				$('.error-section').html('');
 				$('#form').validate({

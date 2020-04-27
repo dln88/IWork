@@ -22,6 +22,10 @@
 	<link rel="shortcut icon" href="{{asset('img/favicon.ico')}}">
 	<!--========== CSS ==========-->
 
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.js"></script>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@9/dist/sweetalert2.min.css" id="theme-styles">
+
+
     <title>i-work</title>
 </head>
 <body>
@@ -89,8 +93,24 @@
 					</div>
 				@else
 					<div class="float-right">
-						<a class="btn btn-outline-primary btn-sm" onclick="return confirm('現在表示されている勤怠一覧を出力します。よろしいですか？')" href="{{ route('admin.work_personal_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a>
+					<button type="button" class="btn btn-outline-primary btn-sm" onclick="downloadCsv()"><i class="fa fa-download"></i> CSV出力</button>
+						<!-- <a class="btn btn-outline-primary btn-sm" onclick="downloadCsv()" href="{{ route('admin.work_personal_csv') }}" role="button" data-toggle="tooltip" data-placement="bottom" title="CSV出力"><i class="fa fa-download"></i> CSV出力</a> -->
 					</div>
+					<script type="text/javascript">
+						function downloadCsv(){
+							Swal.fire({
+								text: "現在表示されている勤怠一覧を出力します。よろしいですか？",
+								icon: 'question',
+								showCancelButton: true,
+								confirmButtonText: 'はい',
+								cancelButtonText: 'いいえ'
+							}).then((result) => {
+								if (result.value) {
+									location.href = '{{ route('admin.work_personal_csv') }}';
+								}
+							})
+						}
+					</script>
 				@endif
 			</div>
 			<div class="card-body">
