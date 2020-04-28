@@ -155,6 +155,7 @@ class WorkDatesController extends Controller
             }
             $user = session('user');
             $validatedData = $request->validated();
+            $startTime =  strlen($validatedData['start_time']) == 5 ? $validatedData['start_time'] : '0' . $validatedData['start_time'];
             
             // Check attendance time registered
             if($this->workDatesRepository->haveAttendanceTime($user->operator_cd)) {
@@ -164,7 +165,7 @@ class WorkDatesController extends Controller
             // register attendance time
             if(!$this->workDatesRepository->registerAttendanceTime(
                 $user->operator_cd, 
-                $validatedData['start_time']
+                $startTime
             )) {
                 return back()->withInput()->withErrors(config('messages.000009'));
             }
@@ -205,20 +206,20 @@ class WorkDatesController extends Controller
             }
             $user = session('user');
             $validatedData = $request->validated();
-            
+            $endTime = strlen($validatedData['end_time']) == 5 ? $validatedData['end_time'] : '0'. $validatedData['end_time'];
             // Checking the maximum time to leave
-            if($validatedData['end_time'] > intval(Common::getSystemConfig('MAX_LEAVE_TIME'))) {
+            if($endTime > intval(Common::getSystemConfig('MAX_LEAVE_TIME'))) {
                 return back()->withInput()->withErrors(config('messages.010012'));
             }
             
-            if (intval(Str::substr($validatedData['end_time'], 0, 2)) >= 24) {
+            if (intval(Str::substr($endTime, 0, 2)) >= 24) {
                 $currentDate = Carbon::yesterday()->toDateString();
                 $timeYesterday = $this->isRegistEndTimeYesterday($user->operator_cd, $currentDate);
                 if(isset($timeYesterday)) {
                     if (is_null($timeYesterday->end_time)) {
                         if(!$this->workDatesRepository->registLeaveTime(
                             $user->operator_cd, 
-                            $validatedData['end_time'],
+                            $endTime,
                             $currentDate
                         )) {
                             return back()->withInput()->withErrors(config('messages.000009'));
@@ -245,14 +246,14 @@ class WorkDatesController extends Controller
                 // Check work time and leave time
                 if(!$this->workDatesRepository->doesEndTimeGreaterStartTime(
                     $user->operator_cd, 
-                    $validatedData['end_time']
+                    $endTime
                 )) {
                     return back()->withInput()->withErrors(config('messages.010011'));
                 };
 
                 if(!$this->workDatesRepository->registLeaveTime(
                     $user->operator_cd, 
-                    $validatedData['end_time'],
+                    $endTime,
                     $currentDate
                 )) {
                     return back()->withInput()->withErrors(config('messages.000009'));
@@ -271,7 +272,7 @@ class WorkDatesController extends Controller
                 'screen_id' => 'W000001',
                 'screen_name' => Common::getScreenName('W000001'),
                 'operation' => '退勤登録',
-                'contents' => '退勤時間: ' .$validatedData['end_time'],
+                'contents' => '退勤時間: ' . $endTime,
             ];
             LogActionUtil::logAction($dataLog);
 

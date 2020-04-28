@@ -199,7 +199,7 @@ class WorkDatesRepository implements WorkDatesRepositoryInterface
          (intval(Str::substr($endTime, 0, 2)) > intval(Str::substr($startTime[0]->start_time, 0, 2)) ) or 
          (
             intval(Str::substr($endTime, 0, 2)) === intval(Str::substr($startTime[0]->start_time, 0, 2)) and
-            intval(Str::substr($endTime, 2, 2)) > intval(Str::substr($startTime[0]->start_time, 2, 2))
+            intval(Str::substr($endTime, 3, 2)) > intval(Str::substr($startTime[0]->start_time, 3, 2))
          )
       ) {
          return true;

@@ -24,7 +24,7 @@ class AttendanceTimeRequest extends FormRequest
     public function rules()
     {
         return [
-            'start_time' => ['required', 'date_format:H:i']
+            'start_time' => ['required', 'regex:/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/']
         ];
     }
 

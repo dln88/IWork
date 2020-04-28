@@ -25,8 +25,8 @@ class UpdateWorkDateRequest extends FormRequest
     {
         return [
             'date' => 'required|date_format:Y-m-d',
-            'start' => ['required', 'date_format:"H:i"'],
-            'end' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/'],
+            'start' => ['required', 'regex:/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/'],
+            'end' => ['required', 'regex:/^([0-9]|[0-9][0-9]):([0-5][0-9])$/'],
             'memo' => 'nullable|string',
             'paid' => 'nullable|in:on',
             'exchange' => 'nullable|in:on',

@@ -24,7 +24,7 @@ class LeaveTimeRequest extends FormRequest
     public function rules()
     {
         return [
-            'end_time' => ['required', 'regex:/^[0-9][0-9]:[0-5][0|5]$/']
+            'end_time' => ['required', 'regex:/^([0-9]|[0-9][0-9]):([0-5][0-9])$/']
         ];
     }
 

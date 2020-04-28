@@ -247,10 +247,11 @@ class WorkDatesController extends Controller
             if (!$this->isEndTimeGreaterThanStartTime($request->start, $request->end)) {
                 return back()->withInput()->withErrors(config('messages.010007'));
             };
-
+            $start = $request->start;
+            $end = $request->end;
             $data['date'] = $request->date;
-            $data['start']= $request->start;
-            $data['end'] = $request->end;
+            $data['start'] = strlen($start) == 5 ? $start : '0'. $start;
+            $data['end'] = strlen($end) == 5 ? $end : '0'. $end;
             $data['memo'] = $request->memo;
             $data['paid'] = $request->paid;
             $data['exchange'] = $request->exchange;
