@@ -270,7 +270,7 @@
 					<script type="text/javascript">
 						function downloadCsv(){
 							Swal.fire({
-								text: "現在表示されている勤怠一覧を出力します。よろしいですか？",
+								html: "現在表示されている勤怠一覧を出力します。<br>よろしいですか？",
 								title: '確認',
 								showCancelButton: true,
 								confirmButtonText: 'はい',
