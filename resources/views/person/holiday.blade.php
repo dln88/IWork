@@ -124,7 +124,7 @@
 			function addHoliday(){
 				Swal.fire({
 					html: "登録休暇を実行します。<br>よろしいですか？",
-					title: 'Add New Holiday',
+					title: '確認',
 					showCancelButton: true,
 					confirmButtonText: 'はい',
 					cancelButtonText: 'いいえ'

@@ -216,7 +216,7 @@
 
 					function resetForm(){
 						Swal.fire({
-							title: 'Reset Form',
+							title: '確認',
 							html: "検索条件をクリアします。<br>よろしいですか？",
 							showCancelButton: true,
 							confirmButtonText: 'はい',
@@ -250,7 +250,7 @@
 						function downloadCsv(){
 							Swal.fire({
 								text: "現在表示されている勤怠一覧を出力します。よろしいですか？",
-								title: 'Download CSV',
+								title: '確認',
 								showCancelButton: true,
 								confirmButtonText: 'はい',
 								cancelButtonText: 'いいえ'
