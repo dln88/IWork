@@ -100,7 +100,7 @@
 						function downloadCsv(){
 							Swal.fire({
 								html: "現在表示されている勤怠一覧を出力します。<br>よろしいですか？",
-								title: 'Export CSV',
+								title: '確認',
 								showCancelButton: true,
 								confirmButtonText: 'はい',
 								cancelButtonText: 'いいえ'
