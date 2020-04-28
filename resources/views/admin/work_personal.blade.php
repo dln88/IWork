@@ -43,7 +43,7 @@
 			</li>
 		</ul>
 		<ul class="navbar-nav navbar-light">
-			<div style="margin-right:1rem;"><a href="{{ url()->previous() }}"><button type="button" class="btn btn-outline-secondary mb-2">一覧に戻る</button></a></div>
+			<div style="margin-right:1rem;"><a href="{{ route('admin.work_dates') }}"><button type="button" class="btn btn-outline-secondary mb-2">一覧に戻る</button></a></div>
 		</ul>
 		<ul class="navbar-nav navbar-light">
 			<div style="margin-right:1rem;"><a href="{{ route('login') }}"><button type="button" class="btn btn-outline-secondary mb-2">ログアウト</button></a></div>
