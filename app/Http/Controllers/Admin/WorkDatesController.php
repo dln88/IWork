@@ -57,7 +57,15 @@ class WorkDatesController extends Controller
             LogActionUtil::logAction($dataLog);
 
             $validatedData = $request->validated();
-            if (isset($validatedData['from_month']) || isset($validatedData['to_month']) ) {
+            if (
+                isset($validatedData['emp_num']) ||
+                isset($validatedData['department_id']) ||
+                isset($validatedData['name']) ||
+                isset($validatedData['ot_min']) ||
+                isset($validatedData['ot_max']) ||
+                isset($validatedData['on_min']) ||
+                isset($validatedData['on_max'])
+            ){
                 // Log action
                 $dataLog = [
                     'operation_timestamp' => Carbon::now()->timestamp,
@@ -71,25 +79,31 @@ class WorkDatesController extends Controller
                 ];
                 
                 if (isset($validatedData['emp_num'])) {
-                    $dataLog['contents'] .= '社員番号: ' . $validatedData['emp_num'] . ', ';
+                    $dataLog['contents'] .= '社員番号: ' . $validatedData['emp_num'];
                 }
                 if (isset($validatedData['department_id'])) {
-                    $dataLog['contents'] .= '部門: ' .  $validatedData['department_id'] . ', ';
+                    $dataLog['contents'] .= ', ' . '部門: ' .  $validatedData['department_id'];
                 }
-                if (isset($validatedData['from_month']) && isset($validatedData['to_month']) ) {
-                    $dataLog['contents'] .= '対象年月: ' .
-                                $validatedData['from_month'] . ' ~ ' .
-                                $validatedData['to_month'] . ', ';
+                if (isset($validatedData['name'])) {
+                    $dataLog['contents'] .= ', ' .  '氏名: ' .  $validatedData['name'];
                 }
-                if (isset($validatedData['ot_min']) && isset($validatedData['ot_max'])) {
-                    $dataLog['contents'] .= '残業時間（合計）: ' .
-                        $validatedData['ot_min'] . ' ~ ' .
-                        $validatedData['ot_max'] . ', ';
+                if (isset($validatedData['from_month'])) {
+                    $dataLog['contents'] .= ', ' . '対象年月: ' . $validatedData['from_month'];
                 }
-                if (isset($validatedData['on_min']) && isset($validatedData['on_max'])) {
-                    $dataLog['contents'] .= '深夜時間（合計）: ' .
-                        $validatedData['on_min'] . ' ~ ' .
-                        $validatedData['on_max'];
+                if (isset($validatedData['to_month'])) {
+                    $dataLog['contents'] .= '~ ' . $validatedData['to_month'];
+                }
+                if (isset($validatedData['ot_min'])) {
+                    $dataLog['contents'] .= ', ' . '残業時間（合計）: ' . $validatedData['ot_min'];
+                }
+                if (isset($validatedData['ot_max'])) {
+                    $dataLog['contents'] .= '~ ' . $validatedData['ot_max'];
+                }
+                if (isset($validatedData['on_min'])) {
+                    $dataLog['contents'] .= ', ' . '深夜時間（合計）: ' . $validatedData['on_min'];
+                }
+                if (isset($validatedData['on_max'])) {
+                    $dataLog['contents'] .= '~ ' . $validatedData['on_max'];
                 }
                 LogActionUtil::logAction($dataLog);
             }
@@ -115,8 +129,25 @@ class WorkDatesController extends Controller
                 'on_min' => $validatedData['on_min'] ?? null,
                 'on_max' => $validatedData['on_max'] ?? null
             ]);
+
+            if (isset($validatedData['from_month']) && !is_null($validatedData['from_month'])) {
+                $fromMonth = $validatedData['from_month'];
+            } else if (!is_null($request->old('from_month'))) {
+                $fromMonth = $request->old('from_month');
+            } else {
+                $fromMonth = Carbon::now()->format('Y/m');
+            }
             
-            return view('admin.work', compact('timeList', 'page', 'comboBoxChoice', 'operatorName', 'departmentName'));
+            if (isset($validatedData['to_month']) && !is_null($validatedData['to_month'])) {
+                $toMonth = $validatedData['to_month'];
+            } else if (!is_null($request->old('to_month'))) {
+                $toMonth = $request->old('to_month');
+            } else {
+                $toMonth = Carbon::now()->format('Y/m');
+            }
+            
+            return view('admin.work', compact('timeList', 'page', 'comboBoxChoice', 'operatorName', 'departmentName',
+                'fromMonth', 'toMonth'));
         } catch (\Exception $e) {
             abort(404);
         }
@@ -159,45 +190,48 @@ class WorkDatesController extends Controller
      */
     public function personal(Request $request, int $id, string $date)
     {
-        try {
-            session([
-                'operatorId' => $id,
-                'yearMonth' => $date
-            ]);
-            if (is_null($id) || !$this->checkId($id)) {
-                session()->flash('errorOperator', config('messages.010017'));
-                $disableCSV = false;
-                return view('admin.work_personal', compact('disableCSV'));
-            }
-            $user = $this->adminWorkRepository->getUserByKey($id);
-            $user = $user[0];
-            $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id, $date);
-
-            $operatorName = Common::operatorName((array) session('user'));
-            $departmentName = session('user')->post_name;
-
-            // Log action
-            $dataLog = [
-                'operation_timestamp' => Carbon::now()->timestamp,
-                'ip_address' => \Request::ip(),
-                'operator_cd' => session('user')->operator_cd,
-                'operator_name' => $operatorName,
-                'screen_id' => 'W000003',
-                'screen_name' => Common::getScreenName('W000003'),
-                'operation' => '初期処理',
-                'contents' => 'なし',
-            ];
-            LogActionUtil::logAction($dataLog);
-
-            return view('admin.work_personal', compact('user', 'monthlyReport', 'operatorName', 'departmentName'));
-        } catch (\Exception $e) {
-            abort(404);
+        session([
+            'operatorId' => $id,
+            'yearMonth' => $date
+        ]);
+        if (is_null($id) || !$this->checkId($id) || is_null($date)) {
+            session()->flash('errorOperator', config('messages.010017'));
+            $disableCSV = false;
+            return view('admin.work_personal', compact('disableCSV'));
         }
+        $user = $this->adminWorkRepository->getUserByKey($id);
+        $user = $user[0];
+        $monthlyReport = $this->adminWorkRepository->getMonthlyReport($id, $date);
+
+        $operatorName = Common::operatorName((array) session('user'));
+        $departmentName = session('user')->post_name;
+
+        // Log action
+        $dataLog = [
+            'operation_timestamp' => Carbon::now()->timestamp,
+            'ip_address' => \Request::ip(),
+            'operator_cd' => session('user')->operator_cd,
+            'operator_name' => $operatorName,
+            'screen_id' => 'W000003',
+            'screen_name' => Common::getScreenName('W000003'),
+            'operation' => '初期処理',
+            'contents' => 'なし',
+        ];
+        LogActionUtil::logAction($dataLog);
+
+        return view('admin.work_personal', compact('user', 'monthlyReport', 'operatorName', 'departmentName'));
     }
 
     private function checkId($id)
     {
         return $this->adminWorkRepository->existUserID($id);
+    }
+
+    public function personalError()
+    {
+        $operatorName = Common::operatorName((array) session('user'));
+        $departmentName = session('user')->post_name;
+        return view('admin.work_personal', compact('operatorName', 'departmentName'));
     }
 
     /**
@@ -335,7 +369,7 @@ class WorkDatesController extends Controller
             session()->flash('message', 'ダウンロード成功');
             return back()->withInput();
         } catch (\Exception $e) {
-            abort(404);
+            return back()->withInput()->withErrors(config('messages.000002'));
         }
     }
 
@@ -403,7 +437,7 @@ class WorkDatesController extends Controller
             session()->flash('message', 'ダウンロード成功');
             return back()->withInput();
         } catch (\Exception $e) {
-            abort(404);
+            return back()->withInput()->withErrors(config('messages.000002'));
         }
     }
 }

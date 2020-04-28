@@ -49,8 +49,13 @@ Route::group(['middleware' => 'admin', 'namespace' => 'Admin'], function()
     Route::get('pages/work_admin/csv', 'WorkDatesController@workCSV')
         ->name('admin.work_csv');
 
+    Route::get('pages/work_admin_personal', 'WorkDatesController@personalError');
+
+    Route::get('pages/work_admin_personal/{var}', 'WorkDatesController@personalError');
+
+    Route::get('pages/work_admin_personal//{var}', 'WorkDatesController@personalError');
+
     Route::get('pages/work_admin_personal/{id}/{date}', 'WorkDatesController@personal')
-        ->where(['id' => '[0-9]+', 'date' => '[0-9]+'])
         ->name('admin.work_personal');
 
     Route::get('pages/work_admin_personal/csv', 'WorkDatesController@personalCSV')
