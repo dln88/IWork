@@ -216,7 +216,7 @@
 				<span aria-hidden="true">&times;</span>
 				</button>
 			</div>
-			<form action="{{ route('admin.work_personal.update', request()->id) }}" id="update" method="post">
+			<form action="{{ route('admin.work_personal.update', request()->id ?? '') }}" id="update" method="post">
 				{{ csrf_field() }}
 				<div class="modal-body">
 					<!-- エラーメッセージ -->

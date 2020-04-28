@@ -65,9 +65,7 @@
 	@if (count($errors) > 0)
 	<div class="container-fluid">
 		<div class="alert alert-danger alert-dismissible fade show" role="alert" >
-			@foreach($errors->all() as $error)
-				<li>{{ $error }}</li>
-			@endforeach
+			{{ $errors->first() }}
 			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 			</button>
@@ -143,14 +141,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="targetMM">対象年月</label>
 												<div class="input-group date datepickerMM" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text"  name="from_month" class="form-control datetimepicker-input" value="{{ old('from_month') ?? request()->get('from_month') }}" data-target="#datetimepicker"/>
+													<input type="text" placeholder="yyyy/mm" name="from_month" class="form-control datetimepicker-input" value="{{ $fromMonth ?? \Carbon\Carbon::now()->format('Y/m') }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepickerMM" id="datepicker_2" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text"  name="to_month" class="form-control datetimepicker-input" value="{{ old('to_month') ?? request()->get('to_month') }}" data-target="#datetimepicker"/>
+													<input type="text" placeholder="yyyy/mm" name="to_month" class="form-control datetimepicker-input" value="{{ $toMonth ?? \Carbon\Carbon::now()->format('Y/m') }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
@@ -165,11 +163,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="orvertime">残業時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? request()->get('ot_min') }}"/>
+													<input type="text" placeholder="0.00" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? request()->get('ot_min') }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? request()->get('ot_max') }}"/>
+													<input type="text" placeholder="0.00" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? request()->get('ot_max') }}"/>
 												</div>
 											</div>
 										</div>
@@ -181,11 +179,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="midnight">深夜時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? request()->get('on_min') }}"/>
+													<input type="text" placeholder="0.00" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? request()->get('on_min') }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? request()->get('on_max') }}"/>
+													<input type="text" placeholder="0.00" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? request()->get('on_max') }}"/>
 												</div>
 											</div>
 										</div>
