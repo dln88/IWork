@@ -99,8 +99,8 @@
 					<script type="text/javascript">
 						function downloadCsv(){
 							Swal.fire({
-								text: "現在表示されている勤怠一覧を出力します。よろしいですか？",
-								icon: 'question',
+								html: "現在表示されている勤怠一覧を出力します。<br>よろしいですか？",
+								title: 'Export CSV',
 								showCancelButton: true,
 								confirmButtonText: 'はい',
 								cancelButtonText: 'いいえ'

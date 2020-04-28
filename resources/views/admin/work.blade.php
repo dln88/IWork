@@ -216,8 +216,8 @@
 
 					function resetForm(){
 						Swal.fire({
-							text: "検索条件をクリアします。よろしいですか？",
-							icon: 'question',
+							title: 'Export CSV',
+							html: "検索条件をクリアします。<br>よろしいですか？",
 							showCancelButton: true,
 							confirmButtonText: 'はい',
 							cancelButtonText: 'いいえ'

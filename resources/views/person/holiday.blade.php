@@ -123,8 +123,8 @@
 		<script type="text/javascript">
 			function addHoliday(){
 				Swal.fire({
-					text: "登録休暇を実行します。よろしいですか？",
-					icon: 'question',
+					html: "登録休暇を実行します。<br>よろしいですか？",
+					title: 'Export CSV',
 					showCancelButton: true,
 					confirmButtonText: 'はい',
 					cancelButtonText: 'いいえ'
