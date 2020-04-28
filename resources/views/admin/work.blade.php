@@ -82,10 +82,13 @@
 					</a>
 				</h6>
 			</div>
-
-			<div id="collapseOne" class="collapse " aria-labelledby="headingOne">
-				<div class="card-body">
-					<form method="get" action="{{ route('admin.work_dates') . '#result' }}" id="frmSearch">
+			@if ($errors->any())
+				<div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+			@else
+				<div id="collapseOne" class="collapse" aria-labelledby="headingOne">
+			@endif
+					<div class="card-body">
+						<form method="get" action="{{ route('admin.work_dates')}}" id="frmSearch">
 						<!-- card group -->
 						<div class="card" style="margin-bottom:30px;">
 							<div class="card-body">
@@ -108,7 +111,7 @@
 													<span class="input-group-text search_item_lbl_width" id="department">部門</span>
 												</div>
 												<select class="form-control" id="department" name="department_id">
-													<option></option>
+													<option id="empty-select"></option>
 													@if (isset($comboBoxChoice) && count($comboBoxChoice) > 0)
 														@foreach ($comboBoxChoice as $postCd)
 															<option value="{{ $postCd->post_cd }}" {{ request()->get('department_id') == $postCd->post_cd || old('department_id') == $postCd->post_cd ? 'selected' : '' }}>{{ $postCd->post_name }}</option>
@@ -124,7 +127,8 @@
 												<div class="input-group-prepend">
 													<span class="input-group-text search_item_lbl_width" id="name">氏名</span>
 												</div>
-												<input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp" placehgeter="" value="{{ old('name') ?? request()->get('name') }}">
+												<input type="text" class="form-control" id="shainName" name="name" 
+													aria-describedby="emailHelp" value="{{ old('name') ?? request()->get('name') }}">
 											</div>
 										</div>
 									</div>
@@ -141,14 +145,14 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="targetMM">対象年月</label>
 												<div class="input-group date datepickerMM" id="datepicker_1" data-target-input="nearest" style="margin-right:10px;">
-													<input type="text" placeholder="yyyy/mm" name="from_month" class="form-control datetimepicker-input" value="{{ $fromMonth ?? \Carbon\Carbon::now()->format('Y/m') }}" data-target="#datetimepicker"/>
+													<input type="text" id="from_month" placeholder="yyyy/mm" name="from_month" class="form-control datetimepicker-input" value="{{ $fromMonth ?? \Carbon\Carbon::now()->format('Y/m') }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_1" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
 												</div>
 												～
 												<div class="input-group date datepickerMM" id="datepicker_2" data-target-input="nearest" style="margin-left:10px;">
-													<input type="text" placeholder="yyyy/mm" name="to_month" class="form-control datetimepicker-input" value="{{ $toMonth ?? \Carbon\Carbon::now()->format('Y/m') }}" data-target="#datetimepicker"/>
+													<input type="text" id="to_month" placeholder="yyyy/mm" name="to_month" class="form-control datetimepicker-input" value="{{ $toMonth ?? \Carbon\Carbon::now()->format('Y/m') }}" data-target="#datetimepicker"/>
 													<div class="input-group-append" data-target="#datepicker_2" data-toggle="datetimepicker">
 														<div class="input-group-text"><i class="far fa-calendar-alt"></i></div>
 													</div>
@@ -163,11 +167,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="orvertime">残業時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" placeholder="0.00" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? request()->get('ot_min') }}"/>
+													<input type="text" id="ot_min" placeholder="0.00" name="ot_min" class="form-control datetimepicker-input" value="{{ old('ot_min') ?? request()->get('ot_min') }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" placeholder="0.00" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? request()->get('ot_max') }}"/>
+													<input type="text" id="ot_max" placeholder="0.00" name="ot_max" class="form-control datetimepicker-input" value="{{ old('ot_max') ?? request()->get('ot_max') }}"/>
 												</div>
 											</div>
 										</div>
@@ -179,11 +183,11 @@
 											<div class="form-group">
 												<label class="my-1 mr-2 search_item_lbl_width" for="midnight">深夜時間（合計）</label>
 												<div class="input-group" style="margin-right:10px;">
-													<input type="text" placeholder="0.00" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? request()->get('on_min') }}"/>
+													<input type="text" id="on_min" placeholder="0.00" name="on_min" class="form-control datetimepicker-input" value="{{ old('on_min') ?? request()->get('on_min') }}"/>
 												</div>
 												～
 												<div class="input-group" style="margin-left:10px;">
-													<input type="text" placeholder="0.00" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? request()->get('on_max') }}"/>
+													<input type="text" id="on_max" placeholder="0.00" name="on_max" class="form-control datetimepicker-input" value="{{ old('on_max') ?? request()->get('on_max') }}"/>
 												</div>
 											</div>
 										</div>
@@ -216,14 +220,31 @@
 
 					function resetForm(){
 						Swal.fire({
-							title: 'Export CSV',
+							title: '検索条件をクリアします。',
 							html: "検索条件をクリアします。<br>よろしいですか？",
 							showCancelButton: true,
 							confirmButtonText: 'はい',
 							cancelButtonText: 'いいえ'
 						}).then((result) => {
 							if (result.value) {
-								location.href = '{{ route('admin.work_dates') }}';
+								var today = new Date();
+								var mm = today.getMonth()+1;
+								var yyyy = today.getFullYear();
+								if(mm<10) 
+								{
+									mm='0'+mm;
+								} 
+								var currentYearMonth = yyyy+'/'+mm;
+								console.log(currentYearMonth);
+								document.getElementById("shainNo").value = '';
+								document.getElementById("empty-select").selected  = true;
+								document.getElementById("shainName").value = '';
+								document.getElementById("from_month").value = currentYearMonth;
+								document.getElementById("to_month").value = currentYearMonth;
+								document.getElementById("ot_min").value = '';
+								document.getElementById("ot_max").value = '';
+								document.getElementById("on_min").value = '';
+								document.getElementById("on_max").value = '';
 							}
 						})
 					}
@@ -256,7 +277,7 @@
 								cancelButtonText: 'いいえ'
 							}).then((result) => {
 								if (result.value) {
-									location.href = '{{ route('admin.work_csv', request()->all()) }}';
+									location.href = "{{ route('admin.work_csv', request()->all()) }}";
 								}
 							})
 						}
