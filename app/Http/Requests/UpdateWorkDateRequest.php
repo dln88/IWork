@@ -42,8 +42,11 @@ class UpdateWorkDateRequest extends FormRequest
     public function messages()
     {
         return [
-            'start.required' => config('messages.010019'),
-            'end.required'  => config('messages.010019')
+            'start.regex' => '勤怠の開始時間の入力形式が不正です。',
+            'end.regex' => '勤怠の終了時間の入力形式が不正です。',
+            'start.required' => '勤怠の開始時間が確定していない勤怠情報の編集はできません。',//config('messages.010019'),
+            'end.required'  => '勤怠の終了時間が確定していない勤怠情報の編集はできません。' //config('messages.010019')
         ];
+        
     }
 }
