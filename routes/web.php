@@ -58,7 +58,7 @@ Route::group(['middleware' => 'admin', 'namespace' => 'Admin'], function()
     Route::get('pages/work_admin_personal/{id}/{date}', 'WorkDatesController@personal')
         ->name('admin.work_personal');
 
-    Route::get('pages/work_admin_personal/csv', 'WorkDatesController@personalCSV')
+    Route::get('pages/admin_personal/csv', 'WorkDatesController@personalCSV')
         ->name('admin.work_personal_csv');
 
     Route::post('pages/work_admin_personal/{id}', 'WorkDatesController@updateWorkDate')
